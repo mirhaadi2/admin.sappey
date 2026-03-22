@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Users, Store, ShoppingCart, TrendingUp, AlertCircle } from 'lucide-react';
+import { Users, Storefront, ShoppingCart, WarningCircle, CurrencyDollar, ChartBar, Gear } from '@phosphor-icons/react';
 import { useAdminStats } from '../hooks/useAdminStats';
 import PendingApprovalsTable from '../components/PendingApprovalsTable';
 
@@ -13,66 +13,89 @@ function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-gray-500 text-lg">Loading dashboard...</p>
+        <p className="text-slate-500 text-lg">Loading dashboard...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+    <div className="space-y-6">
+      <header className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold text-slate-900">Admin Dashboard</h1>
+          <p className="text-sm text-slate-500">Overview of platform activity and performance</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition">
+            <ChartBar size={16} weight="duotone" />
+            Refresh
+          </button>
+          <button className="flex items-center gap-2 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition">
+            <Gear size={16} weight="duotone" />
+            Settings
+          </button>
+        </div>
+      </header>
 
       {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          <AlertCircle size={20} />
+        <div className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700">
+          <WarningCircle size={20} />
           <p>{error.message}</p>
         </div>
       )}
 
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Users</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.totalUsers || 0}</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Total Users</p>
+              <p className="text-3xl font-bold text-slate-900">{stats?.totalUsers || 0}</p>
             </div>
-            <Users className="text-blue-500 opacity-20" size={40} />
+            <div className="p-3 rounded-xl bg-blue-100 text-blue-600">
+              <Users size={28} weight="duotone" />
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-3">Active accounts</p>
+          <p className="mt-3 text-xs text-slate-500">Active accounts across all portals</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Sellers</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.totalSellers || 0}</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Total Sellers</p>
+              <p className="text-3xl font-bold text-slate-900">{stats?.totalSellers || 0}</p>
             </div>
-            <Store className="text-purple-500 opacity-20" size={40} />
+            <div className="p-3 rounded-xl bg-violet-100 text-violet-600">
+              <Storefront size={28} weight="duotone" />
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-3">Verified sellers</p>
+          <p className="mt-3 text-xs text-slate-500">Approved and active sellers</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Total Orders</p>
-              <p className="text-3xl font-bold text-gray-900">{stats?.totalOrders || 0}</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Total Orders</p>
+              <p className="text-3xl font-bold text-slate-900">{stats?.totalOrders || 0}</p>
             </div>
-            <ShoppingCart className="text-orange-500 opacity-20" size={40} />
+            <div className="p-3 rounded-xl bg-amber-100 text-amber-600">
+              <ShoppingCart size={28} weight="duotone" />
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-3">This month: {stats?.mensualOrders || 0}</p>
+          <p className="mt-3 text-xs text-slate-500">Orders processed this month</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Platform Revenue</p>
-              <p className="text-3xl font-bold text-gray-900">₹{stats?.totalRevenue?.toLocaleString() || 0}</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide">Platform Revenue</p>
+              <p className="text-3xl font-bold text-slate-900">₹{stats?.totalRevenue?.toLocaleString() || 0}</p>
             </div>
-            <TrendingUp className="text-green-500 opacity-20" size={40} />
+            <div className="p-3 rounded-xl bg-emerald-100 text-emerald-600">
+              <CurrencyDollar size={28} weight="duotone" />
+            </div>
           </div>
-          <p className="text-xs text-gray-500 mt-3">This month: ₹{stats?.mensualRevenue?.toLocaleString() || 0}</p>
+          <p className="mt-3 text-xs text-slate-500">Revenue this month ₹{stats?.mensualRevenue?.toLocaleString() || 0}</p>
         </div>
       </div>
 
