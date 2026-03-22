@@ -21,9 +21,9 @@ import {
 
 export const adminProductsApi = {
   // Fetch products list
-  listProducts: async (params?: AdminProductsListParams): Promise<AdminProductsResponse> => {
+  listProducts: async (params?: AdminProductsListParams): Promise<AdminProductsResponse['data']> => {
     const response = await apiMethods.get<AdminProductsResponse>(ADMIN_PRODUCTS_LIST, params);
-    return response.data;
+    return response.data?.data;
   },
 
   // Get single product

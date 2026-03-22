@@ -21,7 +21,7 @@ export interface AdminProduct {
 export interface AdminProductsResponse {
   success: boolean;
   data: {
-    products: AdminProduct[];
+    data: AdminProduct[];
     total: number;
     page: number;
     limit: number;

@@ -53,15 +53,15 @@ function UsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50 to-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Users Management</h1>
             <p className="text-slate-600 mt-1">Manage all users in the system</p>
           </div>
-          <button className="flex items-center gap-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all">
+          <button className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all">
             <Plus size={20} weight="bold" />
             Create User
           </button>
