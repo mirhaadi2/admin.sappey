@@ -1,0 +1,69 @@
+// Main API exports
+export { default as api, apiMethods, apiClient } from './index';
+
+// Admin Authentication & Auth Hook
+export { adminAuthApi } from './admin/client';
+export { useAdminAuth } from './admin/hooks';
+export type { AuthResponse, LoginData, AdminUser, AdminProfileResponse } from './admin/types';
+
+// Admin Management APIs & Hooks - Users
+export { adminUsersApi } from './admin/users/client';
+export { 
+  useAdminUsersList, 
+  useAdminUserDetail, 
+  useAdminCreateUser, 
+  useAdminUpdateUser, 
+  useAdminDeleteUser,
+  useAdminBanUser,
+  useAdminUnbanUser
+} from './admin/users/hooks/index';
+export type { AdminUsersListParams, AdminUserCreateInput, AdminUserUpdateInput } from './admin/users/types';
+
+// Admin Management APIs & Hooks - Sellers
+export { adminSellersApi } from './admin/sellers/client';
+export { 
+  useAdminSellersList, 
+  useAdminSellerDetail, 
+  useAdminCreateSeller, 
+  useAdminUpdateSeller, 
+  useAdminDeleteSeller,
+  useAdminApproveSeller,
+  useAdminRejectSeller,
+  useAdminSuspendSeller,
+  useAdminRestoreSeller
+} from './admin/sellers/hooks/index';
+export type { AdminSellersListParams, AdminSellerCreateInput, AdminSellerUpdateInput, AdminSellerVerificationInput } from './admin/sellers/types';
+
+// Admin Management APIs & Hooks - Orders
+export { adminOrdersApi } from './admin/orders/client';
+export { 
+  useAdminOrdersList, 
+  useAdminOrderDetail, 
+  useAdminUpdateOrderStatus, 
+  useAdminRefundOrder,
+  useAdminCancelOrder,
+  useAdminDisputeOrder
+} from './admin/orders/hooks/index';
+export type { AdminOrdersListParams, AdminOrderStatusInput, AdminOrderRefundInput, AdminOrderDisputeInput } from './admin/orders/types';
+
+// Admin Management APIs & Hooks - Products
+export { adminProductsApi } from './admin/products/client';
+export { 
+  useAdminProductsList, 
+  useAdminProductDetail, 
+  useAdminCreateProduct, 
+  useAdminUpdateProduct, 
+  useAdminDeleteProduct,
+  useAdminPublishProduct,
+  useAdminUnpublishProduct,
+  useAdminFeatureProduct,
+  useAdminUnfeatureProduct
+} from './admin/products/hooks/index';
+export type { AdminProductsListParams, AdminProductCreateInput, AdminProductUpdateInput } from './admin/products/types';
+
+// API utilities
+export { ApiService, createApiHooks, createApiService } from './utils';
+
+// Legacy management client export
+export { adminClient } from './admin/management-client';
+

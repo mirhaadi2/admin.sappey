@@ -1,14 +1,19 @@
 import { useEffect } from 'react';
 import { Users, Storefront, ShoppingCart, WarningCircle, CurrencyDollar, ChartBar, Gear } from '@phosphor-icons/react';
-import { useAdminStats } from '../hooks/useAdminStats';
 import PendingApprovalsTable from '../components/PendingApprovalsTable';
 
 function Dashboard() {
-  const { stats, loading, error, fetchStats } = useAdminStats();
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  const stats = {
+    totalUsers: 1234,
+    totalSellers: 456,
+    totalOrders: 789,
+    pendingApprovals: 12,
+    totalRevenue: 50000,
+    mensualRevenue: 5000,
+    activeListings: 2345,
+  };
+  const loading = false;
+  const error: null = null;
 
   if (loading) {
     return (
@@ -41,7 +46,7 @@ function Dashboard() {
       {error && (
         <div className="flex items-center gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700">
           <WarningCircle size={20} />
-          <p>{error.message}</p>
+          <p>An error occurred while fetching dashboard data</p>
         </div>
       )}
 

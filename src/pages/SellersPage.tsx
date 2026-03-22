@@ -1,35 +1,34 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
-import { useAdminSellers } from '../hooks/useAdminSellers';
+import { 
+  useAdminSellersList,
+  useAdminApproveSeller,
+  useAdminRejectSeller
+} from '@/api/exports';
 
 function SellersPage() {
-  const {
-    sellers,
-    total,
-    loading,
-    error,
-    fetchSellers,
-    approveSeller,
-    rejectSeller,
-    clearError,
-  } = useAdminSellers();
-
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [rejectReason, setRejectReason] = useState<{ [key: number]: string }>({});
   const [showRejectForm, setShowRejectForm] = useState<number | null>(null);
 
-  useEffect(() => {
-    const status = filterStatus === 'all' ? undefined : filterStatus;
-    fetchSellers(status);
-  }, [filterStatus]);
+  // Get sellers list
+  const {
+    data: sellersData,
+    isLoading: loading,
+    error,
+  } = useAdminSellersList({
+    status: filterStatus === 'all' ? undefined : (filterStatus as any),
+  });
+
+  // Get mutations
+  const approveMutation = useAdminApproveSeller();
+  const rejectMutation = useAdminRejectSeller();
+  const sellers = sellersData?.data || [];
+  const total = sellersData?.total || 0;
 
   const handleApprove = async (sellerId: number) => {
     if (confirm('Approve this seller?')) {
-      try {
-        await approveSeller(sellerId);
-      } catch (err) {
-        console.error('Failed to approve seller');
-      }
+      approveMutation.mutate({ id: sellerId.toString() });
     }
   };
 
@@ -39,13 +38,12 @@ function SellersPage() {
       alert('Please provide a rejection reason');
       return;
     }
-    try {
-      await rejectSeller(sellerId, reason);
-      setShowRejectForm(null);
-      setRejectReason({ ...rejectReason, [sellerId]: '' });
-    } catch (err) {
-      console.error('Failed to reject seller');
-    }
+    rejectMutation.mutate({ 
+      id: sellerId.toString(), 
+      data: { reason } 
+    });
+    setShowRejectForm(null);
+    setRejectReason({ ...rejectReason, [sellerId]: '' });
   };
 
   const getStatusColor = (status: string) => {
@@ -64,13 +62,7 @@ function SellersPage() {
       {error && (
         <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
           <AlertCircle size={20} />
-          <p>{error.message}</p>
-          <button
-            onClick={clearError}
-            className="ml-auto text-sm underline hover:no-underline"
-          >
-            Dismiss
-          </button>
+          <p>{error instanceof Error ? error.message : 'An error occurred'}</p>
         </div>
       )}
 
@@ -131,37 +123,35 @@ function SellersPage() {
               <thead className="border-b border-gray-200 bg-gray-50">
                 <tr>
                   <th className="text-left py-3 px-4 font-semibold text-gray-900">Business Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Type</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Business License No.</th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Rating</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Orders</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Seller Name</th>
+                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Seller Phone</th>
                   <th className="text-center py-3 px-4 font-semibold text-gray-900">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {sellers.map((seller) => (
+                {sellers?.map((seller: any) => (
                   <tr key={seller.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-900 font-medium">{seller.businessName}</td>
-                    <td className="py-4 px-4 text-gray-600 text-sm">{seller.businessType}</td>
+                    <td className="py-4 px-4 text-gray-900 font-medium">{seller.businessName || seller.name}</td>
+                    <td className="py-4 px-4 text-gray-600 text-sm">{seller.businessLicense || 'N/A'}</td>
                     <td className="py-4 px-4">
                       <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(seller.status)}`}>
                         {seller.status}
                       </span>
                     </td>
-                    <td className="py-4 px-4 text-gray-600">
-                      {seller.rating > 0 ? `${seller.rating.toFixed(1)} ⭐` : 'No rating'}
-                    </td>
-                    <td className="py-4 px-4 text-gray-600">{seller.totalOrders}</td>
+                    <td className="py-4 px-4 text-gray-600">{seller.name || 0}</td>
+                    <td className="py-4 px-4 text-gray-600">{seller.phone || 0}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center justify-center gap-2">
                         <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View details">
                           <Eye size={18} />
                         </button>
 
-                        {seller.status === 'PENDING' && (
+                        {seller.verificationStatus === 'pending' && (
                           <>
                             <button
-                              onClick={() => handleApprove(seller.id)}
+                              onClick={() => handleApprove(parseInt(seller.id))}
                               className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                               title="Approve"
                             >
@@ -188,7 +178,7 @@ function SellersPage() {
               <div className="border-t border-gray-200 mt-4 pt-4">
                 <div className="bg-red-50 p-4 rounded-lg border border-red-200">
                   <h4 className="font-semibold text-gray-900 mb-2">
-                    Reject {sellers.find((s) => s.id === showRejectForm)?.businessName}
+                    Reject {sellers.find((s: any) => s.id === showRejectForm)?.businessName}
                   </h4>
                   <textarea
                     placeholder="Provide a reason for rejection..."

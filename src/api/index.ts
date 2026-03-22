@@ -25,6 +25,12 @@ export const apiMethods = {
     apiClient.patch<T>(url, data),
   delete: <T = any>(url: string) =>
     apiClient.delete<T>(url),
+  upload: <T = any>(url: string, formData: FormData) =>
+    apiClient.post<T>(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
 };
 
 export default apiClient;
