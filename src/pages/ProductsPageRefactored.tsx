@@ -20,7 +20,7 @@ import {
 } from '@/components';
 import type { AdminProduct } from '@/api/admin/products/types';
 
-function ProductsPage() {
+function ProductsPageRefactored() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'all' | 'draft' | 'published'>('all');
@@ -81,27 +81,20 @@ function ProductsPage() {
       key: 'name',
       header: 'Product Name',
       width: '200px',
-      render: (name, product: any) => (
-        <div className="flex items-center gap-2">
-          <img
-            src={product.imageUrl || '/placeholder.png'}
-            alt={name}
-            className="w-10 h-10 object-cover rounded"
-          />
-          <span>{name}</span>
-        </div>
-      ),
+    },
+    {
+      key: 'sellerName',
+      header: 'Seller',
     },
     {
       key: 'price',
       header: 'Price',
-      render: (price) => `$${price?.toFixed(2)}`,
+      render: (price) => `$${price.toFixed(2)}`,
     },
     {
       key: 'stock',
       header: 'Stock',
       align: 'center',
-      render: (stock) => (stock > 0 ? stock : <span className="text-red-500">Out of Stock</span>),
     },
     {
       key: 'status',
@@ -115,22 +108,13 @@ function ProductsPage() {
     },
     {
       key: 'views',
-      header: 'View',
+      header: 'Views',
       align: 'center',
-      render: (views, product: AdminProduct) => (
-        <Button
-          variant="outline"
-          size="sm"
-          isLoading={isPublishingProduct || isUnpublishingProduct}
-          onClick={() => handlePublishToggle(product)}
-          icon={<Eye size={16} />}
-        />
-      ),
     },
     {
       key: 'rating',
       header: 'Rating',
-      render: (rating) => `${rating?.toFixed(1) ?? ""} ⭐`,
+      render: (rating) => `${rating.toFixed(1)} ⭐`,
       align: 'center',
     },
   ];
@@ -184,35 +168,35 @@ function ProductsPage() {
         isLoading={isLoading}
         error={errorMessage}
         emptyMessage="No products found"
-      // rowActions={(product) => (
-      //   <>
-      //     <Button
-      //       variant="outline"
-      //       size="sm"
-      //       isLoading={isPublishingProduct || isUnpublishingProduct}
-      //       onClick={() => handlePublishToggle(product)}
-      //       icon={product.status === 'published' ? '👁️' : '📦'}
-      //     >
-      //       {product.status === 'published' ? 'Unpublish' : 'Publish'}
-      //     </Button>
-      //     <Button
-      //       variant={product.isFeatured ? 'primary' : 'outline'}
-      //       size="sm"
-      //       isLoading={isFeaturingProduct || isUnfeaturingProduct}
-      //       onClick={() => handleFeatureToggle(product)}
-      //       icon={<Star size={16} weight={product.isFeatured ? 'fill' : 'regular'} />}
-      //     >
-      //       {product.isFeatured ? 'Featured' : 'Feature'}
-      //     </Button>
-      //     <Button
-      //       variant="danger"
-      //       size="sm"
-      //       isLoading={isDeletingProduct && selectedProductId === product.id}
-      //       onClick={() => handleDelete(product.id)}
-      //       icon={<Trash size={16} />}
-      //     />
-      //   </>
-      // )}
+        rowActions={(product) => (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              isLoading={isPublishingProduct || isUnpublishingProduct}
+              onClick={() => handlePublishToggle(product)}
+              icon={product.status === 'published' ? '👁️' : '📦'}
+            >
+              {product.status === 'published' ? 'Unpublish' : 'Publish'}
+            </Button>
+            <Button
+              variant={product.isFeatured ? 'primary' : 'outline'}
+              size="sm"
+              isLoading={isFeaturingProduct || isUnfeaturingProduct}
+              onClick={() => handleFeatureToggle(product)}
+              icon={<Star size={16} weight={product.isFeatured ? 'fill' : 'regular'} />}
+            >
+              {product.isFeatured ? 'Featured' : 'Feature'}
+            </Button>
+            <Button
+              variant="danger"
+              size="sm"
+              isLoading={isDeletingProduct && selectedProductId === product.id}
+              onClick={() => handleDelete(product.id)}
+              icon={<Trash size={16} />}
+            />
+          </>
+        )}
       />
 
       {/* Pagination */}
@@ -239,4 +223,4 @@ function ProductsPage() {
   );
 }
 
-export default ProductsPage;
+export default ProductsPageRefactored;
