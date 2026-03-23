@@ -86,3 +86,18 @@ export type {
   AdminProductCreateInput,
   AdminProductUpdateInput
 } from './products/types';
+
+export { 
+  adminCategoriesApi,
+  useAdminCategoriesList,
+  useAdminCategoryDetail,
+  useAdminCreateCategory,
+  useAdminUpdateCategory,
+  useAdminDeleteCategory,
+} from './categories/index';
+export type {
+  AdminCategory,
+  AdminCategoriesListParams,
+  AdminCategoryCreateInput,
+  AdminCategoryUpdateInput,
+} from './categories/types';

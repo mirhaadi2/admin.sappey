@@ -13,17 +13,16 @@ export interface User {
 
 // Seller types
 export interface Seller {
-  // id: number;
-  // userId: number;
-  // businessName: string;
-  // businessType: string;
-  // status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  // rating: number;
-  // totalOrders: number;
-  // totalRevenue: number;
-  // createdAt: string;
-  // updatedAt: string;
-  data: []
+  id: string;
+  userId: string;
+  businessName: string;
+  businessType: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  rating?: number;
+  totalOrders?: number;
+  totalRevenue?: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // Order types

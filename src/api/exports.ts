@@ -61,6 +61,22 @@ export {
 } from './admin/products/hooks/index';
 export type { AdminProductsListParams, AdminProductCreateInput, AdminProductUpdateInput } from './admin/products/types';
 
+// Admin Management APIs & Hooks - Categories
+export { adminCategoriesApi } from './admin/categories/client';
+export { 
+  useAdminCategoriesList,
+  useAdminCategoryDetail,
+  useAdminCreateCategory,
+  useAdminUpdateCategory,
+  useAdminDeleteCategory,
+} from './admin/categories/hooks';
+export type { 
+  AdminCategory,
+  AdminCategoriesListParams,
+  AdminCategoryCreateInput,
+  AdminCategoryUpdateInput,
+} from './admin/categories/types';
+
 // API utilities
 export { ApiService, createApiHooks, createApiService } from './utils';
 

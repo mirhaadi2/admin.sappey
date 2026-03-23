@@ -3,6 +3,9 @@ export interface AdminProduct {
   name: string;
   description: string;
   price: number;
+  discountedPrice?: number;
+  discountedPercent?: number;
+  gst_rate?: number;
   images: string[];
   imageUrl?: string;
   sellerId: string;
@@ -47,17 +50,24 @@ export interface AdminProductsListParams {
 
 export interface AdminProductCreateInput {
   name: string;
+  slug?: string;
   description: string;
-  price: number;
+  price: number | string;
+  discountedPrice?: number | string | null;
+  gst_rate?: number;
+  status?: 'ACTIVE' | 'INACTIVE';
   category: string;
   images?: string[];
-  sellerId: string;
+  sellerId?: string;
 }
 
 export interface AdminProductUpdateInput {
   name?: string;
   description?: string;
   price?: number;
+  discountedPrice?: number;
+  gst_rate?: number;
+  status?: 'ACTIVE' | 'INACTIVE';
   category?: string;
   images?: string[];
   stock?: number;

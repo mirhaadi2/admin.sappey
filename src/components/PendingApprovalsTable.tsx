@@ -7,9 +7,9 @@ export default function PendingApprovalsTable() {
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<number | null>(null);
-  const [rejectReason, setRejectReason] = useState<{ [key: number]: string }>({});
-  const [showRejectModal, setShowRejectModal] = useState<number | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState<{ [key: string]: string }>({});
+  const [showRejectModal, setShowRejectModal] = useState<string | null>(null);
 
   useEffect(() => {
     fetchPendingSellers();
@@ -19,8 +19,8 @@ export default function PendingApprovalsTable() {
     try {
       setLoading(true);
       setError(null);
-      const { sellers } = await adminClient.listSellers('PENDING', 1, 50);
-      setSellers(sellers?.data || []);
+      const response = await adminClient.listSellers('PENDING', 1, 50);
+      setSellers(response.sellers || []);
     } catch (err: any) {
       setError('Failed to load pending sellers');
       console.error('Error fetching pending sellers:', err);
@@ -30,10 +30,10 @@ export default function PendingApprovalsTable() {
   };
   console.log(sellers,'sellers')
 
-  const handleApproveSeller = async (sellerId: number) => {
+  const handleApproveSeller = async (sellerId: string) => {
     try {
       setActionLoading(sellerId);
-      await adminClient.approveSeller(sellerId);
+      await adminClient.approveSeller(sellerId as any);
       setSellers(sellers.filter((s) => s.id !== sellerId));
     } catch (err: any) {
       setError('Failed to approve seller');
@@ -43,12 +43,12 @@ export default function PendingApprovalsTable() {
     }
   };
 
-  const handleRejectSeller = async (sellerId: number) => {
+  const handleRejectSeller = async (sellerId: string) => {
     const reason = rejectReason[sellerId] || 'No reason provided';
 
     try {
       setActionLoading(sellerId);
-      await adminClient.rejectSeller(sellerId, reason);
+      await adminClient.rejectSeller(sellerId as any, reason);
       setSellers(sellers.filter((s) => s.id !== sellerId));
       setShowRejectModal(null);
       setRejectReason({});
