@@ -20,7 +20,7 @@ export default function PendingApprovalsTable() {
       setLoading(true);
       setError(null);
       const { sellers } = await adminClient.listSellers('PENDING', 1, 50);
-      setSellers(sellers);
+      setSellers(sellers?.data || []);
     } catch (err: any) {
       setError('Failed to load pending sellers');
       console.error('Error fetching pending sellers:', err);
@@ -28,6 +28,7 @@ export default function PendingApprovalsTable() {
       setLoading(false);
     }
   };
+  console.log(sellers,'sellers')
 
   const handleApproveSeller = async (sellerId: number) => {
     try {
@@ -117,7 +118,7 @@ export default function PendingApprovalsTable() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {sellers.map((seller) => (
+              {sellers?.map((seller) => (
                 <tr key={seller.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4">
                     <p className="font-medium text-gray-900">{seller.businessName}</p>
