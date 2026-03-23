@@ -6,6 +6,7 @@ import SellersPage from './pages/SellersPage';
 import OrdersPage from './pages/OrdersPage';
 import ProductsPage from './pages/ProductsPage';
 import CategoriesPage from './pages/CategoriesPage';
+import ProductDetailsPage from './pages/ProductDetailsPage';
 import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/sellers" element={<SellersPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<ProductDetailsPage />} />
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/settings" element={<SettingsPage />} />

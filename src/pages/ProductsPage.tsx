@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Plus, Eye, Star, Trash, Package } from "@phosphor-icons/react";
 import { apiMethods } from "@/api/index";
 import {
@@ -27,6 +28,7 @@ import { useForm, FormProvider } from "react-hook-form";
 import type { AdminProduct } from "@/api/admin/products/types";
 
 function ProductsPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "draft" | "published">("all");
@@ -299,7 +301,7 @@ function ProductsPage() {
 
   return (
     <>
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
@@ -355,7 +357,7 @@ function ProductsPage() {
                 variant="outline"
                 size="sm"
                 icon={<Eye size={16} />}
-                onClick={() => console.log("View", product.id)}
+                onClick={() => navigate(`/products/${product.id}`)}
               />
               <Button
                 variant={product.isFeatured ? "primary" : "outline"}
