@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircleNotch, Warning } from '@phosphor-icons/react';
+import { CircleNotch, Package, Warning } from '@phosphor-icons/react';
 
 export interface TableColumn<T> {
   key: keyof T;
@@ -34,78 +34,91 @@ export function Table<T extends { id: string | number }>({
   emptyMessage = 'No data found',
   rowActions,
   onRowClick,
-  striped = true,
+  striped = false,
 }: TableProps<T>) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-      {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="flex flex-col items-center gap-3">
-            <CircleNotch size={32} className="text-amber-600 animate-spin" />
-            <p className="text-slate-600">Loading...</p>
-          </div>
-        </div>
-      ) : error ? (
-        <div className="p-8 flex items-center gap-4 text-red-600 bg-red-50 border-t border-red-200">
-          <Warning size={24} className="flex-shrink-0" />
-          <div>
-            <p className="font-medium">Error loading data</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        </div>
-      ) : data.length === 0 ? (
-        <div className="p-8 text-center text-slate-600">
-          <p className="text-lg font-semibold">{emptyMessage}</p>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-b border-slate-200">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead className="bg-slate-50/50 border-b border-slate-200">
+            <tr>
+              {columns.map((column) => (
+                <th
+                  key={String(column.key)}
+                  style={{ width: column.width }}
+                  className={`px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 ${alignStyles[column.align || 'left']}`}
+                >
+                  {column.header}
+                </th>
+              ))}
+              {rowActions && (
+                <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500 text-right">
+                  Actions
+                </th>
+              )}
+            </tr>
+          </thead>
+          
+          <tbody className="divide-y divide-slate-100">
+            {isLoading ? (
               <tr>
-                {columns.map((column) => (
-                  <th
-                    key={String(column.key)}
-                    style={{ width: column.width }}
-                    className={`px-6 py-3 text-sm font-semibold text-slate-900 ${alignStyles[column.align || 'left']}`}
-                  >
-                    {column.header}
-                  </th>
-                ))}
-                {rowActions && (
-                  <th className="px-6 py-3 text-sm font-semibold text-slate-900 text-right">
-                    Actions
-                  </th>
-                )}
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="py-20">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <CircleNotch size={32} className="text-blue-600 animate-spin" weight="bold" />
+                    <span className="text-slate-500 font-medium">Syncing data...</span>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200">
-              {data.map((row, rowIndex) => (
+            ) : error ? (
+              <tr>
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="p-0">
+                  <div className="m-4 p-4 rounded-lg flex items-center gap-3 text-red-600 bg-red-50 border border-red-100">
+                    <Warning size={20} weight="fill" />
+                    <span className="text-sm font-medium">{error}</span>
+                  </div>
+                </td>
+              </tr>
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (rowActions ? 1 : 0)} className="py-20 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <Package size={40} className="text-slate-300" />
+                    <p className="text-slate-500 font-medium">{emptyMessage}</p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              data.map((row, rowIndex) => (
                 <tr
                   key={row.id}
-                  className={`hover:bg-slate-50 transition-colors ${
-                    striped && rowIndex % 2 === 0 ? 'bg-slate-50' : ''
+                  className={`group transition-colors hover:bg-blue-50/30 ${
+                    striped && rowIndex % 2 !== 0 ? 'bg-slate-50/30' : ''
                   } ${onRowClick ? 'cursor-pointer' : ''}`}
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((column) => (
                     <td
                       key={String(column.key)}
-                      className={`px-6 py-4 text-sm text-slate-900 ${alignStyles[column.align || 'left']}`}
+                      className={`px-6 py-4 text-sm text-slate-600 whitespace-nowrap ${alignStyles[column.align || 'left']}`}
                     >
-                      {column.render ? column.render((row as any)[column.key], row) : (row as any)[column.key]}
+                      {column.render 
+                        ? column.render((row as any)[column.key], row) 
+                        : (row as any)[column.key] || '-'}
                     </td>
                   ))}
                   {rowActions && (
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">{rowActions(row)}</div>
+                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {rowActions(row)}
+                      </div>
                     </td>
                   )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

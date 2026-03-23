@@ -4,6 +4,7 @@ export interface AdminProduct {
   description: string;
   price: number;
   images: string[];
+  imageUrl?: string;
   sellerId: string;
   sellerName: string;
   category: string;
