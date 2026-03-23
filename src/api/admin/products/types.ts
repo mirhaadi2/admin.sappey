@@ -11,6 +11,7 @@ export interface AdminProduct {
   sellerId: string;
   sellerName: string;
   category: string;
+  categoryName?: string;
   status: 'draft' | 'published';
   isFeatured: boolean;
   stock: number;

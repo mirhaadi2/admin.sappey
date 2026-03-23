@@ -339,7 +339,8 @@ function ProductDetailsPage() {
                   variant="outline"
                   className="w-full justify-start"
                   size="sm"
-                  icon={<Tag size={16} />} // Use the prop instead of nesting
+                  icon={<Tag size={16} />}
+                  onClick={() => navigate(`/products/${id}/edit`)}
                 >
                   Edit Product
                 </Button>

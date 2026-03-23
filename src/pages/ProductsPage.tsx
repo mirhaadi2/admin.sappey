@@ -23,8 +23,7 @@ import {
   SearchFilter,
   Toggle,
 } from "@/components";
-import { FormField } from "@/components/Form/FormField";
-import { useForm, FormProvider } from "react-hook-form";
+import { ProductForm, type ProductFormValues } from "@/components/Product/ProductForm";
 import type { AdminProduct } from "@/api/admin/products/types";
 
 function ProductsPage() {
@@ -38,126 +37,61 @@ function ProductsPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [imageKeys, setImageKeys] = useState<string[]>([]);
-  const [uploadingImages, setUploadingImages] = useState(false);
-
-  type CreateProductFormValues = {
-    name: string;
-    slug?: string;
-    description: string;
-    price: number;
-    discountedPrice?: number;
-    gst_rate?: number;
-    status?: "ACTIVE" | "INACTIVE";
-    category: string;
-    images: string;
-    sellerId: string;
-  };
-
-  const formMethods = useForm<CreateProductFormValues>({
-    defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-      price: 0,
-      discountedPrice: undefined,
-      gst_rate: 18,
-      status: "ACTIVE",
-      category: "",
-      images: "",
-      sellerId: "",
-    },
-  });
-
-  const { handleSubmit, reset } = formMethods;
 
   const { mutate: createProduct, isPending: isCreatingProduct } =
     useAdminCreateProduct();
 
-  const onCreateProduct = (values: CreateProductFormValues) => {
-    // 1. Validate mandatory fields manually if not using a Zod schema
+  const createDefaultValues: ProductFormValues = {
+    name: '',
+    slug: '',
+    description: '',
+    price: 0,
+    discountedPrice: null,
+    gst_rate: 18,
+    status: 'ACTIVE',
+    category: '',
+    images: [],
+    stock: 0,
+  };
+
+  const onCreateProduct = (values: ProductFormValues, action: 'continue' | 'return') => {
     if (!values.name || !values.price || !values.category) {
-      console.error("Missing mandatory fields");
+      console.error('Missing mandatory fields');
       return;
     }
 
     const payload = {
       name: values.name.trim(),
-      // Fallback for slug if empty
       slug: (values.slug || values.name)
         .toLowerCase()
-        .replace(/\s+/g, "-")
+        .replace(/\s+/g, '-')
         .trim(),
       description: values.description.trim(),
-
-      // 2. Ensure Numeric Types (Selects often return strings)
       price: Number(values.price),
-      discountedPrice: values.discountedPrice
-        ? Number(values.discountedPrice)
-        : null,
+      discountedPrice:
+        values.discountedPrice !== undefined && values.discountedPrice !== null
+          ? Number(values.discountedPrice)
+          : undefined,
       gst_rate: values.gst_rate ? Number(values.gst_rate) : 18,
-
-      // 3. Status and Category
-      status: values.status || "ACTIVE",
-      category: values.category, // This is the ID from your categoriesData select
-
-      // 4. Clean up images array
-      images: values.images
-        ? values.images
-            .split(",")
-            .map((i) => i.trim())
-            .filter(Boolean)
-        : [],
-
-      // // 5. Only include sellerId if it's not an empty string
-      // ...(values.sellerId?.trim() && { sellerId: values.sellerId.trim() }),
+      status: values.status || 'ACTIVE',
+      category: values.category,
+      images: values.images || [],
+      stock: values.stock ?? 0,
     };
 
     createProduct(payload, {
       onSuccess: () => {
-        setShowCreateModal(false);
-        reset(); // Resets RHF state
-        setImageKeys([]); // Resets your local upload state
+        if (action === 'return') {
+          setShowCreateModal(false);
+        }
       },
       onError: (error) => {
-        console.error("Submission failed:", error);
-        // You can add a toast notification here
+        console.error('Submission failed:', error);
       },
     });
   };
 
-  const handleUploadImages = async (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
 
-    setUploadingImages(true);
-
-    try {
-      const uploaded: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("folder", "products");
-
-        const response = await apiMethods.upload<{ url: string; key: string }>(
-          "/uploads",
-          formData,
-        );
-        const key = response.data?.key || response.data?.url;
-        if (key) uploaded.push(key);
-      }
-
-      setImageKeys((prev) => [...prev, ...uploaded]);
-      formMethods.setValue("images", [...imageKeys, ...uploaded].join(","));
-    } catch (error) {
-      console.error("Image upload failed", error);
-    } finally {
-      setUploadingImages(false);
-    }
-  };
 
   const params: AdminProductsListParams = {
     page,
@@ -404,162 +338,20 @@ function ProductsPage() {
       </div>
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl max-h-screen bg-white rounded-xl shadow-xl flex flex-col relative">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 flex-shrink-0">
+          <div className="w-full max-w-2xl max-h-screen bg-white rounded-xl shadow-xl flex flex-col overflow-hidden">
+            <div className="px-6 py-4 border-b border-slate-200">
               <h2 className="text-xl font-bold">Add New Product</h2>
-              <button
-                className="text-slate-400 hover:text-slate-600"
-                onClick={() => setShowCreateModal(false)}
-              >
-                ✕
-              </button>
             </div>
-            <div className="overflow-y-auto flex-1 px-6 py-4">
-              <FormProvider {...formMethods}>
-                <form
-                  onSubmit={handleSubmit(onCreateProduct)}
-                  className="grid grid-cols-2 gap-4"
-                >
-                  {/* Full Width Fields */}
-                  <FormField
-                    name="name"
-                    label="Product Name"
-                    className="col-span-2"
-                    required
-                  />
-
-                  <FormField
-                    name="slug"
-                    label="Slug"
-                    className="col-span-2"
-                    placeholder="e.g. apple-iphone-15"
-                    helperText="Generated from name if left blank"
-                  />
-
-                  <FormField
-                    name="description"
-                    label="Description"
-                    type="textarea"
-                    className="col-span-2"
-                    required
-                  />
-
-                  {/* 50% / 50% Split for Price and Discount */}
-                  <FormField
-                    name="price"
-                    label="Base Price (Excl. GST)"
-                    type="number"
-                    className="col-span-1"
-                    required
-                  />
-
-                  <FormField
-                    name="discountedPrice"
-                    label="Discounted Price"
-                    type="number"
-                    className="col-span-1"
-                  />
-
-                  {/* FIXED: GST Rate as a Select Dropdown */}
-                  <FormField
-                    name="gst_rate"
-                    label="GST Rate (%)"
-                    type="select"
-                    className="col-span-1"
-                    required
-                    options={[
-                      { value: "0", label: "0% (Exempted)" },
-                      { value: "5", label: "5% (Essentials)" },
-                      { value: "12", label: "12% (Standard)" },
-                      { value: "18", label: "18% (Standard High)" },
-                      { value: "28", label: "28% (Luxury/Sin)" },
-                    ]}
-                  />
-
-                  <FormField
-                    name="status"
-                    label="Listing Status"
-                    type="select"
-                    className="col-span-1"
-                    options={[
-                      { value: "ACTIVE", label: "Active" },
-                      { value: "INACTIVE", label: "Inactive" },
-                    ]}
-                  />
-
-                  {/* Category Select Dropdown */}
-                  <FormField
-                    name="category"
-                    label="Product Category"
-                    type="select"
-                    className="col-span-2"
-                    required
-                    options={categoriesData.map((cat) => ({
-                      value: cat.id,
-                      label: cat.name,
-                    }))}
-                    disabled={isCategoryLoading}
-                    helperText={
-                      isCategoryLoading
-                        ? "Loading categories..."
-                        : "Select a category for this product"
-                    }
-                  />
-
-                  {/* Image Upload Section */}
-                  <div className="grid gap-2 col-span-2">
-                    <label className="text-sm font-medium text-slate-700">
-                      Product Media
-                    </label>
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleUploadImages}
-                      disabled={uploadingImages}
-                      className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      accept="image/*"
-                    />
-                    {uploadingImages && (
-                      <p className="text-xs text-blue-600 animate-pulse font-medium">
-                        Uploading to R2 storage...
-                      </p>
-                    )}
-                  </div>
-
-                  <FormField
-                    name="images"
-                    label="Image Keys"
-                    className="col-span-2"
-                    disabled
-                    helperText="Populated automatically after upload"
-                  />
-
-                  {/* <FormField
-                    name="sellerId"
-                    label="Seller Reference"
-                    className="col-span-2"
-                    placeholder="Enter Seller UUID"
-                  /> */}
-
-                  {/* Action Buttons */}
-                  <div className="flex items-center gap-3 pt-6 col-span-2 justify-end border-t border-slate-100">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setShowCreateModal(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      disabled={isCreatingProduct}
-                    >
-                      {isCreatingProduct ? "Creating..." : "Create Product"}
-                    </Button>
-                  </div>
-                </form>
-              </FormProvider>
+            <div className="overflow-y-auto flex-1 p-6">
+              <ProductForm
+                title="Add New Product"
+                submitLabel={isCreatingProduct ? 'Creating...' : 'Create Product'}
+                isSubmitting={isCreatingProduct}
+                defaultValues={createDefaultValues}
+                categories={categoriesData}
+                onCancel={() => setShowCreateModal(false)}
+                onSubmit={onCreateProduct}
+              />
             </div>
           </div>
         </div>

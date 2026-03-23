@@ -37,8 +37,9 @@ export const useAdminUpdateProduct = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: AdminProductUpdateInput }) =>
       adminProductsApi.updateProduct(id, data),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'product', variables.id] });
     },
   });
 };
