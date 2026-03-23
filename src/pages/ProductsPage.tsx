@@ -115,7 +115,7 @@ function ProductsPage() {
       align: 'center',
       render: (stock) => (
         stock > 0 ? (
-          <span className="text-slate-600">{stock} units</span>
+          <span className="font-medium text-slate-700">{stock} KG</span>
         ) : (
           <span className="text-red-500 font-bold text-[10px] uppercase bg-red-50 px-2 py-0.5 rounded-full border border-red-100">
             Out of Stock
