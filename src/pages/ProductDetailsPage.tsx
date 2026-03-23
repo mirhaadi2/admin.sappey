@@ -173,7 +173,7 @@ function ProductDetailsPage() {
                     Category
                   </span>
                   <span className="text-sm text-slate-900">
-                    {product.category || "N/A"}
+                    {product.categoryName || "N/A"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
@@ -181,7 +181,7 @@ function ProductDetailsPage() {
                     Stock Level
                   </span>
                   <span className="text-sm text-slate-900">
-                    {product.stock} units
+                    {product.stock} KG
                   </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
