@@ -3,6 +3,7 @@ export * from './Form';
 
 // UI Components
 export { Button } from './Button';
+export { Toggle } from './Toggle';
 export { Pagination } from './Pagination';
 export { Table, type TableColumn } from './Table';
 export { ConfirmDialog } from './ConfirmDialog';

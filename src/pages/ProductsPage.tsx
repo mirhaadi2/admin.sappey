@@ -17,6 +17,7 @@ import {
   ConfirmDialog,
   StatusBadge,
   SearchFilter,
+  Toggle,
 } from '@/components';
 import type { AdminProduct } from '@/api/admin/products/types';
 
@@ -106,10 +107,14 @@ function ProductsPage() {
     {
       key: 'status',
       header: 'Status',
-      render: (status) => (
-        <StatusBadge
-          status={status === 'published' ? 'Published' : 'Draft'}
-          color={status === 'published' ? 'success' : 'info'}
+      render: (status, product: AdminProduct) => (
+        <Toggle
+          isActive={status === 'published'}
+          isLoading={isPublishingProduct || isUnpublishingProduct}
+          activeLabel="Published"
+          inactiveLabel="Draft"
+          size="md"
+          onClick={() => handlePublishToggle(product)}
         />
       ),
     },
