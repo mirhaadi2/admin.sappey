@@ -20,9 +20,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <div className="relative">
-          {icon && <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">{icon}</div>}
+          {icon && <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none">{icon}</div>}
           <input
             ref={ref}
+            autoComplete="off"
             className={`w-full px-4 py-2 ${icon ? 'pl-10' : ''} border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors ${
               error
                 ? 'border-red-500 focus:ring-red-500'

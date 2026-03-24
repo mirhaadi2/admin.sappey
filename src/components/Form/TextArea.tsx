@@ -10,7 +10,8 @@ interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 }
 
 export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ label, error, helperText, fullWidth = true, charLimit, className = '', value, ...props }, ref) => {
+  ({ label, error, helperText, fullWidth = true, charLimit, className = '', ...props }, ref) => {
+    const value = props.value || '';
     const charCount = typeof value === 'string' ? value.length : 0;
 
     return (
@@ -23,7 +24,7 @@ export const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         )}
         <textarea
           ref={ref}
-          value={value}
+          autoComplete="off"
           className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 transition-colors resize-vertical ${
             error
               ? 'border-red-500 focus:ring-red-500'

@@ -134,9 +134,11 @@ export function ProductForm({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-        <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-      </div>
+      {title && (
+        <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+          <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
+        </div>
+      )}
 
       <FormProvider {...formMethods}>
         <form
@@ -144,7 +146,8 @@ export function ProductForm({
             const normalized: ProductFormValues = {
               ...values,
               discountedPrice:
-                values.discountedPrice !== undefined && values.discountedPrice !== null
+                values.discountedPrice !== undefined &&
+                values.discountedPrice !== null
                   ? Number(values.discountedPrice)
                   : undefined,
               gst_rate: values.gst_rate ?? 18,
