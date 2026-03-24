@@ -18,6 +18,12 @@ function UsersPage() {
   const [status, setStatus] = useState<'all' | 'active' | 'banned'>('all');
   const [showUserModal, setShowUserModal] = useState<'create' | 'edit' | 'view' | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [formInitialValues, setFormInitialValues] = useState<Partial<UserFormValues>>({
+    email: '',
+    name: '',
+    phone: '',
+    status: 'active',
+  });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const params = useMemo(
@@ -40,11 +46,19 @@ function UsersPage() {
   const users = usersData?.data || [];
 
   const openCreateModal = () => {
+    setSelectedUser(null);
+    setFormInitialValues({ email: '', name: '', phone: '', status: 'active' });
     setShowUserModal('create');
   };
 
   const openEditModal = (user: AdminUser) => {
     setSelectedUser(user);
+    setFormInitialValues({
+      email: user.email,
+      name: user.name || '',
+      phone: user.phone || '',
+      status: user.status as 'active' | 'banned',
+    });
     setShowUserModal('edit');
   };
 
@@ -218,14 +232,10 @@ function UsersPage() {
 
             {(showUserModal === 'create' || showUserModal === 'edit') && (
               <UserForm
+                key={showUserModal === 'edit' ? selectedUser?.id ?? 'edit' : 'create'}
                 isEdit={showUserModal === 'edit'}
                 isSubmitting={createUser.isPending || updateUser.isPending}
-                defaultValues={selectedUser ? {
-                  email: selectedUser.email,
-                  name: selectedUser.name,
-                  phone: selectedUser.phone || '',
-                  status: selectedUser.status as 'active' | 'banned',
-                } : undefined}
+                defaultValues={formInitialValues}
                 onCancel={() => setShowUserModal(null)}
                 onSubmit={(values: UserFormValues) => {
                   if (showUserModal === 'create') {
@@ -233,7 +243,6 @@ function UsersPage() {
                       email: values.email,
                       name: values.name,
                       phone: values.phone || undefined,
-                      password: values.password!,
                     }).then(() => {
                       setShowUserModal(null);
                       setPage(1);

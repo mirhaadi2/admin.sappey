@@ -8,7 +8,6 @@ export type UserFormValues = {
   name: string;
   phone?: string;
   status?: "active" | "banned";
-  password?: string;
 };
 
 interface UserFormProps {
@@ -36,24 +35,25 @@ export function UserForm({
       name: "",
       phone: "",
       status: "active",
-      password: "",
       ...defaultValues,
     },
+    shouldUnregister: true,
   });
 
   const { handleSubmit, reset, formState } = formMethods;
 
   React.useEffect(() => {
-    if (!formState.isDirty) {
-      reset({
-        email: "",
-        name: "",
-        phone: "",
-        status: "active",
-        password: "",
-        ...defaultValues,
-      });
-    }
+    if (formState.isDirty) return;
+
+    const mergedValues = {
+      email: "",
+      name: "",
+      phone: "",
+      status: "active",
+      ...defaultValues,
+    } as UserFormValues;
+
+    reset(mergedValues);
   }, [defaultValues, reset, formState.isDirty]);
 
   const onFormSubmit = (values: UserFormValues) => {
@@ -96,16 +96,6 @@ export function UserForm({
             ]}
           />
         </div>
-
-        {!isEdit && (
-          <FormField
-            label="Password"
-            name="password"
-            type="password"
-            required
-            placeholder="Enter password"
-          />
-        )}
 
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>

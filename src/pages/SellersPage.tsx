@@ -236,8 +236,8 @@ function SellersPage() {
                       email: values.email,
                       name: values.name,
                       businessName: values.businessName,
+                      businessLicense: values.businessLicense,
                       phone: values.phone || undefined,
-                      password: values.password!,
                     }).then(() => {
                       setShowSellerModal(null);
                       setPage(1);

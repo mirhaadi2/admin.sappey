@@ -48,8 +48,8 @@ export interface AdminSellerCreateInput {
   email: string;
   name: string;
   businessName: string;
+  businessLicense: string;
   phone?: string;
-  password: string;
 }
 
 export interface AdminSellerUpdateInput {

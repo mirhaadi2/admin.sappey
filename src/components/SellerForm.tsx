@@ -7,12 +7,12 @@ export type SellerFormValues = {
   email: string;
   name: string;
   businessName: string;
+  businessLicense: string;
   phone?: string;
   address?: string;
   city?: string;
   state?: string;
   zipCode?: string;
-  password?: string;
 };
 
 interface SellerFormProps {
@@ -39,12 +39,12 @@ export function SellerForm({
       email: "",
       name: "",
       businessName: "",
+      businessLicense: "",
       phone: "",
       address: "",
       city: "",
       state: "",
       zipCode: "",
-      password: "",
       ...defaultValues,
     },
   });
@@ -57,12 +57,12 @@ export function SellerForm({
         email: "",
         name: "",
         businessName: "",
+        businessLicense: "",
         phone: "",
         address: "",
         city: "",
         state: "",
         zipCode: "",
-        password: "",
         ...defaultValues,
       });
     }
@@ -100,6 +100,15 @@ export function SellerForm({
             placeholder="Full name"
           />
           <FormField
+            label="Business License"
+            name="businessLicense"
+            required
+            placeholder="Business registration number"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
             label="Phone"
             name="phone"
             placeholder="Phone number"
@@ -123,16 +132,6 @@ export function SellerForm({
             placeholder="Zip code"
           />
         </div>
-
-        {!isEdit && (
-          <FormField
-            label="Password"
-            name="password"
-            type="password"
-            required
-            placeholder="Enter password"
-          />
-        )}
 
         <div className="flex justify-end gap-2 pt-4">
           <Button type="button" variant="outline" onClick={onCancel}>

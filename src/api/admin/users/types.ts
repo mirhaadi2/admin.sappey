@@ -36,9 +36,8 @@ export interface AdminUsersListParams {
 
 export interface AdminUserCreateInput {
   email: string;
-  name: string;
+  name?: string;
   phone?: string;
-  password: string;
 }
 
 export interface AdminUserUpdateInput {
