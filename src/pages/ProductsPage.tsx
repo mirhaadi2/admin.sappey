@@ -22,6 +22,7 @@ import type { AdminProduct } from "@/api/admin/products/types";
 function ProductsPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<Record<string, any>>({
     status: "all",
@@ -40,7 +41,7 @@ function ProductsPage() {
     error,
   } = useAdminProductsList({
     page,
-    limit: 10,
+    limit,
     search: search || undefined,
     status: filters.status === "all" ? undefined : filters.status,
   });
@@ -238,9 +239,13 @@ function ProductsPage() {
 
         <Pagination
           page={page}
+          limit={limit}
           total={productsData?.total || 0}
-          limit={10}
-          onPageChange={setPage}
+          onPageChange={(newPage) => setPage(newPage)}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
         />
       </div>
       <ConfirmDialog
