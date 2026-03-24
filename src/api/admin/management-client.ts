@@ -54,12 +54,12 @@ export const adminClient = {
   },
 
   // Sellers Management
-  async listSellers(status?: string, page?: number, limit?: number): Promise<{ sellers: Seller[]; total: number }> {
+  async listSellers(status?: string, page?: number, limit?: number): Promise<any> {
     try {
       const response = await apiClient.get<ListResponse<Seller>>(`${ADMIN_BASE_URL}/sellers`, {
         params: { status, page, limit },
       });
-      return { sellers: response.data.data, total: response.data.total };
+      return response.data.data;
     } catch (error) {
       throw error;
     }

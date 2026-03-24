@@ -68,6 +68,10 @@ export function ProductForm({
   }, [formState.isDirty, onDirtyChange]);
 
   useEffect(() => {
+    // Prevent resetting while user is actively editing (dirty state),
+    // which can happen if parent passes a new defaultValues object every render.
+    if (formState.isDirty) return;
+
     const merged = {
       name: "",
       slug: "",
@@ -85,7 +89,7 @@ export function ProductForm({
     merged.images = defaultValues.images ?? [];
 
     reset(merged);
-  }, [defaultValues, reset]);
+  }, [defaultValues, reset, formState.isDirty]);
 
   const currentImages = watch("images");
 

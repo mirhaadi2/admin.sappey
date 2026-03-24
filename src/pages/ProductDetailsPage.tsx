@@ -72,9 +72,7 @@ function ProductDetailsPage() {
                 size="sm"
                 icon={<ArrowLeft size={16} />}
                 onClick={() => navigate("/products")}
-              >
-                Back to Products
-              </Button>
+              />
               <div className="h-6 w-px bg-slate-300"></div>
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
@@ -238,7 +236,6 @@ function ProductDetailsPage() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-slate-600">Discount</span>
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <Percent size={12} className="mr-1" />
                           {product.discountedPercent.toFixed(1)}% off
                         </span>
                       </div>

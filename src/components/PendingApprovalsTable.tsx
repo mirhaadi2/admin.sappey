@@ -20,7 +20,7 @@ export default function PendingApprovalsTable() {
       setLoading(true);
       setError(null);
       const response = await adminClient.listSellers('PENDING', 1, 50);
-      setSellers(response.sellers || []);
+      setSellers(response.data || []);
     } catch (err: any) {
       setError('Failed to load pending sellers');
       console.error('Error fetching pending sellers:', err);

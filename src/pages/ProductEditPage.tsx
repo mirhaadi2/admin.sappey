@@ -11,6 +11,7 @@ import {
 } from "@/components/Product/ProductForm";
 import { Button } from "@/components";
 import type { AdminProductUpdateInput } from '@/api/admin/products/types';
+import { ArrowLeft } from "lucide-react";
 
 function ProductEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +39,40 @@ function ProductEditPage() {
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [isDirty]);
+
+  const product = productResponse?.data;
+
+  const initialValues = React.useMemo<ProductFormValues>(() => {
+    if (!product) {
+      return {
+        name: "",
+        slug: "",
+        description: "",
+        price: 0,
+        discountedPrice: undefined,
+        gst_rate: 18,
+        status: "ACTIVE",
+        category: "",
+        images: [],
+        stock: 0,
+      };
+    }
+
+    return {
+      name: product.name,
+      description: product.description ?? "",
+      price: product.price ?? 0,
+      discountedPrice:
+        product.discountedPrice !== undefined && product.discountedPrice !== null
+          ? product.discountedPrice
+          : undefined,
+      gst_rate: product.gst_rate ?? 18,
+      status: product.status === "published" ? "ACTIVE" : "INACTIVE",
+      category: product.category,
+      images: Array.isArray(product.images) ? product.images : [],
+      stock: product.stock ?? 0,
+    };
+  }, [product]);
 
   const handleBack = () => {
     if (
@@ -80,26 +115,6 @@ function ProductEditPage() {
     );
   }
 
-  const product = productResponse.data;
-
-  const initialValues: ProductFormValues = {
-    name: product.name,
-    description: product.description ?? "",
-    price: product.price ?? 0,
-    discountedPrice:
-      product.discountedPrice !== undefined && product.discountedPrice !== null
-        ? product.discountedPrice
-        : undefined,
-    gst_rate: product.gst_rate ?? 18,
-    status:
-      product.status === "published"
-        ? "ACTIVE"
-        : "INACTIVE",
-    category: product.category,
-    images: Array.isArray(product.images) ? product.images : [],
-    stock: product.stock ?? 0,
-  };
-
   const handleSubmit = (
     values: ProductFormValues,
     action: "continue" | "return",
@@ -139,13 +154,12 @@ function ProductEditPage() {
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4">
         <div className="mx-auto max-w-5xl flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
+              icon={<ArrowLeft size={16} />}
               onClick={handleBack}
-              className="px-3 py-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 border border-slate-200"
-              title="Go back"
-            >
-              Back
-            </button>
+            />
             <div>
               <h1 className="text-lg font-bold text-slate-900">Edit Product</h1>
               <p className="text-xs text-slate-500 font-mono">{product?.name}</p>
@@ -160,7 +174,7 @@ function ProductEditPage() {
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="py-6">
         <div className="mx-auto max-w-5xl bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
           <ProductForm
             title="General Information"
