@@ -1,5 +1,7 @@
 // Form Components
 export * from './Form';
+export { UserForm, type UserFormValues } from './UserForm';
+export { SellerForm, type SellerFormValues } from './SellerForm';
 
 // UI Components
 export { Button } from './Button';

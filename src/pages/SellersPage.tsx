@@ -1,226 +1,270 @@
-import { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, AlertCircle, Eye } from 'lucide-react';
-import { 
+﻿import React, { useMemo, useState } from 'react';
+import { Plus, Eye, Pencil, Trash, CheckCircle, XCircle } from '@phosphor-icons/react';
+import {
   useAdminSellersList,
+  useAdminCreateSeller,
+  useAdminUpdateSeller,
+  useAdminDeleteSeller,
   useAdminApproveSeller,
-  useAdminRejectSeller
+  useAdminRejectSeller,
+  useAdminSuspendSeller,
+  useAdminRestoreSeller,
 } from '@/api/exports';
+import type { AdminSeller } from '@/api/admin/sellers/types';
+import { Button, Table, Pagination, ConfirmDialog, SellerForm, type SellerFormValues } from '@/components';
 
 function SellersPage() {
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [rejectReason, setRejectReason] = useState<{ [key: number]: string }>({});
-  const [showRejectForm, setShowRejectForm] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState<'all' | 'active' | 'suspended'>('all');
+  const [verificationStatus, setVerificationStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [showSellerModal, setShowSellerModal] = useState<'create' | 'edit' | 'view' | null>(null);
+  const [selectedSeller, setSelectedSeller] = useState<AdminSeller | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Get sellers list
-  const {
-    data: sellersData,
-    isLoading: loading,
-    error,
-  } = useAdminSellersList({
-    status: filterStatus === 'all' ? undefined : (filterStatus as any),
-  });
+  const params = useMemo(
+    () => ({
+      page,
+      limit,
+      search: search || undefined,
+      status: status === 'all' ? undefined : status,
+      verificationStatus: verificationStatus === 'all' ? undefined : verificationStatus,
+    }),
+    [page, limit, search, status, verificationStatus],
+  );
 
-  // Get mutations
-  const approveMutation = useAdminApproveSeller();
-  const rejectMutation = useAdminRejectSeller();
+  const { data: sellersData, isLoading, error } = useAdminSellersList(params);
+  const createSeller = useAdminCreateSeller();
+  const updateSeller = useAdminUpdateSeller();
+  const deleteSeller = useAdminDeleteSeller();
+  const approveSeller = useAdminApproveSeller();
+  const rejectSeller = useAdminRejectSeller();
+  const suspendSeller = useAdminSuspendSeller();
+  const restoreSeller = useAdminRestoreSeller();
+
   const sellers = sellersData?.data || [];
-  const total = sellersData?.total || 0;
 
-  const handleApprove = async (sellerId: number) => {
-    if (confirm('Approve this seller?')) {
-      approveMutation.mutate({ id: sellerId.toString() });
-    }
+  const openCreateModal = () => {
+    setShowSellerModal('create');
   };
 
-  const handleReject = async (sellerId: number) => {
-    const reason = rejectReason[sellerId];
-    if (!reason.trim()) {
-      alert('Please provide a rejection reason');
-      return;
-    }
-    rejectMutation.mutate({ 
-      id: sellerId.toString(), 
-      data: { reason } 
-    });
-    setShowRejectForm(null);
-    setRejectReason({ ...rejectReason, [sellerId]: '' });
+  const openEditModal = (seller: AdminSeller) => {
+    setSelectedSeller(seller);
+    setShowSellerModal('edit');
   };
 
-  const getStatusColor = (status: string) => {
-    const colors: { [key: string]: string } = {
-      APPROVED: 'bg-green-100 text-green-700',
-      PENDING: 'bg-yellow-100 text-yellow-700',
-      REJECTED: 'bg-red-100 text-red-700',
-    };
-    return colors[status] || 'bg-gray-100 text-gray-700';
+  const openViewModal = (seller: AdminSeller) => {
+    setSelectedSeller(seller);
+    setShowSellerModal('view');
   };
+
+  const handleDelete = (seller: AdminSeller) => {
+    setSelectedSeller(seller);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedSeller) return;
+    await deleteSeller.mutateAsync(selectedSeller.id);
+    setShowDeleteConfirm(false);
+    setSelectedSeller(null);
+  };
+
+  const localeStatus = (value: string) => {
+    const normalized = (value || '').toString().toLowerCase();
+    return normalized === 'active' ? 'Active' : normalized === 'suspended' ? 'Suspended' : normalized;
+  };
+
+  const columns = [
+    { key: 'businessName', header: 'Business', width: '25%' },
+    { key: 'name', header: 'Seller Name', width: '15%' },
+    { key: 'email', header: 'Email', width: '20%' },
+    { key: 'phone', header: 'Phone', width: '10%' },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (value: string) => {
+        const normalized = value?.toLowerCase() || 'pending';
+        const color = normalized === 'pending' ? 'bg-yellow-100 text-amber-800' : normalized === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+        return <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${color}`}>{normalized.charAt(0).toUpperCase() + normalized.slice(1)}</span>;
+      },
+    },
+    {
+      key: 'createdAt',
+      header: 'Joined',
+      render: (value: string) => new Date(value).toLocaleDateString(),
+      width: '12%',
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Seller Management</h1>
-
-      {error && (
-        <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          <AlertCircle size={20} />
-          <p>{error instanceof Error ? error.message : 'An error occurred'}</p>
+    <div className="space-y-6 min-h-screen bg-slate-50">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Seller Management</h1>
+          <p className="text-slate-500 text-sm font-medium">Search, filter, and manage your sellers with approvals and controls.</p>
         </div>
-      )}
 
-      <div className="flex gap-4 flex-wrap">
-        <button
-          onClick={() => setFilterStatus('all')}
-          className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-            filterStatus === 'all'
-              ? 'bg-blue-600 text-white'
-              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          All Sellers
-        </button>
-        <button
-          onClick={() => setFilterStatus('PENDING')}
-          className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-            filterStatus === 'PENDING'
-              ? 'bg-yellow-600 text-white'
-              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Pending
-        </button>
-        <button
-          onClick={() => setFilterStatus('APPROVED')}
-          className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-            filterStatus === 'APPROVED'
-              ? 'bg-green-600 text-white'
-              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Approved
-        </button>
-        <button
-          onClick={() => setFilterStatus('REJECTED')}
-          className={`px-4 py-2 rounded-lg transition-colors font-medium ${
-            filterStatus === 'REJECTED'
-              ? 'bg-red-600 text-white'
-              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          Rejected
-        </button>
+        <Button variant="primary" icon={<Plus size={16} />} onClick={openCreateModal}>
+          Add Seller
+        </Button>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading sellers...</div>
-        ) : sellers.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <p className="text-lg font-semibold">No sellers found</p>
-            <p className="text-sm mt-2">No sellers match the selected filter</p>
+      <Table
+        data={sellers}
+        columns={columns}
+        isLoading={isLoading}
+        error={error ? ((error as any).message || String(error)) : null}
+        emptyMessage="No sellers found"
+        searchValue={search}
+        onSearchChange={(value) => {
+          setSearch(value);
+          setPage(1);
+        }}
+        filterConfig={{
+          searchPlaceholder: 'Search sellers...',
+          filters: [
+            { key: 'status', label: 'Status: All', type: 'select', options: [{ label: 'Active', value: 'active' }, { label: 'Suspended', value: 'suspended' }] },
+            { key: 'verificationStatus', label: 'Verification: All', type: 'select', options: [{ label: 'Pending', value: 'pending' }, { label: 'Approved', value: 'approved' }, { label: 'Rejected', value: 'rejected' }] },
+          ],
+        }}
+        filterValues={{ status, verificationStatus }}
+        onFilterChange={(key, value) => {
+          if (key === 'status') {
+            setStatus(value as 'all' | 'active' | 'suspended');
+          }
+          if (key === 'verificationStatus') {
+            setVerificationStatus(value as 'all' | 'pending' | 'approved' | 'rejected');
+          }
+          setPage(1);
+        }}
+        rowActions={(seller: AdminSeller) => (
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="outline" size="sm" icon={<Eye size={14} />} onClick={() => openViewModal(seller)} />
+            <Button variant="outline" size="sm" icon={<Pencil size={14} />} onClick={() => openEditModal(seller)} />
+            {seller.verificationStatus === 'pending' && (
+              <>
+                <Button variant="success" size="sm" icon={<CheckCircle size={14} />} onClick={() => approveSeller.mutateAsync({ id: seller.id })}>
+                  Approve
+                </Button>
+                <Button variant="danger" size="sm" icon={<XCircle size={14} />} onClick={() => rejectSeller.mutateAsync({ id: seller.id, data: { reason: 'Not meeting requirements' } })}>
+                  Reject
+                </Button>
+              </>
+            )}
+            {seller.status === 'suspended' ? (
+              <Button variant="secondary" size="sm" onClick={() => restoreSeller.mutateAsync(seller.id)}>
+                Restore
+              </Button>
+            ) : (
+              <Button variant="secondary" size="sm" onClick={() => suspendSeller.mutateAsync({ id: seller.id })}>
+                Suspend
+              </Button>
+            )}
+            <Button variant="danger" size="sm" icon={<Trash size={14} />} onClick={() => handleDelete(seller)} />
           </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="border-b border-gray-200 bg-gray-50">
-                <tr>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Business Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Business License No.</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Status</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Seller Name</th>
-                  <th className="text-left py-3 px-4 font-semibold text-gray-900">Seller Phone</th>
-                  <th className="text-center py-3 px-4 font-semibold text-gray-900">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sellers?.map((seller: any) => (
-                  <tr key={seller.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4 text-gray-900 font-medium">{seller.businessName || seller.name}</td>
-                    <td className="py-4 px-4 text-gray-600 text-sm">{seller.businessLicense || 'N/A'}</td>
-                    <td className="py-4 px-4">
-                      <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(seller.status)}`}>
-                        {seller.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-gray-600">{seller.name || 0}</td>
-                    <td className="py-4 px-4 text-gray-600">{seller.phone || 0}</td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="View details">
-                          <Eye size={18} />
-                        </button>
+        )}
+      />
 
-                        {seller.verificationStatus === 'pending' && (
-                          <>
-                            <button
-                              onClick={() => handleApprove(parseInt(seller.id))}
-                              className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                              title="Approve"
-                            >
-                              <CheckCircle size={18} />
-                            </button>
-                            <button
-                              onClick={() => setShowRejectForm(showRejectForm === seller.id ? null : seller.id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Reject"
-                            >
-                              <XCircle size={18} />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <Pagination
+        page={page}
+        limit={limit}
+        total={sellersData?.total || 0}
+        onPageChange={(next) => setPage(next)}
+        onLimitChange={(nextLimit) => {
+          setLimit(nextLimit);
+          setPage(1);
+        }}
+      />
 
-            {/* Rejection form */}
-            {showRejectForm !== null && (
-              <div className="border-t border-gray-200 mt-4 pt-4">
-                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                  <h4 className="font-semibold text-gray-900 mb-2">
-                    Reject {sellers.find((s: any) => s.id === showRejectForm)?.businessName}
-                  </h4>
-                  <textarea
-                    placeholder="Provide a reason for rejection..."
-                    value={rejectReason[showRejectForm] || ''}
-                    onChange={(e) =>
-                      setRejectReason({ ...rejectReason, [showRejectForm]: e.target.value })
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 mb-3"
-                    rows={3}
-                  />
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleReject(showRejectForm)}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                      Confirm Rejection
-                    </button>
-                    <button
-                      onClick={() => setShowRejectForm(null)}
-                      className="px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Seller"
+        description="This operation cannot be undone. Continue?"
+        confirmText="Delete"
+        isDangerous
+        isLoading={deleteSeller.isPending}
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
+
+      {showSellerModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-xl bg-white rounded-2xl shadow-2xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-slate-900">
+                {showSellerModal === 'create' && 'Create Seller'}
+                {showSellerModal === 'edit' && 'Edit Seller'}
+                {showSellerModal === 'view' && 'Seller Details'}
+              </h2>
+              <button onClick={() => setShowSellerModal(null)} className="text-slate-400 hover:text-slate-600">
+                ×
+              </button>
+            </div>
+
+            {showSellerModal === 'view' && selectedSeller && (
+              <div className="space-y-3 text-sm text-slate-700">
+                <div><div className="font-semibold">Business Name</div><div>{selectedSeller.businessName}</div></div>
+                <div><div className="font-semibold">Email</div><div>{selectedSeller.email}</div></div>
+                <div><div className="font-semibold">Owner</div><div>{selectedSeller.name}</div></div>
+                <div><div className="font-semibold">Phone</div><div>{selectedSeller.phone || '—'}</div></div>
+                <div><div className="font-semibold">Status</div><div>{localeStatus(selectedSeller.status)}</div></div>
+                <div><div className="font-semibold">Verification</div><div>{selectedSeller.verificationStatus}</div></div>
+                <div><div className="font-semibold">Joined</div><div>{new Date(selectedSeller.createdAt).toLocaleString()}</div></div>
               </div>
             )}
-          </div>
-        )}
 
-        {!loading && sellers.length > 0 && (
-          <div className="flex items-center justify-center gap-2 mt-4 pt-4 border-t border-gray-200">
-            <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
-              Previous
-            </button>
-            <span className="text-sm text-gray-600">Showing {sellers.length} of {total}</span>
-            <button className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50">
-              Next
-            </button>
+            {(showSellerModal === 'create' || showSellerModal === 'edit') && (
+              <SellerForm
+                isEdit={showSellerModal === 'edit'}
+                isSubmitting={createSeller.isPending || updateSeller.isPending}
+                defaultValues={selectedSeller ? {
+                  email: selectedSeller.email,
+                  name: selectedSeller.name,
+                  businessName: selectedSeller.businessName,
+                  phone: selectedSeller.phone || '',
+                  address: selectedSeller.address || '',
+                  city: selectedSeller.city || '',
+                  state: selectedSeller.state || '',
+                  zipCode: selectedSeller.zipCode || '',
+                } : undefined}
+                onCancel={() => setShowSellerModal(null)}
+                onSubmit={(values: SellerFormValues) => {
+                  if (showSellerModal === 'create') {
+                    createSeller.mutateAsync({
+                      email: values.email,
+                      name: values.name,
+                      businessName: values.businessName,
+                      phone: values.phone || undefined,
+                      password: values.password!,
+                    }).then(() => {
+                      setShowSellerModal(null);
+                      setPage(1);
+                    });
+                  } else if (showSellerModal === 'edit' && selectedSeller) {
+                    updateSeller.mutateAsync({
+                      id: selectedSeller.id,
+                      data: {
+                        name: values.name,
+                        businessName: values.businessName,
+                        phone: values.phone || undefined,
+                        address: values.address || undefined,
+                        city: values.city || undefined,
+                        state: values.state || undefined,
+                        zipCode: values.zipCode || undefined,
+                      },
+                    }).then(() => {
+                      setShowSellerModal(null);
+                      setSelectedSeller(null);
+                    });
+                  }
+                }}
+              />
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
