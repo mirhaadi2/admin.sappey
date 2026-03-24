@@ -240,7 +240,7 @@ export function ProductForm({
                 currentImages.map((url, index) => (
                   <div
                     key={index}
-                    className="aspect-square rounded-md overflow-hidden border border-slate-200"
+                    className="aspect-square rounded-md overflow-hidden border border-slate-200 bg-slate-50 relative"
                   >
                     <img
                       src={url}
@@ -248,14 +248,47 @@ export function ProductForm({
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.currentTarget;
-                        target.onerror = null; // 1. Prevents the infinite loop
-                        target.src = "/placeholder.png"; // 2. Tries the fallback
+                        // Only swap if we aren't already showing the placeholder
+                        // This stops the infinite loop even if placeholder.png is missing
+                        if (!target.src.includes("placeholder.png")) {
+                          target.src = "/placeholder.png";
+                        }
                       }}
                     />
+                    {/* Optional: Add a remove button here since we're fixing the UI */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newImages = currentImages.filter(
+                          (_, i) => i !== index,
+                        );
+                        setValue("images", newImages, { shouldDirty: true });
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-slate-500">No images attached</p>
+                <div className="col-span-3 py-8 border-2 border-dashed border-slate-200 rounded-md flex flex-col items-center justify-center">
+                  <p className="text-sm text-slate-400 font-medium">
+                    No images uploaded yet
+                  </p>
+                </div>
               )}
             </div>
           </div>

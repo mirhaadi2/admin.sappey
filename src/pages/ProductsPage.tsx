@@ -179,9 +179,9 @@ function ProductsPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-black text-slate-900">Inventory</h1>
+            <h1 className="text-2xl font-black text-slate-900">Products</h1>
             <p className="text-slate-500 text-sm font-medium">
-              Manage stock and publishing status
+              Manage all products listed on the platform, including details, pricing, and status.
             </p>
           </div>
           <Button
@@ -210,7 +210,7 @@ function ProductsPage() {
             setPage(1);
           }}
           rowActions={(product) => (
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
                 size="sm"
