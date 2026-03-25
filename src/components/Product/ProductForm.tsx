@@ -10,9 +10,6 @@ export type ProductFormValues = {
   name: string;
   slug?: string;
   description: string;
-  price: number;
-  discountedPrice?: number | null;
-  weight?: number;
   gst_rate?: number;
   status?: "ACTIVE" | "INACTIVE";
   category: string;
@@ -20,7 +17,10 @@ export type ProductFormValues = {
   stock?: number;
   variants?: Array<{
     price: number;
+    discountedPrice?: number;
+    discountedPercent?: number;
     weight?: number;
+    weightUnit?: "G" | "KG";
     status?: "ACTIVE" | "INACTIVE";
   }>;
 };
@@ -51,9 +51,6 @@ export function ProductForm({
       name: "",
       slug: "",
       description: "",
-      price: 0,
-      discountedPrice: null,
-      weight: 0,
       gst_rate: 18,
       status: "ACTIVE",
       category: "",
@@ -95,9 +92,6 @@ export function ProductForm({
       name: "",
       slug: "",
       description: "",
-      price: 0,
-      discountedPrice: null,
-      weight: 0,
       gst_rate: 18,
       status: "ACTIVE",
       category: "",
@@ -174,21 +168,16 @@ export function ProductForm({
                   .filter((variant) => variant.price !== undefined)
                   .map((variant) => ({
                     price: Number(variant.price),
-                    weight:
-                      variant.weight !== undefined
-                        ? Number(variant.weight)
-                        : undefined,
+                    discountedPrice: variant.discountedPrice !== undefined ? Number(variant.discountedPrice) : undefined,
+                    discountedPercent: variant.discountedPercent !== undefined ? Number(variant.discountedPercent) : undefined,
+                    weight: variant.weight !== undefined ? Number(variant.weight) : undefined,
+                    weightUnit: variant.weightUnit || "G",
                     status: variant.status || "ACTIVE",
                   }))
               : [];
 
             const normalized: ProductFormValues = {
               ...values,
-              discountedPrice:
-                values.discountedPrice !== undefined &&
-                values.discountedPrice !== null
-                  ? Number(values.discountedPrice)
-                  : undefined,
               gst_rate: values.gst_rate ?? 18,
               images: values.images || [],
               variants: normalizedVariants,
@@ -216,13 +205,6 @@ export function ProductForm({
             className="col-span-2"
             required
           />
-          <FormField name="price" label="Base Price" type="number" required />
-          <FormField
-            name="discountedPrice"
-            label="Discounted Price"
-            type="number"
-          />
-          <FormField name="weight" label="Base Weight (g)" type="number" />
           <FormField
             name="gst_rate"
             label="GST Rate %"
@@ -269,7 +251,10 @@ export function ProductForm({
                 onClick={() =>
                   appendVariant({
                     price: 0,
+                    discountedPrice: undefined,
+                    discountedPercent: undefined,
                     weight: 0,
+                    weightUnit: "G",
                     status: "ACTIVE",
                   })
                 }
@@ -289,6 +274,22 @@ export function ProductForm({
                   key={variant.id}
                 >
                   <FormField
+                    name={`variants.${index}.weightUnit`}
+                    label="Unit"
+                    type="select"
+                    options={[
+                      { value: "G", label: "Grams (G)" },
+                      { value: "KG", label: "Kilograms (KG)" },
+                    ]}
+                    className="col-span-4"
+                  />
+                  <FormField
+                    name={`variants.${index}.weight`}
+                    label="Weight"
+                    type="number"
+                    className="col-span-4"
+                  />
+                  <FormField
                     name={`variants.${index}.price`}
                     label="Price"
                     type="number"
@@ -296,8 +297,14 @@ export function ProductForm({
                     className="col-span-4"
                   />
                   <FormField
-                    name={`variants.${index}.weight`}
-                    label="Weight (g)"
+                    name={`variants.${index}.discountedPrice`}
+                    label="Discounted Price"
+                    type="number"
+                    className="col-span-4"
+                  />
+                  <FormField
+                    name={`variants.${index}.discountedPercent`}
+                    label="Discount %"
                     type="number"
                     className="col-span-4"
                   />
