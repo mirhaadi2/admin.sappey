@@ -13,7 +13,7 @@ import {
   Image as ImageIcon,
 } from "@phosphor-icons/react";
 import { useAdminProductDetail } from "@/api/exports";
-import { Button } from "@/components";
+import { Button, VariantsSection } from "@/components";
 import { format } from "date-fns";
 
 function ProductDetailsPage() {
@@ -203,6 +203,12 @@ function ProductDetailsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Product Variants */}
+            <VariantsSection 
+              variants={product.variants}
+              variantsCount={product.variantsCount || 0}
+            />
           </div>
 
           {/* Sidebar */}

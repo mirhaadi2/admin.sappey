@@ -1,3 +1,21 @@
+/**
+ * Admin Product Variant Detail
+ * Comprehensive variant information with timestamps
+ */
+export interface AdminProductVariantDetail {
+  id: string;
+  sku?: string;
+  price: number;
+  weight?: number;
+  status: 'ACTIVE' | 'INACTIVE';
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Admin Product
+ * Complete product information with variants
+ */
 export interface AdminProduct {
   id: string;
   name: string;
@@ -17,7 +35,16 @@ export interface AdminProduct {
   status: 'draft' | 'published';
   isFeatured: boolean;
   stock: number;
-  variants?: Array<{ id?: string; sku?: string; price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
+  /**
+   * Number of variants for this product
+   * Available in both list and detail views
+   */
+  variantsCount: number;
+  /**
+   * Detailed variant information
+   * Populated in product detail view
+   */
+  variants?: AdminProductVariantDetail[];
   orders: number;
   views: number;
   rating: number;

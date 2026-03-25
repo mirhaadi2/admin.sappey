@@ -3,6 +3,9 @@ export * from './Form';
 export { UserForm, type UserFormValues } from './UserForm';
 export { SellerForm, type SellerFormValues } from './SellerForm';
 
+// Product Components
+export { default as VariantsSection } from './Product/VariantsSection';
+
 // UI Components
 export { Button } from './Button';
 export { Toggle } from './Toggle';

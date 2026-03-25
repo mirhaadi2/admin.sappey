@@ -1,0 +1,296 @@
+import React, { useState } from 'react';
+import {
+  Package,
+  Warning,
+  CheckCircle,
+  Minus,
+  CurrencyInr,
+  Cpu,
+  Calendar,
+  Clock,
+} from '@phosphor-icons/react';
+import { format } from 'date-fns';
+import type { AdminProductVariantDetail } from '@/api/admin/products/types';
+
+interface VariantsSectionProps {
+  variants?: AdminProductVariantDetail[];
+  variantsCount: number;
+}
+
+/**
+ * Professional Variants Display Component
+ * Enterprise-grade UI for managing and viewing product variants
+ */
+export function VariantsSection({ variants, variantsCount }: VariantsSectionProps) {
+  const [expandedVariant, setExpandedVariant] = useState<string | null>(null);
+
+  if (variantsCount === 0) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Package size={20} className="text-slate-600" />
+          <h2 className="text-lg font-semibold text-slate-900">Product Variants</h2>
+        </div>
+        <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+          <Warning size={20} className="text-amber-600 flex-shrink-0" />
+          <p className="text-sm text-amber-900">No variants available for this product</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Package size={20} className="text-slate-600" />
+          <h2 className="text-lg font-semibold text-slate-900">Product Variants</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            {variantsCount} {variantsCount === 1 ? 'variant' : 'variants'}
+          </span>
+        </div>
+      </div>
+
+      {/* Variants Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-slate-200">
+              <th className="text-left py-3 px-4 font-semibold text-slate-700">SKU</th>
+              <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
+              <th className="text-right py-3 px-4 font-semibold text-slate-700">Weight</th>
+              <th className="text-center py-3 px-4 font-semibold text-slate-700">Status</th>
+              <th className="text-left py-3 px-4 font-semibold text-slate-700">Created</th>
+              <th className="text-center py-3 px-4"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {variants?.map((variant) => {
+              const isExpanded = expandedVariant === variant.id;
+              return (
+                <React.Fragment key={variant.id}>
+                  {/* Main Row */}
+                  <tr
+                    className="border-b border-slate-200 hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() =>
+                      setExpandedVariant(isExpanded ? null : variant.id)
+                    }
+                  >
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        {/* <div className="w-8 h-8 bg-slate-100 rounded flex items-center justify-center">
+                          <Cpu size={14} className="text-slate-600" />
+                        </div> */}
+                        <span className="font-medium text-slate-900">
+                          {variant.sku || 'N/A'}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="font-semibold text-slate-900">
+                        ₹{variant.price?.toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="text-slate-600">
+                        {variant.weight
+                          ? `${variant.weight} KG`
+                          : 'N/A'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex justify-center">
+                        {variant.status === 'ACTIVE' ? (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <CheckCircle size={12} weight="fill" />
+                            Active
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                            <Minus size={12} weight="fill" />
+                            Inactive
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1 text-slate-600">
+                        <Calendar size={14} />
+                        <span className="text-xs">
+                          {format(new Date(variant.createdAt), 'MMM dd, yyyy')}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedVariant(isExpanded ? null : variant.id);
+                        }}
+                        className="p-1 hover:bg-slate-200 rounded transition-colors"
+                      >
+                        <Package size={16} className="text-slate-600" />
+                      </button>
+                    </td>
+                  </tr>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <tr className="border-b border-slate-200 bg-slate-50">
+                      <td colSpan={6} className="p-0">
+                        <div className="px-4 py-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* SKU Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Cpu size={14} className="text-blue-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  SKU
+                                </span>
+                              </div>
+                              <p className="text-sm font-semibold text-slate-900">
+                                {variant.sku || 'Not Set'}
+                              </p>
+                            </div>
+
+                            {/* Price Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <CurrencyInr size={14} className="text-green-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Price
+                                </span>
+                              </div>
+                              <p className="text-sm font-semibold text-slate-900">
+                                ₹{variant.price?.toLocaleString()}
+                              </p>
+                            </div>
+
+                            {/* Weight Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Package size={14} className="text-purple-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Weight
+                                </span>
+                              </div>
+                              <p className="text-sm font-semibold text-slate-900">
+                                {variant.weight ? `${variant.weight} KG` : 'N/A'}
+                              </p>
+                            </div>
+
+                            {/* Status Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <CheckCircle size={14} className="text-emerald-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Status
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                {variant.status === 'ACTIVE' ? (
+                                  <>
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span className="text-sm font-semibold text-green-700">
+                                      Active
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="w-2 h-2 bg-slate-400 rounded-full"></div>
+                                    <span className="text-sm font-semibold text-slate-600">
+                                      Inactive
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Timestamps */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Calendar size={14} className="text-slate-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Created
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-700">
+                                {format(
+                                  new Date(variant.createdAt),
+                                  'PPP p'
+                                )}
+                              </p>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Clock size={14} className="text-slate-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Updated
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-700">
+                                {format(
+                                  new Date(variant.updatedAt),
+                                  'PPP p'
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Footer Summary */}
+      <div className="mt-6 pt-4 border-t border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+            <Package size={18} className="text-blue-600" />
+            <div>
+              <p className="text-xs font-medium text-blue-600 uppercase tracking-wide">
+                Total Variants
+              </p>
+              <p className="text-lg font-bold text-blue-900">{variantsCount}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg">
+            <CheckCircle size={18} className="text-green-600" />
+            <div>
+              <p className="text-xs font-medium text-green-600 uppercase tracking-wide">
+                Active
+              </p>
+              <p className="text-lg font-bold text-green-900">
+                {variants?.filter((v) => v.status === 'ACTIVE').length || 0}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+            <Minus size={18} className="text-slate-600" />
+            <div>
+              <p className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                Inactive
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {variants?.filter((v) => v.status === 'INACTIVE').length || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default VariantsSection;
