@@ -214,7 +214,7 @@ function ProductDetailsPage() {
           {/* Sidebar */}
           <div className="space-y-2">
             {/* Pricing Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center gap-2 mb-6">
                 <CurrencyInr size={20} className="text-slate-600" />
                 <h2 className="text-lg font-semibold text-slate-900">
@@ -257,7 +257,7 @@ function ProductDetailsPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
 
             {/* Statistics Card */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
