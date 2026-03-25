@@ -144,6 +144,16 @@ function ProductsPage() {
         </div>
       ),
     },
+    {
+      key: "variantsCount",
+      header: "Variants",
+      align: "center" as const,
+      render: (count: number) => (
+        <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
+          {count}
+        </div>
+      ),
+    },
   ];
 
   const createDefaultValues: ProductFormValues = {
