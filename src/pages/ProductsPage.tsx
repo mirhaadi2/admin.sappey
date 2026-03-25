@@ -157,6 +157,7 @@ function ProductsPage() {
     category: '',
     images: [],
     stock: 0,
+    variants: [],
   };
 
   const onCreateProduct = (values: ProductFormValues, action: 'continue' | 'return') => {
@@ -166,6 +167,7 @@ function ProductsPage() {
       slug: (values.slug || values.name).toLowerCase().replace(/\s+/g, '-').trim(),
       price: Number(values.price),
       stock: values.stock ?? 0,
+      variants: values.variants || [],
     };
 
     createProduct(payload, {
@@ -267,7 +269,7 @@ function ProductsPage() {
             <div className="px-6 py-4 border-b border-slate-100">
                <h2 className="text-xl font-bold text-slate-900">Add New Product</h2>
             </div>
-            <div className="overflow-y-auto flex-1 p-6">
+            <div className="overflow-y-auto flex-1 p-2">
               <ProductForm
                 title=""
                 defaultValues={createDefaultValues}

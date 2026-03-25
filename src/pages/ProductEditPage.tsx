@@ -50,6 +50,7 @@ function ProductEditPage() {
         description: "",
         price: 0,
         discountedPrice: undefined,
+        weight: 0,
         gst_rate: 18,
         status: "ACTIVE",
         category: "",
@@ -66,11 +67,13 @@ function ProductEditPage() {
         product.discountedPrice !== undefined && product.discountedPrice !== null
           ? product.discountedPrice
           : undefined,
+      weight: product.weight ?? 0,
       gst_rate: product.gst_rate ?? 18,
       status: product.status === "published" ? "ACTIVE" : "INACTIVE",
       category: product.category,
       images: Array.isArray(product.images) ? product.images : [],
       stock: product.stock ?? 0,
+      variants: Array.isArray(product.variants) ? product.variants : [],
     };
   }, [product]);
 
@@ -124,11 +127,13 @@ function ProductEditPage() {
       name: values.name.trim(),
       description: values.description.trim(),
       price: Number(values.price),
+      weight: values.weight,
       gst_rate: values.gst_rate,
       status: values.status,
       category: values.category,
       images: values.images,
       stock: values.stock,
+      variants: values.variants,
     };
 
     if (values.discountedPrice !== undefined && values.discountedPrice !== null) {

@@ -5,6 +5,8 @@ export interface AdminProduct {
   price: number;
   discountedPrice?: number;
   discountedPercent?: number;
+  sku?: string;
+  weight?: number;
   gst_rate?: number;
   images: string[];
   imageUrl?: string;
@@ -15,6 +17,7 @@ export interface AdminProduct {
   status: 'draft' | 'published';
   isFeatured: boolean;
   stock: number;
+  variants?: Array<{ id?: string; sku?: string; price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
   orders: number;
   views: number;
   rating: number;
@@ -55,11 +58,14 @@ export interface AdminProductCreateInput {
   description: string;
   price: number | string;
   discountedPrice?: number | string | null;
+  sku?: string;
+  weight?: number;
   gst_rate?: number;
   status?: 'ACTIVE' | 'INACTIVE';
   category: string;
   images?: string[];
   sellerId?: string;
+  variants?: Array<{ price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
 }
 
 export interface AdminProductUpdateInput {
@@ -67,9 +73,12 @@ export interface AdminProductUpdateInput {
   description?: string;
   price?: number;
   discountedPrice?: number;
+  sku?: string;
+  weight?: number;
   gst_rate?: number;
   status?: 'ACTIVE' | 'INACTIVE';
   category?: string;
   images?: string[];
   stock?: number;
+  variants?: Array<{ price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
 }
