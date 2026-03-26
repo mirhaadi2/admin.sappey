@@ -12,6 +12,7 @@ import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import GuestRoute from './components/GuestRoute';
 
 function App() {
   return (
@@ -19,7 +20,11 @@ function App() {
       <Router>
         <Routes>
           {/* Public Routes - No Authentication Required */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login" element={
+            <GuestRoute>
+              <LoginPage />
+            </GuestRoute>
+          } />
 
           {/* Protected Routes - Authentication Required */}
           <Route

@@ -47,15 +47,7 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
     logoutMutation.mutate(undefined);
   };
 
-  // Handle successful authentication
-  React.useEffect(() => {
-    if (user && loginMutation.isSuccess) {
-      // Optionally redirect after successful auth
-      setTimeout(() => {
-        window.location.href = '/dashboard';
-      }, 500);
-    }
-  }, [user, loginMutation.isSuccess]);
+  // No direct navigation from auth context: let route guards handle redirect control for SPA behavior
 
   const value: AdminAuthContextType = {
     user,

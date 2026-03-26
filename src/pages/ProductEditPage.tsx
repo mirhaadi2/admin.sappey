@@ -48,9 +48,6 @@ function ProductEditPage() {
         name: "",
         slug: "",
         description: "",
-        price: 0,
-        discountedPrice: undefined,
-        weight: 0,
         gst_rate: 18,
         status: "ACTIVE",
         category: "",
@@ -62,12 +59,6 @@ function ProductEditPage() {
     return {
       name: product.name,
       description: product.description ?? "",
-      price: product.price ?? 0,
-      discountedPrice:
-        product.discountedPrice !== undefined && product.discountedPrice !== null
-          ? product.discountedPrice
-          : undefined,
-      weight: product.weight ?? 0,
       gst_rate: product.gst_rate ?? 18,
       status: product.status === "published" ? "ACTIVE" : "INACTIVE",
       category: product.category,
@@ -126,8 +117,6 @@ function ProductEditPage() {
     const payload: AdminProductUpdateInput = {
       name: values.name.trim(),
       description: values.description.trim(),
-      price: Number(values.price),
-      weight: values.weight,
       gst_rate: values.gst_rate,
       status: values.status,
       category: values.category,
@@ -135,10 +124,6 @@ function ProductEditPage() {
       stock: values.stock,
       variants: values.variants,
     };
-
-    if (values.discountedPrice !== undefined && values.discountedPrice !== null) {
-      payload.discountedPrice = Number(values.discountedPrice);
-    }
 
     updateProduct(
       { id: id!, data: payload },

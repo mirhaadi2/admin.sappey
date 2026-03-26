@@ -83,29 +83,35 @@ export interface AdminProductCreateInput {
   name: string;
   slug?: string;
   description: string;
-  price: number | string;
-  discountedPrice?: number | string | null;
-  sku?: string;
-  weight?: number;
   gst_rate?: number;
   status?: 'ACTIVE' | 'INACTIVE';
   category: string;
   images?: string[];
-  sellerId?: string;
-  variants?: Array<{ price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
+  stock?: number;
+  variants?: Array<{
+    price: number;
+    discountedPrice?: number;
+    discountedPercent?: number;
+    weight?: number;
+    weightUnit?: 'G' | 'KG';
+    status?: 'ACTIVE' | 'INACTIVE';
+  }>;
 }
 
 export interface AdminProductUpdateInput {
   name?: string;
   description?: string;
-  price?: number;
-  discountedPrice?: number;
-  sku?: string;
-  weight?: number;
   gst_rate?: number;
   status?: 'ACTIVE' | 'INACTIVE';
   category?: string;
   images?: string[];
   stock?: number;
-  variants?: Array<{ price: number; weight?: number; status?: 'ACTIVE' | 'INACTIVE' }>;
+  variants?: Array<{
+    price: number;
+    discountedPrice?: number;
+    discountedPercent?: number;
+    weight?: number;
+    weightUnit?: 'G' | 'KG';
+    status?: 'ACTIVE' | 'INACTIVE';
+  }>;
 }

@@ -160,8 +160,6 @@ function ProductsPage() {
     name: '',
     slug: '',
     description: '',
-    price: 0,
-    discountedPrice: null,
     gst_rate: 18,
     status: 'ACTIVE',
     category: '',
@@ -175,7 +173,6 @@ function ProductsPage() {
       ...values,
       name: values.name.trim(),
       slug: (values.slug || values.name).toLowerCase().replace(/\s+/g, '-').trim(),
-      price: Number(values.price),
       stock: values.stock ?? 0,
       variants: values.variants || [],
     };

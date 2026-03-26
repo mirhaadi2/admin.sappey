@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminAuthApi } from './client';
-import { AuthResponse, LoginData } from './types';
+import { AuthResponse, LoginData, AdminUser } from './types';
 
 export const useAdminAuth = () => {
   const queryClient = useQueryClient();
@@ -14,12 +14,14 @@ export const useAdminAuth = () => {
     },
   });
 
-  const profileQuery = useQuery({
+  const profileQuery = useQuery<AdminUser>({
     queryKey: ['admin', 'user'],
     queryFn: adminAuthApi.getProfile,
     retry: 1,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 
   const logoutMutation = useMutation({
@@ -33,7 +35,7 @@ export const useAdminAuth = () => {
   return {
     // Data
     user: profileQuery.data,
-    isLoading: profileQuery.isLoading,
+    isLoading: profileQuery.isInitialLoading,
     isAuthenticated: !!profileQuery.data, // User is authenticated if profile exists
 
     // Mutations

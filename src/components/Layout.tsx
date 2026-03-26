@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {
   Gauge,
@@ -15,10 +15,19 @@ import {
   CaretLeft,
   CaretRight,
 } from '@phosphor-icons/react';
+import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
 function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { signOut, signOutLoading } = useAdminAuthContext();
+
+  const handleLogout = () => {
+    signOut();
+    // Navigate to login after logout
+    navigate('/login', { replace: true });
+  };
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: <Gauge size={20} weight="duotone" /> },
@@ -78,9 +87,13 @@ function Layout() {
         </nav>
 
         <div className="p-4 border-t border-slate-200">
-          <button className="flex items-center gap-3 w-full p-3 rounded-xl text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
+          <button
+            onClick={handleLogout}
+            disabled={signOutLoading}
+            className="flex items-center gap-3 w-full p-3 rounded-xl text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <SignOut size={20} weight="duotone" />
-            {sidebarOpen && <span className="font-medium">Logout</span>}
+            {sidebarOpen && <span className="font-medium">{signOutLoading ? 'Logging out...' : 'Logout'}</span>}
           </button>
         </div>
       </aside>
