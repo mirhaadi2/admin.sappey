@@ -50,7 +50,7 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
   // No direct navigation from auth context: let route guards handle redirect control for SPA behavior
 
   const value: AdminAuthContextType = {
-    user,
+    user: user || null,
     loading: isLoading,
     isLoading,
     isAuthenticated,

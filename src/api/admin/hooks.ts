@@ -14,7 +14,7 @@ export const useAdminAuth = () => {
     },
   });
 
-  const profileQuery = useQuery<AdminUser>({
+  const profileQuery = useQuery<AdminUser | null, Error>({
     queryKey: ['admin', 'user'],
     queryFn: adminAuthApi.getProfile,
     retry: 1,
@@ -26,8 +26,14 @@ export const useAdminAuth = () => {
 
   const logoutMutation = useMutation({
     mutationFn: adminAuthApi.logout,
+    onMutate: async () => {
+      // Optimistically clear user and cancel in-flight queries to prevent stale protected data fetch
+      await queryClient.cancelQueries({ queryKey: ['admin', 'user'] });
+      queryClient.setQueryData(['admin', 'user'], null);
+      await queryClient.cancelQueries();
+    },
     onSuccess: () => {
-      // Session is destroyed on server, clear cache
+      // Session is destroyed on server, clear client cache
       queryClient.clear();
     },
   });

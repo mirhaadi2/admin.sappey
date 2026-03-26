@@ -25,8 +25,8 @@ function Layout() {
 
   const handleLogout = () => {
     signOut();
-    // Navigate to login after logout
-    navigate('/login', { replace: true });
+    // After logout, auth state will update and ProtectedRoute will redirect to login.
+    // Prevent manual navigation race with auth cache updates by leaving redirect to route guard.
   };
 
   const navItems = [
