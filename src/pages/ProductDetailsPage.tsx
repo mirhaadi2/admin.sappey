@@ -209,6 +209,92 @@ function ProductDetailsPage() {
               variants={product.variants}
               variantsCount={product.variantsCount || 0}
             />
+
+            {/* Seller Offerings */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center gap-2 mb-6">
+                <ShoppingCart size={20} className="text-slate-600" />
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Seller Offerings
+                </h2>
+                <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+                  {product.sellerOfferings?.length || 0} sellers
+                </span>
+              </div>
+
+              {product.sellerOfferings && product.sellerOfferings.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Seller</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Contact</th>
+                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
+                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Available Stock</th>
+                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Total Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.sellerOfferings.map((offering, index) => (
+                        <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
+                          <td className="py-4 px-4">
+                            <div>
+                              <div className="font-medium text-slate-900">
+                                {offering.sellerBusinessName}
+                              </div>
+                              <div className="text-sm text-slate-600">
+                                {offering.sellerOwnerName}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-sm">
+                              <div className="text-slate-700">
+                                {offering.sellerOwnerEmail}
+                              </div>
+                              <div className="text-slate-500">
+                                {offering.sellerBusinessPhone}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <div className="font-semibold text-slate-900">
+                              ₹{offering.sellerPrice?.toLocaleString()}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              offering.availableStock > 10
+                                ? 'bg-green-100 text-green-800'
+                                : offering.availableStock > 0
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {offering.availableStock}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <div className="text-slate-700">
+                              {offering.totalStock}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <ShoppingCart size={48} className="text-slate-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">
+                    No Seller Offerings
+                  </h3>
+                  <p className="text-slate-500">
+                    This product is not currently offered by any sellers.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}

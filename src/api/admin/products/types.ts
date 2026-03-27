@@ -13,6 +13,26 @@ export interface AdminProductVariantDetail {
 }
 
 /**
+ * Admin Product Seller Offering
+ * Information about sellers offering this product
+ */
+export interface AdminProductSellerOffering {
+  sellerPrice: number;
+  sellerWeight?: number;
+  sellerBusinessName: string;
+  sellerOwnerName: string;
+  sellerOwnerEmail: string;
+  sellerBusinessPhone: string;
+  sellerCommissionRate?: number;
+  totalStock: number;
+  availableStock: number;
+  reservedStock: number;
+  soldStock: number;
+  reorderLevel: number;
+  lastRestockedAt?: string;
+}
+
+/**
  * Admin Product
  * Complete product information with variants
  */
@@ -45,6 +65,11 @@ export interface AdminProduct {
    * Populated in product detail view
    */
   variants?: AdminProductVariantDetail[];
+  /**
+   * Seller offerings for this product
+   * Populated in product detail view
+   */
+  sellerOfferings?: AdminProductSellerOffering[];
   orders: number;
   views: number;
   rating: number;
