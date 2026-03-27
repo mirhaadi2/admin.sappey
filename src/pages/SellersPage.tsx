@@ -1,5 +1,6 @@
 ﻿import React, { useMemo, useState } from 'react';
 import { Plus, Eye, Pencil, Trash, CheckCircle, XCircle } from '@phosphor-icons/react';
+import { useNavigate } from 'react-router-dom';
 import {
   useAdminSellersList,
   useAdminCreateSeller,
@@ -14,6 +15,7 @@ import type { AdminSeller } from '@/api/admin/sellers/types';
 import { Button, Table, Pagination, ConfirmDialog, SellerForm, type SellerFormValues } from '@/components';
 
 function SellersPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState('');
@@ -55,8 +57,7 @@ function SellersPage() {
   };
 
   const openViewModal = (seller: AdminSeller) => {
-    setSelectedSeller(seller);
-    setShowSellerModal('view');
+    navigate(`/sellers/${seller.id}`);
   };
 
   const handleDelete = (seller: AdminSeller) => {
@@ -153,7 +154,7 @@ function SellersPage() {
                 </Button>
               </>
             )}
-            {seller.status === 'suspended' ? (
+            {seller.status === 'SUSPENDED' ? (
               <Button variant="secondary" size="sm" onClick={() => restoreSeller.mutateAsync(seller.id)}>
                 Restore
               </Button>
@@ -202,18 +203,6 @@ function SellersPage() {
                 ×
               </button>
             </div>
-
-            {showSellerModal === 'view' && selectedSeller && (
-              <div className="space-y-3 text-sm text-slate-700">
-                <div><div className="font-semibold">Business Name</div><div>{selectedSeller.businessName}</div></div>
-                <div><div className="font-semibold">Email</div><div>{selectedSeller.email}</div></div>
-                <div><div className="font-semibold">Owner</div><div>{selectedSeller.name}</div></div>
-                <div><div className="font-semibold">Phone</div><div>{selectedSeller.phone || '—'}</div></div>
-                <div><div className="font-semibold">Status</div><div>{localeStatus(selectedSeller.status)}</div></div>
-                <div><div className="font-semibold">Verification</div><div>{selectedSeller.verificationStatus}</div></div>
-                <div><div className="font-semibold">Joined</div><div>{new Date(selectedSeller.createdAt).toLocaleString()}</div></div>
-              </div>
-            )}
 
             {(showSellerModal === 'create' || showSellerModal === 'edit') && (
               <SellerForm

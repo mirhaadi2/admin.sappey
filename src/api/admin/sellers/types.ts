@@ -1,21 +1,41 @@
 export interface AdminSeller {
   id: string;
+  // Basic info
   email: string;
   name: string;
   businessName: string;
-  businessLicense?: string;
-  verificationStatus: 'pending' | 'approved' | 'rejected';
-  status: 'active' | 'suspended';
-  phone?: string;
+  businessRegistrationNo: string;
+  businessType: string;
+  businessIdType?: string;
+  gstNumber?: string;
+  businessAddress: string;
+  businessPhone: string;
   address?: string;
   city?: string;
   state?: string;
   zipCode?: string;
+  ownerName: string;
+  ownerEmail: string;
+  // Banking
+  bankAccountName: string;
+  bankAccountNumber: string;
+  bankIfscCode: string;
+  commissionRate: number;
+  // Status
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED';
+  verificationStatus: string;
+  approvedAt?: string;
+  rejectedReason?: string;
+  onboardingStep: number;
+  metadata?: Record<string, any>;
+  // Timestamps
+  createdAt: string;
+  updatedAt: string;
+  // Computed fields
+  phone?: string;
   products: number;
   orders: number;
   revenue: number;
-  createdAt: string;
-  updatedAt: string;
   lastActive?: string;
 }
 

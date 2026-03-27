@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { CheckCircle2, XCircle, AlertCircle, Clock, FileText } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, Clock, FileText, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { adminClient } from '../api/admin';
 import { Seller } from '../api/types';
 
 export default function PendingApprovalsTable() {
+  const navigate = useNavigate();
   const [sellers, setSellers] = useState<Seller[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -143,6 +145,12 @@ export default function PendingApprovalsTable() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => navigate(`/sellers/${seller.id}`)}
+                        className="flex items-center gap-1 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg hover:bg-blue-100 disabled:opacity-50 transition-colors text-sm font-medium"
+                      >
+                        <Eye size={16} />
+                      </button>
                       <button
                         onClick={() => handleApproveSeller(seller.id)}
                         disabled={actionLoading === seller.id}
