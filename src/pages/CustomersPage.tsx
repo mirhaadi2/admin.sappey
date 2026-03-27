@@ -18,7 +18,7 @@ import {
   type UserFormValues,
 } from "@/components";
 
-function UsersPage() {
+function CustomersPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
@@ -131,10 +131,10 @@ function UsersPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
-              Users Management
+              Customers Management
             </h1>
             <p className="text-slate-500 text-sm font-medium">
-              Search, view, edit, and manage users with full control.
+              Search, view, edit, and manage customers with full control.
             </p>
           </div>
 
@@ -143,7 +143,7 @@ function UsersPage() {
             icon={<Plus size={16} />}
             onClick={openCreateModal}
           >
-            Create User
+            Create Customer
           </Button>
         </div>
 
@@ -159,7 +159,7 @@ function UsersPage() {
             setPage(1);
           }}
           filterConfig={{
-            searchPlaceholder: "Search users...",
+            searchPlaceholder: "Search customers...",
             filters: [
               {
                 key: "status",
@@ -318,4 +318,4 @@ function UsersPage() {
   );
 }
 
-export default UsersPage;
+export default CustomersPage;

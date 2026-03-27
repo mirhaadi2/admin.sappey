@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
-import UsersPage from './pages/UsersPage';
+import CustomersPage from './pages/CustomersPage';
 import SellersPage from './pages/SellersPage';
 import SellerDetailsPage from './pages/SellerDetailsPage';
 import OrdersPage from './pages/OrdersPage';
@@ -37,7 +37,7 @@ function App() {
           >
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/users" element={<UsersPage />} />
+            <Route path="/customers" element={<CustomersPage />} />
             <Route path="/sellers" element={<SellersPage />} />
             <Route path="/sellers/:id" element={<SellerDetailsPage />} />
             <Route path="/orders" element={<OrdersPage />} />

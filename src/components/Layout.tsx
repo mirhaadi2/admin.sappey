@@ -31,7 +31,7 @@ function Layout() {
 
   const navItems = [
     { label: 'Dashboard', path: '/', icon: <Gauge size={20} weight="duotone" /> },
-    { label: 'Users', path: '/users', icon: <UserCircle size={20} weight="duotone" /> },
+    { label: 'Customers', path: '/customers', icon: <UserCircle size={20} weight="duotone" /> },
     { label: 'Sellers', path: '/sellers', icon: <Buildings size={20} weight="duotone" /> },
     { label: 'Orders', path: '/orders', icon: <ShoppingBagOpen size={20} weight="duotone" /> },
     { label: 'Products', path: '/products', icon: <Package size={20} weight="duotone" /> },
