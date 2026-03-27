@@ -77,6 +77,20 @@ export type {
   AdminCategoryUpdateInput,
 } from './admin/categories/types';
 
+// Admin Dashboard APIs & Hooks
+export { adminDashboardApi } from './admin/dashboard/client';
+export { 
+  useAdminDashboardStats,
+  useAdminDashboardKeyMetrics,
+  useAdminDashboardTrendData,
+} from './admin/dashboard/hooks/index';
+export type { 
+  PlatformStats,
+  ChartDataPoint,
+  StatsQueryParams,
+  DashboardStatsResponse,
+} from './admin/dashboard/types';
+
 // API utilities
 export { ApiService, createApiHooks, createApiService } from './utils';
 

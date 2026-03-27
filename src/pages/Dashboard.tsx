@@ -1,21 +1,22 @@
 import { useEffect } from 'react';
 import { Users, Storefront, ShoppingCart, WarningCircle, CurrencyDollar, ChartBar, Gear } from '@phosphor-icons/react';
+import { useAdminDashboardStats } from '@/api/exports';
 import PendingApprovalsTable from '../components/PendingApprovalsTable';
 
 function Dashboard() {
-  const stats = {
-    totalUsers: 1234,
-    totalSellers: 456,
-    totalOrders: 789,
-    pendingApprovals: 12,
-    totalRevenue: 50000,
-    mensualRevenue: 5000,
-    activeListings: 2345,
+  const { data: statsResponse, isLoading, error } = useAdminDashboardStats();
+  
+  const stats = statsResponse?.data || {
+    totalUsers: 0,
+    totalSellers: 0,
+    totalOrders: 0,
+    pendingApprovals: 0,
+    totalRevenue: 0,
+    mensualRevenue: 0,
+    activeListings: 0,
   };
-  const loading = false;
-  const error: null = null;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <p className="text-slate-500 text-lg">Loading dashboard...</p>
