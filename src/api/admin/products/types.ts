@@ -70,6 +70,12 @@ export interface AdminProduct {
    * Populated in product detail view
    */
   sellerOfferings?: AdminProductSellerOffering[];
+  sellerOfferingsPagination?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
   orders: number;
   views: number;
   rating: number;

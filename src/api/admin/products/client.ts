@@ -27,8 +27,8 @@ export const adminProductsApi = {
   },
 
   // Get single product
-  getProduct: async (id: string): Promise<AdminProductResponse> => {
-    const response = await apiMethods.get<AdminProductResponse>(ADMIN_PRODUCTS_GET(id));
+  getProduct: async (id: string, params?: { sellerOfferingsPage?: number; sellerOfferingsLimit?: number }): Promise<AdminProductResponse> => {
+    const response = await apiMethods.get<AdminProductResponse>(ADMIN_PRODUCTS_GET(id), params);
     return response.data;
   },
 

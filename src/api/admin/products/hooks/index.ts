@@ -11,10 +11,10 @@ export const useAdminProductsList = (params?: AdminProductsListParams) => {
   });
 };
 
-export const useAdminProductDetail = (id: string) => {
+export const useAdminProductDetail = (id: string, params?: { sellerOfferingsPage?: number; sellerOfferingsLimit?: number }) => {
   return useQuery({
-    queryKey: ['admin', 'product', id],
-    queryFn: () => adminProductsApi.getProduct(id),
+    queryKey: ['admin', 'product', id, params],
+    queryFn: () => adminProductsApi.getProduct(id, params),
     enabled: !!id,
     staleTime: 1000 * 60 * 5,
   });
