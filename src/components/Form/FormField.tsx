@@ -4,7 +4,7 @@ import { Input } from './Input';
 import { Select } from './Select';
 import { TextArea } from './TextArea';
 
-type FieldType = 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea';
+type FieldType = 'text' | 'email' | 'password' | 'number' | 'select' | 'textarea' | 'checkbox';
 
 interface SelectOption {
   value: string | number;

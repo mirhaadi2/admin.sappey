@@ -170,6 +170,9 @@ function ProductsPage() {
     category: '',
     images: [],
     stock: 0,
+    isNew: false,
+    isCustomerFavourites: false,
+    isBestseller: false,
     variants: [],
   };
 

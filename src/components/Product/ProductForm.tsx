@@ -15,6 +15,9 @@ export type ProductFormValues = {
   category: string;
   images: string[];
   stock?: number;
+  isNew?: boolean;
+  isCustomerFavourites?: boolean;
+  isBestseller?: boolean;
   variants?: Array<{
     price: number;
     discountedPrice?: number;
@@ -56,6 +59,9 @@ export function ProductForm({
       category: "",
       images: [],
       stock: 0,
+      isNew: false,
+      isCustomerFavourites: false,
+      isBestseller: false,
       variants: [],
       ...defaultValues,
     },
@@ -97,6 +103,9 @@ export function ProductForm({
       category: "",
       images: [],
       stock: 0,
+      isNew: false,
+      isCustomerFavourites: false,
+      isBestseller: false,
       ...defaultValues,
     } as ProductFormValues;
 
@@ -239,6 +248,28 @@ export function ProductForm({
             }))}
           />
           <FormField name="stock" label="Stock (kg)" type="number" />
+
+          <div className="col-span-2 space-y-3">
+            <h3 className="text-sm font-semibold text-slate-800">Product Flags</h3>
+            <FormField
+              name="isNew"
+              label="Mark as New Arrival"
+              type="checkbox"
+              helperText="Display this product in the 'New Arrivals' section"
+            />
+            <FormField
+              name="isCustomerFavourites"
+              label="Mark as Customer Favourite"
+              type="checkbox"
+              helperText="Highlight this product as a customer favorite"
+            />
+            <FormField
+              name="isBestseller"
+              label="Mark as Bestseller"
+              type="checkbox"
+              helperText="Display this product in the 'Bestsellers' section"
+            />
+          </div>
 
           <div className="col-span-2 rounded-md border border-slate-200 p-4 bg-white">
             <div className="flex items-center justify-between mb-2">

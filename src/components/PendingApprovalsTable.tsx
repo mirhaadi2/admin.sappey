@@ -30,7 +30,6 @@ export default function PendingApprovalsTable() {
       setLoading(false);
     }
   };
-  console.log(sellers,'sellers')
 
   const handleApproveSeller = async (sellerId: string) => {
     try {
