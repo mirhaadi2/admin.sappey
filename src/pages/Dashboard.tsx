@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Users, Storefront, ShoppingCart, WarningCircle, CurrencyDollar, ChartBar, Gear } from '@phosphor-icons/react';
+import { Users, Storefront, ShoppingCart, WarningCircle, CurrencyDollar, ChartBar, Gear, CurrencyInr } from '@phosphor-icons/react';
 import { useAdminDashboardStats } from '@/api/exports';
 import PendingApprovalsTable from '../components/PendingApprovalsTable';
 
@@ -98,7 +98,7 @@ function Dashboard() {
               <p className="text-3xl font-bold text-slate-900">₹{stats?.totalRevenue?.toLocaleString() || 0}</p>
             </div>
             <div className="p-3 rounded-xl bg-emerald-100 text-emerald-600">
-              <CurrencyDollar size={28} weight="duotone" />
+              <CurrencyInr size={28} weight="duotone" />
             </div>
           </div>
           <p className="mt-3 text-xs text-slate-500">Revenue this month ₹{stats?.mensualRevenue?.toLocaleString() || 0}</p>
