@@ -87,7 +87,7 @@ export type {
   AdminProductUpdateInput
 } from './products/types';
 
-export { 
+export {
   adminCategoriesApi,
   useAdminCategoriesList,
   useAdminCategoryDetail,
@@ -99,5 +99,42 @@ export type {
   AdminCategory,
   AdminCategoriesListParams,
   AdminCategoryCreateInput,
-  AdminCategoryUpdateInput,
+  AdminCategoryUpdateInput
 } from './categories/types';
+
+export {
+  websiteApi,
+  useWebsiteBanners,
+  useWebsiteBannerMutations,
+  useWebsiteHero,
+  useWebsiteHeroMutations,
+  useWebsiteSections,
+  useWebsiteSectionMutations,
+  useWebsiteTestimonials,
+  useWebsiteTestimonialMutations,
+  useWebsiteInstagramPosts,
+  useWebsiteInstagramMutations,
+} from './website/index';
+export type {
+  Banner,
+  Hero,
+  Section,
+  Testimonial,
+  InstagramPost,
+  WebsiteSetting,
+  WebsitePage,
+  CreateBannerRequest,
+  UpdateBannerRequest,
+  CreateHeroRequest,
+  UpdateHeroRequest,
+  CreateSectionRequest,
+  UpdateSectionRequest,
+  CreateTestimonialRequest,
+  UpdateTestimonialRequest,
+  CreateInstagramPostRequest,
+  UpdateInstagramPostRequest,
+  CreateWebsiteSettingRequest,
+  UpdateWebsiteSettingRequest,
+  CreateWebsitePageRequest,
+  UpdateWebsitePageRequest,
+} from './website/types';
