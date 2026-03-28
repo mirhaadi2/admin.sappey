@@ -78,13 +78,14 @@ function SellersPage() {
   };
 
   const columns = [
-    { key: 'businessName', header: 'Business', width: '25%' },
-    { key: 'name', header: 'Seller Name', width: '15%' },
-    { key: 'email', header: 'Email', width: '20%' },
-    { key: 'phone', header: 'Phone', width: '10%' },
+    { key: 'businessName', header: 'Business', width: '25%', column: true },
+    { key: 'name', header: 'Seller Name', width: '20%', column: true },
+    { key: 'email', header: 'Email', width: '20%', column: true },
+    { key: 'phone', header: 'Phone', width: '10%', column: true },
     {
       key: 'status',
       header: 'Status',
+      column: true,
       render: (value: string) => {
         const normalized = value?.toLowerCase() || 'pending';
         const color = normalized === 'pending' ? 'bg-yellow-100 text-amber-800' : normalized === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
@@ -94,6 +95,7 @@ function SellersPage() {
     {
       key: 'createdAt',
       header: 'Joined',
+      column: false,
       render: (value: string) => new Date(value).toLocaleDateString(),
       width: '12%',
     },

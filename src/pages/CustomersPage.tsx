@@ -99,9 +99,9 @@ function CustomersPage() {
   };
 
   const tableColumns = [
-    { key: "email", header: "Email", width: "30%" },
-    { key: "name", header: "Name", width: "20%" },
-    { key: "phone", header: "Phone", width: "15%" },
+    { key: "email", header: "Email", width: "30%", column: true },
+    { key: "name", header: "Name", width: "20%", column: true },
+    { key: "phone", header: "Phone", width: "15%", column: true },
     {
       key: "status",
       header: "Status",
@@ -122,6 +122,7 @@ function CustomersPage() {
       header: "Joined",
       render: (createdAt: string) => new Date(createdAt).toLocaleDateString(),
       width: "15%",
+      column: false
     },
   ];
 

@@ -65,6 +65,7 @@ const CategoriesPage = () => {
       key: 'name',
       header: 'Category Name',
       width: '300px',
+      column: true,
       render: (name: string) => (
         <span className="font-semibold text-slate-900">{name}</span>
       ),
@@ -72,6 +73,7 @@ const CategoriesPage = () => {
     {
       key: 'slug',
       header: 'Slug',
+      column: false,
       render: (slug: string) => (
         <span className="text-slate-600 font-mono text-sm">{slug}</span>
       ),
@@ -79,6 +81,7 @@ const CategoriesPage = () => {
     {
       key: 'description',
       header: 'Description',
+      column: true,
       render: (description: string) => (
         <span className="text-slate-500 text-sm">{description || '-'}</span>
       ),
@@ -86,6 +89,7 @@ const CategoriesPage = () => {
     {
       key: 'isActive',
       header: 'Status',
+      column: true,
       align: 'center' as const,
       render: (isActive: boolean) => (
         <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold ${

@@ -92,6 +92,7 @@ function ProductsPage() {
       key: "name",
       header: "Product Name",
       width: "350px",
+      column: true,
       render: (name: string, product: AdminProduct) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-md bg-slate-100 overflow-hidden border border-slate-200">
@@ -113,6 +114,7 @@ function ProductsPage() {
     {
       key: "price",
       header: "Price",
+      column: true,
       render: (price: number) => (
         <span className="font-semibold text-slate-700">
           ₹{price?.toLocaleString()}
@@ -123,6 +125,7 @@ function ProductsPage() {
       key: "status",
       header: "Status",
       align: "center" as const,
+      column: true,
       render: (status: string, product: AdminProduct) => (
         <Toggle
           isActive={status === "published"}
@@ -137,6 +140,7 @@ function ProductsPage() {
       key: "rating",
       header: "Rating",
       align: "center" as const,
+      column: false,
       render: (rating: number) => (
         <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
           <Star size={14} weight="fill" className="text-amber-400" />{" "}
@@ -148,6 +152,7 @@ function ProductsPage() {
       key: "variantsCount",
       header: "Variants",
       align: "center" as const,
+      column: true,
       render: (count: number) => (
         <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
           {count}
