@@ -10,7 +10,7 @@ import {
   ProductFormValues,
 } from "@/components/Product/ProductForm";
 import { Button } from "@/components";
-import type { AdminProductUpdateInput } from '@/api/admin/products/types';
+import type { AdminProductUpdateInput } from "@/api/admin/products/types";
 import { ArrowLeft } from "lucide-react";
 
 function ProductEditPage() {
@@ -52,6 +52,9 @@ function ProductEditPage() {
         status: "ACTIVE",
         category: "",
         images: [],
+        isNew: false,
+        isCustomerFavourites: false,
+        isBestseller: false,
         stock: 0,
       };
     }
@@ -64,6 +67,9 @@ function ProductEditPage() {
       category: product.category,
       images: Array.isArray(product.images) ? product.images : [],
       stock: product.stock ?? 0,
+      isNew: Boolean(product?.isNew),
+      isCustomerFavourites: Boolean(product?.isCustomerFavourites),
+      isBestseller: Boolean(product?.isBestseller),
       variants: Array.isArray(product.variants) ? product.variants : [],
     };
   }, [product]);
@@ -113,7 +119,6 @@ function ProductEditPage() {
     values: ProductFormValues,
     action: "continue" | "return",
   ) => {
-
     const payload: AdminProductUpdateInput = {
       name: values.name.trim(),
       description: values.description.trim(),
@@ -122,6 +127,9 @@ function ProductEditPage() {
       category: values.category,
       images: values.images,
       stock: values.stock,
+      isNew: values.isNew,
+      isCustomerFavourites: values.isCustomerFavourites,
+      isBestseller: values.isBestseller,
       variants: values.variants,
     };
 
@@ -138,6 +146,8 @@ function ProductEditPage() {
     );
   };
 
+  console.log(initialValues,'intialValues')
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Sticky Top Bar with Back Button */}
@@ -152,7 +162,9 @@ function ProductEditPage() {
             />
             <div>
               <h1 className="text-lg font-bold text-slate-900">Edit Product</h1>
-              <p className="text-xs text-slate-500 font-mono">{product?.name}</p>
+              <p className="text-xs text-slate-500 font-mono">
+                {product?.name}
+              </p>
             </div>
           </div>
 
@@ -165,7 +177,7 @@ function ProductEditPage() {
       </div>
 
       <div className="py-6">
-        <div className="mx-auto max-w-5xl bg-white rounded-xl border border-slate-200 p-8 shadow-sm">
+        <div className="mx-auto max-w-5xl bg-white rounded-xl border border-slate-200 p-2 shadow-sm">
           <ProductForm
             title="General Information"
             submitLabel="Update Product"

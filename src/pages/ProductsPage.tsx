@@ -8,15 +8,10 @@ import {
   useAdminUnpublishProduct,
   useAdminFeatureProduct,
   useAdminUnfeatureProduct,
-  useAdminCreateProduct,
   useAdminCategoriesList,
   AdminCategory,
 } from "@/api/exports";
 import { Button, Table, Pagination, ConfirmDialog, Toggle } from "@/components";
-import {
-  ProductForm,
-  type ProductFormValues,
-} from "@/components/Product/ProductForm";
 import type { AdminProduct } from "@/api/admin/products/types";
 
 function ProductsPage() {
@@ -32,7 +27,6 @@ function ProductsPage() {
   );
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
 
   // Queries
   const {
@@ -49,8 +43,6 @@ function ProductsPage() {
   const categoriesData = (categories?.data.categories || []) as AdminCategory[];
 
   // Mutations
-  const { mutate: createProduct, isPending: isCreatingProduct } =
-    useAdminCreateProduct();
   const { mutate: deleteProduct, isPending: isDeleting } =
     useAdminDeleteProduct();
   const { mutate: publishProduct } = useAdminPublishProduct();
@@ -161,37 +153,6 @@ function ProductsPage() {
     },
   ];
 
-  const createDefaultValues: ProductFormValues = {
-    name: '',
-    slug: '',
-    description: '',
-    gst_rate: 18,
-    status: 'ACTIVE',
-    category: '',
-    images: [],
-    stock: 0,
-    isNew: false,
-    isCustomerFavourites: false,
-    isBestseller: false,
-    variants: [],
-  };
-
-  const onCreateProduct = (values: ProductFormValues, action: 'continue' | 'return') => {
-    const payload = {
-      ...values,
-      name: values.name.trim(),
-      slug: (values.slug || values.name).toLowerCase().replace(/\s+/g, '-').trim(),
-      stock: values.stock ?? 0,
-      variants: values.variants || [],
-    };
-
-    createProduct(payload, {
-      onSuccess: () => {
-        if (action === 'return') setShowCreateModal(false);
-      },
-    });
-  };
-
   return (
     <>
       <div className="space-y-6">
@@ -205,7 +166,7 @@ function ProductsPage() {
           <Button
             variant="primary"
             icon={<Plus weight="bold" />}
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => navigate('/products/create')}
           >
             Add Product
           </Button>
@@ -277,27 +238,6 @@ function ProductsPage() {
         }
         onCancel={() => setShowDeleteConfirm(false)}
       />
-
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl max-h-[90vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-            <div className="px-6 py-4 border-b border-slate-100">
-               <h2 className="text-xl font-bold text-slate-900">Add New Product</h2>
-            </div>
-            <div className="overflow-y-auto flex-1 p-2">
-              <ProductForm
-                title=""
-                defaultValues={createDefaultValues}
-                categories={categoriesData}
-                isSubmitting={isCreatingProduct}
-                submitLabel={isCreatingProduct ? "Saving..." : "Create Product"}
-                onSubmit={onCreateProduct}
-                onCancel={() => setShowCreateModal(false)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

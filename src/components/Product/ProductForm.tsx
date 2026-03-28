@@ -49,6 +49,7 @@ export function ProductForm({
   onSubmit,
   onDirtyChange,
 }: ProductFormProps) {
+  console.log("ProductForm rendered with defaultValues:", defaultValues);
   const formMethods = useForm<ProductFormValues>({
     defaultValues: {
       name: "",
@@ -90,26 +91,24 @@ export function ProductForm({
   }, [formState.isDirty, onDirtyChange]);
 
   useEffect(() => {
-    // Prevent resetting while user is actively editing (dirty state),
-    // which can happen if parent passes a new defaultValues object every render.
     if (formState.isDirty) return;
 
-    const merged = {
-      name: "",
-      slug: "",
-      description: "",
-      gst_rate: 18,
-      status: "ACTIVE",
-      category: "",
-      images: [],
-      stock: 0,
-      isNew: false,
-      isCustomerFavourites: false,
-      isBestseller: false,
-      ...defaultValues,
-    } as ProductFormValues;
-
-    merged.images = defaultValues.images ?? [];
+    // Explicitly map the boolean flags to ensure they aren't undefined
+    const merged: ProductFormValues = {
+      name: defaultValues.name ?? "",
+      slug: defaultValues.slug ?? "",
+      description: defaultValues.description ?? "",
+      gst_rate: defaultValues.gst_rate ?? 18,
+      status: defaultValues.status ?? "ACTIVE",
+      category: defaultValues.category ?? "",
+      images: defaultValues.images ?? [],
+      stock: defaultValues.stock ?? 0,
+      // Ensure these are explicitly boolean
+      isNew: !!defaultValues.isNew,
+      isCustomerFavourites: !!defaultValues.isCustomerFavourites,
+      isBestseller: !!defaultValues.isBestseller,
+      variants: defaultValues.variants ?? [],
+    };
 
     reset(merged);
   }, [defaultValues, reset, formState.isDirty]);
@@ -177,9 +176,18 @@ export function ProductForm({
                   .filter((variant) => variant.price !== undefined)
                   .map((variant) => ({
                     price: Number(variant.price),
-                    discountedPrice: variant.discountedPrice !== undefined ? Number(variant.discountedPrice) : undefined,
-                    discountedPercent: variant.discountedPercent !== undefined ? Number(variant.discountedPercent) : undefined,
-                    weight: variant.weight !== undefined ? Number(variant.weight) : undefined,
+                    discountedPrice:
+                      variant.discountedPrice !== undefined
+                        ? Number(variant.discountedPrice)
+                        : undefined,
+                    discountedPercent:
+                      variant.discountedPercent !== undefined
+                        ? Number(variant.discountedPercent)
+                        : undefined,
+                    weight:
+                      variant.weight !== undefined
+                        ? Number(variant.weight)
+                        : undefined,
                     weightUnit: variant.weightUnit || "G",
                     status: variant.status || "ACTIVE",
                   }))
@@ -249,26 +257,39 @@ export function ProductForm({
           />
           <FormField name="stock" label="Stock (kg)" type="number" />
 
-          <div className="col-span-2 space-y-3">
-            <h3 className="text-sm font-semibold text-slate-800">Product Flags</h3>
-            <FormField
-              name="isNew"
-              label="Mark as New Arrival"
-              type="checkbox"
-              helperText="Display this product in the 'New Arrivals' section"
-            />
-            <FormField
-              name="isCustomerFavourites"
-              label="Mark as Customer Favourite"
-              type="checkbox"
-              helperText="Highlight this product as a customer favorite"
-            />
-            <FormField
-              name="isBestseller"
-              label="Mark as Bestseller"
-              type="checkbox"
-              helperText="Display this product in the 'Bestsellers' section"
-            />
+          <div className="col-span-2 space-y-4 mt-4">
+            <h3 className="text-sm font-semibold text-slate-800 border-b border-slate-200 pb-2">
+              Product Flags
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              <div className="max-w-xs">
+                <FormField
+                  name="isNew"
+                  label="Mark as New Arrival"
+                  type="checkbox"
+                  helperText="Display this product in the 'New Arrivals' section"
+                />
+              </div>
+
+              <div className="max-w-xs">
+                <FormField
+                  name="isCustomerFavourites"
+                  label="Mark as Customer Favourite"
+                  type="checkbox"
+                  helperText="Highlight this product as a customer favorite"
+                />
+              </div>
+
+              <div className="max-w-xs">
+                <FormField
+                  name="isBestseller"
+                  label="Mark as Bestseller"
+                  type="checkbox"
+                  helperText="Display this product in the 'Bestsellers' section"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="col-span-2 rounded-md border border-slate-200 p-4 bg-white">

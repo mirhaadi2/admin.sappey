@@ -7,7 +7,7 @@ export interface AdminProductVariantDetail {
   sku?: string;
   price: number;
   weight?: number;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string;
 }
@@ -52,7 +52,7 @@ export interface AdminProduct {
   sellerName: string;
   category: string;
   categoryName?: string;
-  status: 'draft' | 'published';
+  status: "draft" | "published";
   isFeatured: boolean;
   isNew: boolean;
   isCustomerFavourites: boolean;
@@ -106,11 +106,11 @@ export interface AdminProductsListParams {
   page?: number;
   limit?: number;
   search?: string;
-  status?: 'draft' | 'published';
+  status?: "draft" | "published";
   category?: string;
   sellerId?: string;
-  sortBy?: 'createdAt' | 'price' | 'orders' | 'rating';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "createdAt" | "price" | "orders" | "rating";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface AdminProductCreateInput {
@@ -118,7 +118,7 @@ export interface AdminProductCreateInput {
   slug?: string;
   description: string;
   gst_rate?: number;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: "ACTIVE" | "INACTIVE";
   category: string;
   images?: string[];
   stock?: number;
@@ -127,8 +127,8 @@ export interface AdminProductCreateInput {
     discountedPrice?: number;
     discountedPercent?: number;
     weight?: number;
-    weightUnit?: 'G' | 'KG';
-    status?: 'ACTIVE' | 'INACTIVE';
+    weightUnit?: "G" | "KG";
+    status?: "ACTIVE" | "INACTIVE";
   }>;
 }
 
@@ -136,16 +136,19 @@ export interface AdminProductUpdateInput {
   name?: string;
   description?: string;
   gst_rate?: number;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: "ACTIVE" | "INACTIVE";
   category?: string;
   images?: string[];
   stock?: number;
+  isNew?: boolean;
+  isCustomerFavourites?: boolean;
+  isBestseller?: boolean;
   variants?: Array<{
     price: number;
     discountedPrice?: number;
     discountedPercent?: number;
     weight?: number;
-    weightUnit?: 'G' | 'KG';
-    status?: 'ACTIVE' | 'INACTIVE';
+    weightUnit?: "G" | "KG";
+    status?: "ACTIVE" | "INACTIVE";
   }>;
 }

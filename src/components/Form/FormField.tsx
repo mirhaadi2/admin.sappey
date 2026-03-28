@@ -23,7 +23,7 @@ interface FormFieldProps<T extends FieldPath<any>> {
   icon?: React.ReactNode;
   disabled?: boolean;
   required?: boolean;
-  className?: string; // Added className prop
+  className?: string;
 }
 
 export function FormField<T extends FieldPath<any>>({
@@ -38,14 +38,11 @@ export function FormField<T extends FieldPath<any>>({
   icon,
   disabled = false,
   required = false,
-  className = '', // Default to empty string
+  className = '',
 }: FormFieldProps<T>) {
   const { control, formState: { errors } } = useFormContext();
 
-  /**
-   * Professional Tip: Using a helper to find errors in nested paths.
-   * This ensures 'product.details.price' returns the correct error object.
-   */
+  // Helper to find errors in nested paths (e.g., variants.0.price)
   const getNestedError = (obj: any, path: string) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   };
@@ -62,6 +59,7 @@ export function FormField<T extends FieldPath<any>>({
           ...rules,
         }}
         render={({ field }) => {
+          // CASE 1: Dropdown Select
           if (type === 'select') {
             return (
               <Select
@@ -76,6 +74,7 @@ export function FormField<T extends FieldPath<any>>({
             );
           }
 
+          // CASE 2: Multi-line Text
           if (type === 'textarea') {
             return (
               <TextArea
@@ -91,6 +90,42 @@ export function FormField<T extends FieldPath<any>>({
             );
           }
 
+          // CASE 3: Checkbox (The specific fix for your issue)
+          if (type === 'checkbox') {
+            return (
+              <div className="space-y-1">
+                <div className="flex items-start gap-3 py-2">
+                  <div className="flex h-5 items-center">
+                    <input
+                      id={name}
+                      type="checkbox"
+                      // Use 'checked' instead of 'value' for booleans
+                      checked={!!field.value}
+                      // Pass the boolean state to React Hook Form
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                      disabled={disabled}
+                      className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50 cursor-pointer"
+                    />
+                  </div>
+                  <div className="text-sm leading-5">
+                    <label htmlFor={name} className="font-medium text-slate-700 cursor-pointer">
+                      {label} {required && <span className="text-red-500">*</span>}
+                    </label>
+                    {helperText && (
+                      <p className="text-slate-500 text-xs mt-0.5">{helperText}</p>
+                    )}
+                  </div>
+                </div>
+                {error && (
+                  <p className="text-xs text-red-500 font-medium">{error.message}</p>
+                )}
+              </div>
+            );
+          }
+
+          // CASE 4: Standard Inputs (text, email, password, number)
           return (
             <Input
               {...field}
