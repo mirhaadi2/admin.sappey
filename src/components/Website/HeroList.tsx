@@ -56,13 +56,12 @@ export const HeroList: React.FC<HeroListProps> = ({
                 <CardBody>
                     <div className="flex items-start gap-6">
                         {/* Media Preview */}
-                        {(hero.videoUrl || hero.videoPosterUrl || hero.imageUrl) && (
+                        {(hero.videoUrl || hero.imageUrl) && (
                             <div className="flex-shrink-0">
                                 {hero.videoUrl ? (
                                     <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
                                         <video
                                             src={hero.videoUrl}
-                                            poster={hero.videoPosterUrl || undefined}
                                             className="w-full h-full object-cover"
                                             muted
                                             loop
@@ -75,14 +74,6 @@ export const HeroList: React.FC<HeroListProps> = ({
                                         <img
                                             src={hero.imageUrl}
                                             alt="Hero image"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
-                                ) : hero.videoPosterUrl ? (
-                                    <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                        <img
-                                            src={hero.videoPosterUrl}
-                                            alt="Video poster"
                                             className="w-full h-full object-cover"
                                         />
                                     </div>

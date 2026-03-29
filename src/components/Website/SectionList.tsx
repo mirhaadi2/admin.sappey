@@ -51,20 +51,12 @@ export const SectionList: React.FC<SectionListProps> = ({
                     <Card key={section.id}>
                         <CardBody>
                             <div className="flex items-start gap-6">
-                                {(section.imageUrl ||
-                                section.videoUrl ||
-                                section.videoPosterUrl ||
-                                section.backgroundImageUrl) && (
+                                {(section.imageUrl || section.videoUrl || section.backgroundImageUrl) && (
                                     <div className="flex-shrink-0">
                                         {section.videoUrl ? (
                                             <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
                                                 <video
                                                     src={section.videoUrl}
-                                                    poster={
-                                                        section.videoPosterUrl ||
-                                                        section.imageUrl ||
-                                                        undefined
-                                                    }
                                                     className="w-full h-full object-cover"
                                                     muted
                                                     loop
@@ -85,14 +77,6 @@ export const SectionList: React.FC<SectionListProps> = ({
                                                 <img
                                                     src={section.backgroundImageUrl}
                                                     alt="Background image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : section.videoPosterUrl ? (
-                                            <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <img
-                                                    src={section.videoPosterUrl}
-                                                    alt="Video poster"
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>

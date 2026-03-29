@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { Toggle } from "../Toggle";
+import { apiClient } from "../../api";
+import { CheckCircle, X } from "@phosphor-icons/react";
 
 type WebsiteTab =
     | "banners"
@@ -66,9 +68,10 @@ const fieldsByType: Record<
     Array<{
         key: string;
         label: string;
-        type: "text" | "textarea" | "number" | "select";
+        type: "text" | "textarea" | "number" | "select" | "file";
         options?: Array<{ value: string; label: string }>;
         required?: boolean;
+        accept?: string;
     }>
 > = {
     banners: [
@@ -109,10 +112,11 @@ const fieldsByType: Record<
             required: false 
         },
         { 
-            key: "imageUrl", 
-            label: "Image URL", 
-            type: "text", 
-            required: true 
+            key: "videoUrl", 
+            label: "Video File", 
+            type: "file", 
+            required: true,
+            accept: "video/*"
         },
         { 
             key: "buttonText", 
@@ -244,6 +248,8 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
         ...emptyDefaults[type],
         ...initialValues,
     }));
+    const [uploadingFields, setUploadingFields] = useState<Set<string>>(new Set());
+    const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         setForm({ ...emptyDefaults[type], ...initialValues });
@@ -253,6 +259,55 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
 
     const handleInputChange = (key: string, value: any) => {
         setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const handleFileUpload = async (key: string, file: File) => {
+        try {
+            setUploadingFields((prev) => new Set([...prev, key]));
+            setUploadErrors((prev) => ({ ...prev, [key]: "" }));
+
+            const formData = new FormData();
+            formData.append("file", file, file.name);
+            formData.append("folder", "website/hero");
+
+            // DEBUG: verify the form payload includes the file and folder
+            for (const [key, value] of formData.entries()) {
+                console.log("upload formData entry", key, value);
+            }
+
+            const response = await apiClient.post<{
+                success: boolean;
+                url: string;
+                key: string;
+                originalName: string;
+                contentType: string;
+            }>("/uploads", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+
+            if (response.data.success && response.data.key) {
+                // Store the key (R2 path) in the form
+                handleInputChange(key, response.data.key);
+            } else {
+                const message =
+                    response.data?.message ||
+                    response.data?.url ||
+                    "Upload succeeded but no key returned";
+                setUploadErrors((prev) => ({ ...prev, [key]: message }));
+            }
+        } catch (error: any) {
+            const errorMessage =
+                error.response?.data?.message || error.message || "Upload failed";
+            setUploadErrors((prev) => ({ ...prev, [key]: errorMessage }));
+        } finally {
+            setUploadingFields((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(key);
+                return newSet;
+            });
+        }
     };
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -297,6 +352,45 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                     </option>
                                 ))}
                             </select>
+                        ) : field.type === "file" ? (
+                            <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="file"
+                                        accept={field.accept}
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                handleFileUpload(field.key, file);
+                                            }
+                                        }}
+                                        disabled={uploadingFields.has(field.key)}
+                                        className="w-full rounded border border-slate-300 p-2 text-sm disabled:bg-slate-100"
+                                        required={false}
+                                    />
+                                    {uploadingFields.has(field.key) && (
+                                        <span className="text-sm text-blue-600">Uploading...</span>
+                                    )}
+                                </div>
+                                {form[field.key] && (
+                                    <div className="flex items-center gap-2 rounded bg-green-50 p-2">
+                                        <CheckCircle size={16} className="text-green-600" />
+                                        <span className="text-sm text-green-700">
+                                            {form[field.key].split("/").pop()}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleInputChange(field.key, "")}
+                                            className="ml-auto text-green-600 hover:text-green-800"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                                {uploadErrors[field.key] && (
+                                    <p className="text-sm text-red-600">{uploadErrors[field.key]}</p>
+                                )}
+                            </div>
                         ) : (
                             <input
                                 type={field.type}
