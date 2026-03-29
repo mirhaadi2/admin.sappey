@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Pencil, Trash, Eye, Check, X, Upload, Image as ImageIcon, Star } from '@phosphor-icons/react';
+import React, { useState } from 'react';
+import { Plus, Eye, Check, Upload, Image as ImageIcon } from '@phosphor-icons/react';
 import { Card, CardHeader, CardBody } from '../components/Card';
 import { Button } from '../components/Button';
-import { Badge } from '../components/Badge';
-import { Toggle } from '../components/Toggle';
 import { ErrorAlert } from '../components/ErrorAlert';
 import { Toast } from '../components';
+import WebsiteEntityForm from '../components/Website/WebsiteEntityForm';
+import { BannerList, HeroList, SectionList, TestimonialList, InstagramList } from '../components/Website/index';
 import {
     useWebsiteBanners,
     useWebsiteBannerMutations,
@@ -25,13 +24,21 @@ import {
     InstagramPost,
 } from '../api/admin/index';
 
+type WebsiteTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
+
 const WebsitePage: React.FC = () => {
-    const [activeTab, setActiveTab] = useState('banners');
+    const [activeTab, setActiveTab] = useState<WebsiteTab>('banners');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [entityModal, setEntityModal] = useState<{
+        open: boolean;
+        mode: 'create' | 'edit';
+        type: WebsiteTab;
+        item: Banner | Hero | Section | Testimonial | InstagramPost | null;
+    }>({ open: false, mode: 'create', type: 'banners', item: null });
 
-    // API hooks based on active tab
+    // API hooks
     const { banners, isLoading: bannersLoading, error: bannersError } = useWebsiteBanners();
     const { hero, isLoading: heroLoading, error: heroError } = useWebsiteHero();
     const { sections, isLoading: sectionsLoading, error: sectionsError } = useWebsiteSections();
@@ -46,11 +53,11 @@ const WebsitePage: React.FC = () => {
     const instagramMutations = useWebsiteInstagramMutations();
 
     const tabs = [
-        { id: 'banners', label: 'Banners', icon: <ImageIcon size={16} />, count: banners?.length || 0 },
-        { id: 'hero', label: 'Hero Section', icon: <Eye size={16} />, count: hero ? 1 : 0 },
-        { id: 'sections', label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
-        { id: 'testimonials', label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
-        { id: 'instagram', label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
+        { id: 'banners' as WebsiteTab, label: 'Banners', icon: <ImageIcon size={16} />, count: banners?.length || 0 },
+        { id: 'hero' as WebsiteTab, label: 'Hero Section', icon: <Eye size={16} />, count: hero ? 1 : 0 },
+        { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
+        { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
+        { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
     ];
 
     const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
@@ -59,44 +66,119 @@ const WebsitePage: React.FC = () => {
         setShowToast(true);
     };
 
-    const handleDelete = async (type: string, id: string, name?: string) => {
-        if (!window.confirm(`Are you sure you want to delete this ${type}?`)) return;
+    const openEntityModal = (type: WebsiteTab, mode: 'create' | 'edit', item: any = null) => {
+        setEntityModal({ open: true, mode, type, item });
+    };
 
+    const closeEntityModal = () => {
+        setEntityModal((prev) => ({ ...prev, open: false, item: null }));
+    };
+
+    const handleDeleteEntity = async (type: WebsiteTab, id: string, label?: string) => {
+        if (!window.confirm(`Delete ${label ?? type} permanently?`)) return;
         try {
             switch (type) {
-                case 'banner':
-                    bannerMutations.deleteBanner(id);
+                case 'banners':
+                    await bannerMutations.deleteBanner(id);
                     break;
                 case 'hero':
-                    heroMutations.deleteHero(id);
+                    await heroMutations.deleteHero(id);
                     break;
-                case 'section':
-                    sectionMutations.deleteSection(id);
+                case 'sections':
+                    await sectionMutations.deleteSection(id);
                     break;
-                case 'testimonial':
-                    testimonialMutations.deleteTestimonial(id);
+                case 'testimonials':
+                    await testimonialMutations.deleteTestimonial(id);
                     break;
                 case 'instagram':
-                    instagramMutations.deleteInstagramPost(id);
+                    await instagramMutations.deleteInstagramPost(id);
                     break;
             }
-            showToastMessage(`${type} deleted successfully`);
-        } catch (error) {
-            showToastMessage(`Failed to delete ${type}`, 'error');
+            showToastMessage(`${label ?? type} deleted successfully.`);
+        } catch (error: any) {
+            showToastMessage(`Failed to delete ${label ?? type}: ${error?.message || String(error)}`, 'error');
+        }
+    };
+
+    const handleToggleActive = async (type: WebsiteTab, item: any) => {
+        try {
+            const payload = { isActive: !item.isActive };
+            switch (type) {
+                case 'banners':
+                    await bannerMutations.updateBanner(item.id, payload);
+                    break;
+                case 'hero':
+                    await heroMutations.updateHero(item.id, payload);
+                    break;
+                case 'sections':
+                    await sectionMutations.updateSection(item.id, payload);
+                    break;
+                case 'testimonials':
+                    await testimonialMutations.updateTestimonial(item.id, payload);
+                    break;
+                case 'instagram':
+                    await instagramMutations.updateInstagramPost(item.id, payload);
+                    break;
+            }
+            showToastMessage(`${item.title ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);
+        } catch (error: any) {
+            showToastMessage(`Failed to update status: ${error?.message || String(error)}`, 'error');
+        }
+    };
+
+    const handleSubmitEntity = async (data: Record<string, any>) => {
+        const type = entityModal.type;
+        const id = entityModal.item?.id;
+
+        try {
+            if (entityModal.mode === 'create') {
+                switch (type) {
+                    case 'banners':
+                        await bannerMutations.createBanner(data);
+                        break;
+                    case 'hero':
+                        await heroMutations.createHero(data);
+                        break;
+                    case 'sections':
+                        await sectionMutations.createSection(data);
+                        break;
+                    case 'testimonials':
+                        await testimonialMutations.createTestimonial(data);
+                        break;
+                    case 'instagram':
+                        await instagramMutations.createInstagramPost(data);
+                        break;
+                }
+                showToastMessage(`${type} created successfully.`);
+            } else {
+                switch (type) {
+                    case 'banners':
+                        await bannerMutations.updateBanner(id, data);
+                        break;
+                    case 'hero':
+                        await heroMutations.updateHero(id, data);
+                        break;
+                    case 'sections':
+                        await sectionMutations.updateSection(id, data);
+                        break;
+                    case 'testimonials':
+                        await testimonialMutations.updateTestimonial(id, data);
+                        break;
+                    case 'instagram':
+                        await instagramMutations.updateInstagramPost(id, data);
+                        break;
+                }
+                showToastMessage(`${type} updated successfully.`);
+            }
+
+            closeEntityModal();
+        } catch (error: any) {
+            showToastMessage(`Failed to ${entityModal.mode} ${type}: ${error?.message || String(error)}`, 'error');
         }
     };
 
     const renderContent = () => {
-        const isLoading = bannersLoading || heroLoading || sectionsLoading || testimonialsLoading || instagramLoading;
         const error = bannersError || heroError || sectionsError || testimonialsError || instagramError;
-
-        if (isLoading) {
-            return (
-                <div className="flex items-center justify-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-            );
-        }
 
         if (error) {
             return <ErrorAlert message={`Failed to load ${activeTab}: ${error.message}`} />;
@@ -104,634 +186,64 @@ const WebsitePage: React.FC = () => {
 
         switch (activeTab) {
             case 'banners':
-                return renderBanners();
+                return (
+                    <BannerList
+                        banners={banners || []}
+                        isLoading={bannersLoading}
+                        onAdd={() => openEntityModal('banners', 'create')}
+                        onEdit={(banner) => openEntityModal('banners', 'edit', banner)}
+                        onDelete={(id, title) => handleDeleteEntity('banners', id, title)}
+                        onToggle={(banner) => handleToggleActive('banners', banner)}
+                    />
+                );
             case 'hero':
-                return renderHero();
+                return (
+                    <HeroList
+                        hero={hero}
+                        isLoading={heroLoading}
+                        onAdd={() => openEntityModal('hero', 'create')}
+                        onEdit={(hero) => openEntityModal('hero', 'edit', hero)}
+                        onDelete={(id, title) => handleDeleteEntity('hero', id, title)}
+                        onToggle={(hero) => handleToggleActive('hero', hero)}
+                    />
+                );
             case 'sections':
-                return renderSections();
+                return (
+                    <SectionList
+                        sections={sections || []}
+                        isLoading={sectionsLoading}
+                        onAdd={() => openEntityModal('sections', 'create')}
+                        onEdit={(section) => openEntityModal('sections', 'edit', section)}
+                        onDelete={(id, title) => handleDeleteEntity('sections', id, title)}
+                        onToggle={(section) => handleToggleActive('sections', section)}
+                    />
+                );
             case 'testimonials':
-                return renderTestimonials();
+                return (
+                    <TestimonialList
+                        testimonials={testimonials || []}
+                        isLoading={testimonialsLoading}
+                        onAdd={() => openEntityModal('testimonials', 'create')}
+                        onEdit={(testimonial) => openEntityModal('testimonials', 'edit', testimonial)}
+                        onDelete={(id, author) => handleDeleteEntity('testimonials', id, author)}
+                        onToggle={(testimonial) => handleToggleActive('testimonials', testimonial)}
+                    />
+                );
             case 'instagram':
-                return renderInstagram();
+                return (
+                    <InstagramList
+                        posts={instagramPosts || []}
+                        isLoading={instagramLoading}
+                        onAdd={() => openEntityModal('instagram', 'create')}
+                        onEdit={(post) => openEntityModal('instagram', 'edit', post)}
+                        onDelete={(id) => handleDeleteEntity('instagram', id)}
+                        onToggle={(post) => handleToggleActive('instagram', post)}
+                    />
+                );
             default:
-                return renderBanners();
+                return null;
         }
     };
-
-    const renderBanners = () => (
-        <div className="space-y-4">
-            {banners?.length === 0 ? (
-                <div className="text-center py-12">
-                    <ImageIcon size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No banners yet</h3>
-                    <p className="text-gray-600 mb-6">Create your first banner to showcase on the website.</p>
-                    <Button variant="primary" icon={<Plus size={16} />}>
-                        Add Banner
-                    </Button>
-                </div>
-            ) : (
-                banners?.map((banner: Banner) => (
-                    <Card key={banner.id}>
-                        <CardBody>
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1 space-y-3">
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                        {/* <div>
-                                            <span className="font-medium text-gray-700">Title:</span>
-                                            <p className="text-gray-600">{banner.title}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Subtitle:</span>
-                                            <p className="text-gray-600">{banner.subtitle}</p>
-                                        </div> */}
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Text:</span>
-                                            <p className="text-gray-600">{banner.text}</p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Status:</span>
-                                            <p className="text-gray-600">
-                                                <Badge variant={banner.isActive ? 'success' : 'default'}>
-                                                    {banner.isActive ? 'Active' : 'Inactive'}
-                                                </Badge>
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Created:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(banner.createdAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Updated:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(banner.updatedAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="sm" icon={<Pencil size={16} />}>
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        icon={<Trash size={16} />}
-                                        onClick={() => handleDelete('banner', banner.id, banner.title)}
-                                        className="text-red-600 hover:text-red-700"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-                ))
-            )}
-        </div>
-    );
-
-    const renderHero = () => (
-        <div className="space-y-4">
-            {!hero ? (
-                <div className="text-center py-12">
-                    <Eye size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No hero section</h3>
-                    <p className="text-gray-600 mb-6">Create a hero section to welcome visitors to your website.</p>
-                    <Button variant="primary" icon={<Plus size={16} />}>
-                        Add Hero Section
-                    </Button>
-                </div>
-            ) : (
-                <Card>
-                    <CardBody>
-                        <div className="flex items-start gap-6">
-                            {/* Media Preview */}
-                            {(hero.videoUrl || hero.videoPosterUrl || hero.imageUrl) && (
-                                <div className="flex-shrink-0">
-                                    {hero.videoUrl ? (
-                                        <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                            <video
-                                                src={hero.videoUrl}
-                                                poster={hero.videoPosterUrl || undefined}
-                                                className="w-full h-full object-cover"
-                                                muted
-                                                loop
-                                                autoPlay
-                                                playsInline
-                                            />
-                                        </div>
-                                    ) : hero.imageUrl ? (
-                                        <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                            <img
-                                                src={hero.imageUrl}
-                                                alt="Hero image"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                    ) : hero.videoPosterUrl ? (
-                                        <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                            <img
-                                                src={hero.videoPosterUrl}
-                                                alt="Video poster"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                    ) : null}
-                                </div>
-                            )}
-
-                            <div className="flex-1 space-y-3">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="font-medium text-gray-700">Title:</span>
-                                        <p className="text-gray-600">{hero.title}</p>
-                                    </div>
-
-                                    <div>
-                                        <span className="font-medium text-gray-700">Subtitle:</span>
-                                        <p className="text-gray-600">{hero.subtitle}</p>
-                                    </div>
-
-                                    {hero.ctaText && (
-                                        <div>
-                                            <span className="font-medium text-gray-700">CTA Text:</span>
-                                            <p className="text-gray-600">{hero.ctaText}</p>
-                                        </div>
-                                    )}
-
-                                    {(hero.buttonUrl || (hero as any).ctaLink) && (
-                                        <div>
-                                            <span className="font-medium text-gray-700">CTA Link:</span>
-                                            <p className="text-gray-600 break-all">
-                                                {(hero as any).ctaLink || hero.buttonUrl}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {hero.videoUrl && (
-                                        <div>
-                                            <span className="font-medium text-gray-700">Video URL:</span>
-                                            <p className="text-gray-600 break-all">{hero.videoUrl}</p>
-                                        </div>
-                                    )}
-
-                                    {hero.videoPosterUrl && (
-                                        <div>
-                                            <span className="font-medium text-gray-700">Video Poster:</span>
-                                            <p className="text-gray-600 break-all">{hero.videoPosterUrl}</p>
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <span className="font-medium text-gray-700">Created:</span>
-                                        <p className="text-gray-600">
-                                            {new Date(hero.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-
-                                    <div>
-                                        <span className="font-medium text-gray-700">Updated:</span>
-                                        <p className="text-gray-600">
-                                            {new Date(hero.updatedAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 pt-2">
-                                    <Badge variant={hero.isActive ? 'success' : 'default'}>
-                                        {hero.isActive ? 'Active' : 'Inactive'}
-                                    </Badge>
-                                    {hero.buttonText && (
-                                        <span className="text-sm text-gray-500">
-                                            Button: {hero.buttonText}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                                <Button variant="ghost" size="sm" icon={<Pencil size={16} />}>
-                                    Edit
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    icon={<Trash size={16} />}
-                                    onClick={() => handleDelete('hero', hero.id, hero.title)}
-                                    className="text-red-600 hover:text-red-700"
-                                >
-                                    Delete
-                                </Button>
-                            </div>
-                        </div>
-                    </CardBody>
-                </Card>
-            )}
-        </div>
-    );
-
-    const renderSections = () => (
-        <div className="space-y-4">
-            {sections?.length === 0 ? (
-                <div className="text-center py-12">
-                    <Upload size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No sections yet</h3>
-                    <p className="text-gray-600 mb-6">Create sections to organize your website content.</p>
-                    <Button variant="primary" icon={<Plus size={16} />}>
-                        Add Section
-                    </Button>
-                </div>
-            ) : (
-                sections?.map((section: Section) => (
-                    <Card key={section.id}>
-                        <CardBody>
-                            <div className="flex items-start gap-6">
-                                {/* Media Preview */}
-                                {(section.imageUrl || section.videoUrl || section.videoPosterUrl || section.backgroundImageUrl) && (
-                                    <div className="flex-shrink-0">
-                                        {section.videoUrl ? (
-                                            <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <video
-                                                    src={section.videoUrl}
-                                                    poster={section.videoPosterUrl || section.imageUrl || undefined}
-                                                    className="w-full h-full object-cover"
-                                                    muted
-                                                    loop
-                                                    autoPlay
-                                                    playsInline
-                                                />
-                                            </div>
-                                        ) : section.imageUrl ? (
-                                            <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <img
-                                                    src={section.imageUrl}
-                                                    alt="Section image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : section.backgroundImageUrl ? (
-                                            <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <img
-                                                    src={section.backgroundImageUrl}
-                                                    alt="Background image"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : section.videoPosterUrl ? (
-                                            <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
-                                                <img
-                                                    src={section.videoPosterUrl}
-                                                    alt="Video poster"
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                )}
-
-                                <div className="flex-1 space-y-3">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <span className="font-medium text-gray-700">Title:</span>
-                                            <p className="text-gray-600">{section.title}</p>
-                                        </div>
-
-                                        {section.subtitle && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Subtitle:</span>
-                                                <p className="text-gray-600">{section.subtitle}</p>
-                                            </div>
-                                        )}
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Section Type:</span>
-                                            <p className="text-gray-600">
-                                                <Badge variant="info">{section.sectionType}</Badge>
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Order:</span>
-                                            <p className="text-gray-600">{section.order}</p>
-                                        </div>
-
-                                        {section.content && (
-                                            <div className="md:col-span-2">
-                                                <span className="font-medium text-gray-700">Content:</span>
-                                                <p className="text-gray-600">{section.content}</p>
-                                            </div>
-                                        )}
-
-                                        {section.imageUrl && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Image URL:</span>
-                                                <p className="text-gray-600 break-all">{section.imageUrl}</p>
-                                            </div>
-                                        )}
-
-                                        {section.videoUrl && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Video URL:</span>
-                                                <p className="text-gray-600 break-all">{section.videoUrl}</p>
-                                            </div>
-                                        )}
-
-                                        {section.videoPosterUrl && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Video Poster:</span>
-                                                <p className="text-gray-600 break-all">{section.videoPosterUrl}</p>
-                                            </div>
-                                        )}
-
-                                        {section.buttonText && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Button Text:</span>
-                                                <p className="text-gray-600">{section.buttonText}</p>
-                                            </div>
-                                        )}
-
-                                        {section.buttonLink && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Button Link:</span>
-                                                <p className="text-gray-600 break-all">{section.buttonLink}</p>
-                                            </div>
-                                        )}
-
-                                        {section.backgroundImageUrl && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Background Image:</span>
-                                                <p className="text-gray-600 break-all">{section.backgroundImageUrl}</p>
-                                            </div>
-                                        )}
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Status:</span>
-                                            <p className="text-gray-600">
-                                                <Badge variant={section.isActive ? 'success' : 'default'}>
-                                                    {section.isActive ? 'Active' : 'Inactive'}
-                                                </Badge>
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Created:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(section.createdAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Updated:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(section.updatedAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="sm" icon={<Pencil size={16} />}>
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        icon={<Trash size={16} />}
-                                        onClick={() => handleDelete('section', section.id, section.title)}
-                                        className="text-red-600 hover:text-red-700"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-                ))
-            )}
-        </div>
-    );
-
-    const renderTestimonials = () => (
-        <div className="space-y-4">
-            {testimonials?.length === 0 ? (
-                <div className="text-center py-12">
-                    <Check size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No testimonials yet</h3>
-                    <p className="text-gray-600 mb-6">Add customer testimonials to build trust.</p>
-                    <Button variant="primary" icon={<Plus size={16} />}>
-                        Add Testimonial
-                    </Button>
-                </div>
-            ) : (
-                testimonials?.map((testimonial: Testimonial) => (
-                    <Card key={testimonial.id}>
-                        <CardBody>
-                            <div className="flex items-start gap-4">
-                                {/* Profile Image */}
-                                {testimonial.imageUrl && (
-                                    <div className="flex-shrink-0">
-                                        <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden">
-                                            <img
-                                                src={testimonial.imageUrl}
-                                                alt={testimonial.author}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div className="flex-1 space-y-3">
-                                    <div>
-                                        <h3 className="font-medium text-gray-900 mb-1">{testimonial.author}</h3>
-                                        {testimonial.location && (
-                                            <p className="text-sm text-gray-600">{testimonial.location}</p>
-                                        )}
-                                    </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                            <span className="font-medium text-gray-700">Name:</span>
-                                            <p className="text-gray-600">{testimonial.author}</p>
-                                        </div>
-
-                                        {testimonial.location && (
-                                            <div>
-                                                <span className="font-medium text-gray-700">Location:</span>
-                                                <p className="text-gray-600">{testimonial.location}</p>
-                                            </div>
-                                        )}
-
-                                        <div className="md:col-span-2">
-                                            <span className="font-medium text-gray-700">Comment:</span>
-                                            <blockquote className="text-gray-900 mt-1">"{testimonial.comment}"</blockquote>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Rating:</span>
-                                            <div className="flex items-center gap-2 mt-1">
-                                                {[...Array(5)].map((_, i) => (
-                                                    <Star
-                                                        key={i}
-                                                        size={16}
-                                                        weight={i < testimonial.rating ? "fill" : "regular"}
-                                                        className="text-yellow-400"
-                                                    />
-                                                ))}
-                                                <span className="text-gray-600">({testimonial.rating}/5)</span>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Status:</span>
-                                            <p className="text-gray-600 mt-1">
-                                                <Badge variant={testimonial.isActive ? 'success' : 'default'}>
-                                                    {testimonial.isActive ? 'Active' : 'Inactive'}
-                                                </Badge>
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Created:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(testimonial.createdAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <span className="font-medium text-gray-700">Updated:</span>
-                                            <p className="text-gray-600">
-                                                {new Date(testimonial.updatedAt).toLocaleDateString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <Button variant="ghost" size="sm" icon={<Pencil size={16} />}>
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        icon={<Trash size={16} />}
-                                        onClick={() => handleDelete('testimonial', testimonial.id, testimonial.author)}
-                                        className="text-red-600 hover:text-red-700"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-                ))
-            )}
-        </div>
-    );
-
-    const renderInstagram = () => (
-        <div className="space-y-4">
-            {instagramPosts?.length === 0 ? (
-                <div className="text-center py-12">
-                    <ImageIcon size={48} className="mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No Instagram posts yet</h3>
-                    <p className="text-gray-600 mb-6">Showcase your Instagram content on your website.</p>
-                    <Button variant="primary" icon={<Plus size={16} />}>
-                        Add Instagram Post
-                    </Button>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 gap-4">
-                    {instagramPosts?.map((post: InstagramPost) => (
-                        <Card key={post.id}>
-                            <CardBody>
-                                <div className="flex items-start gap-4">
-                                    {/* Post Image */}
-                                    <div className="flex-shrink-0">
-                                        <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
-                                            <img
-                                                src={post.imageUrl}
-                                                alt="Instagram post"
-                                                className="w-full h-full object-cover"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex-1 space-y-3">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                            <div className="md:col-span-2">
-                                                <span className="font-medium text-gray-700">Image URL:</span>
-                                                <p className="text-gray-600 break-all">{post.imageUrl}</p>
-                                            </div>
-
-                                            {post.caption && (
-                                                <div className="md:col-span-2">
-                                                    <span className="font-medium text-gray-700">Caption:</span>
-                                                    <p className="text-gray-600">{post.caption}</p>
-                                                </div>
-                                            )}
-
-                                            {post.postUrl && (
-                                                <div>
-                                                    <span className="font-medium text-gray-700">Post URL:</span>
-                                                    <p className="text-gray-600 break-all">{post.postUrl}</p>
-                                                </div>
-                                            )}
-
-                                            <div>
-                                                <span className="font-medium text-gray-700">Status:</span>
-                                                <p className="text-gray-600 mt-1">
-                                                    <Badge variant={post.isActive ? 'success' : 'default'}>
-                                                        {post.isActive ? 'Active' : 'Inactive'}
-                                                    </Badge>
-                                                </p>
-                                            </div>
-
-                                            <div>
-                                                <span className="font-medium text-gray-700">Created:</span>
-                                                <p className="text-gray-600">
-                                                    {new Date(post.createdAt).toLocaleDateString()}
-                                                </p>
-                                            </div>
-
-                                            <div>
-                                                <span className="font-medium text-gray-700">Updated:</span>
-                                                <p className="text-gray-600">
-                                                    {new Date(post.updatedAt).toLocaleDateString()}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <Button variant="ghost" size="sm" icon={<Pencil size={16} />}>
-                                            Edit
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            icon={<Trash size={16} />}
-                                            onClick={() => handleDelete('instagram', post.id)}
-                                            className="text-red-600 hover:text-red-700"
-                                        >
-                                            Delete
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardBody>
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
 
     return (
         <div className="space-y-6">
@@ -740,9 +252,6 @@ const WebsitePage: React.FC = () => {
                     <h1 className="text-2xl font-bold text-gray-900">Website Management</h1>
                     <p className="text-gray-600">Manage your website content and appearance</p>
                 </div>
-                <Button variant="primary" icon={<Plus size={16} />}>
-                    Add Content
-                </Button>
             </div>
 
             {/* Tab Navigation */}
@@ -788,6 +297,30 @@ const WebsitePage: React.FC = () => {
                     type={toastType}
                     onClose={() => setShowToast(false)}
                 />
+            )}
+
+            {entityModal.open && (
+                <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-bold text-slate-900">
+                                {entityModal.mode === 'create' ? 'Create' : 'Edit'} {entityModal.type}
+                            </h2>
+                            <button onClick={closeEntityModal} className="text-slate-400 hover:text-slate-600 text-2xl">
+                                ×
+                            </button>
+                        </div>
+
+                        <WebsiteEntityForm
+                            type={entityModal.type}
+                            mode={entityModal.mode}
+                            initialValues={entityModal.mode === 'edit' ? entityModal.item : undefined}
+                            isSubmitting={false}
+                            onSubmit={handleSubmitEntity}
+                            onCancel={closeEntityModal}
+                        />
+                    </div>
+                </div>
             )}
         </div>
     );

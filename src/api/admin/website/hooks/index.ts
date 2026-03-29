@@ -66,9 +66,9 @@ export const useWebsiteBannerMutations = () => {
   });
 
   return {
-    createBanner: createMutation.mutate,
-    updateBanner: updateMutation.mutate,
-    deleteBanner: deleteMutation.mutate,
+    createBanner: createMutation.mutateAsync,
+    updateBanner: updateMutation.mutateAsync,
+    deleteBanner: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
@@ -117,9 +117,9 @@ export const useWebsiteHeroMutations = () => {
   });
 
   return {
-    createHero: createMutation.mutate,
-    updateHero: updateMutation.mutate,
-    deleteHero: deleteMutation.mutate,
+    createHero: createMutation.mutateAsync,
+    updateHero: updateMutation.mutateAsync,
+    deleteHero: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
@@ -168,9 +168,9 @@ export const useWebsiteSectionMutations = () => {
   });
 
   return {
-    createSection: createMutation.mutate,
-    updateSection: updateMutation.mutate,
-    deleteSection: deleteMutation.mutate,
+    createSection: createMutation.mutateAsync,
+    updateSection: updateMutation.mutateAsync,
+    deleteSection: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
@@ -219,9 +219,9 @@ export const useWebsiteTestimonialMutations = () => {
   });
 
   return {
-    createTestimonial: createMutation.mutate,
-    updateTestimonial: updateMutation.mutate,
-    deleteTestimonial: deleteMutation.mutate,
+    createTestimonial: createMutation.mutateAsync,
+    updateTestimonial: updateMutation.mutateAsync,
+    deleteTestimonial: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
@@ -270,9 +270,9 @@ export const useWebsiteInstagramMutations = () => {
   });
 
   return {
-    createInstagramPost: createMutation.mutate,
-    updateInstagramPost: updateMutation.mutate,
-    deleteInstagramPost: deleteMutation.mutate,
+    createInstagramPost: createMutation.mutateAsync,
+    updateInstagramPost: updateMutation.mutateAsync,
+    deleteInstagramPost: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
