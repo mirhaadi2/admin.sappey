@@ -37,11 +37,13 @@ const emptyDefaults: Record<WebsiteTab, Record<string, any>> = {
         isActive: true,
     },
     sections: {
-        sectionType: "collections",
+        sectionType: "",
         title: "",
         subtitle: "",
         content: "",
         imageUrl: "",
+        videoUrl: "",
+        backgroundImageUrl: "",
         buttonText: "",
         buttonLink: "",
         isActive: true,
@@ -133,20 +135,8 @@ const fieldsByType: Record<
         {
             key: "sectionType",
             label: "Section Type",
-            type: "select",
+            type: "text",
             required: true,
-            options: [
-                { value: "collections", label: "Collections" },
-                { value: "bestsellers", label: "Bestsellers" },
-                { value: "health_wellness", label: "Health & Wellness" },
-                { value: "new_arrivals", label: "New Arrivals" },
-                { value: "story", label: "Story" },
-                { value: "testimonials", label: "Testimonials" },
-                { value: "instagram", label: "Instagram" },
-                { value: "contact", label: "Contact" },
-                { value: "about", label: "About" },
-                { value: "footer", label: "Footer" },
-            ],
         },
         { 
             key: "title", 
@@ -172,8 +162,21 @@ const fieldsByType: Record<
         },
         { 
             key: "imageUrl", 
-            label: "Image URL", 
-            type: "text" 
+            label: "Image", 
+            type: "file",
+            accept: "image/*"
+        },
+        { 
+            key: "videoUrl", 
+            label: "Video Upload", 
+            type: "file",
+            accept: "video/*"
+        },
+        { 
+            key: "backgroundImageUrl", 
+            label: "Background Image", 
+            type: "file",
+            accept: "image/*"
         },
         { 
             key: "buttonText", 
