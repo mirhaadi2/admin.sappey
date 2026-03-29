@@ -84,7 +84,7 @@ export const useWebsiteHero = () => {
   });
 
   return {
-    heroes: query.data?.data || [],
+    heroes: query.data?.data ?? [],
     isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,

@@ -21,8 +21,16 @@ import {
     Hero,
     Section,
     Testimonial,
-    InstagramPost,
-} from '../api/admin/index';
+    InstagramPost,    CreateBannerRequest,
+    UpdateBannerRequest,
+    CreateHeroRequest,
+    UpdateHeroRequest,
+    CreateSectionRequest,
+    UpdateSectionRequest,
+    CreateTestimonialRequest,
+    UpdateTestimonialRequest,
+    CreateInstagramPostRequest,
+    UpdateInstagramPostRequest,} from '../api/admin/index';
 
 type WebsiteTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
 
@@ -54,7 +62,7 @@ const WebsitePage: React.FC = () => {
 
     const tabs = [
         { id: 'banners' as WebsiteTab, label: 'Banners', icon: <ImageIcon size={16} />, count: banners?.length || 0 },
-        { id: 'hero' as WebsiteTab, label: 'Hero Section', icon: <Eye size={16} />, count: heroes?.length || 0 },
+        { id: 'hero' as WebsiteTab, label: 'Hero Section', icon: <Eye size={16} />, count: heroes ? 1 : 0 },
         { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
@@ -131,42 +139,47 @@ const WebsitePage: React.FC = () => {
         const type = entityModal.type;
         const id = entityModal.item?.id;
 
+        if (entityModal.mode === 'edit' && !id) {
+            showToastMessage('Entity ID is missing for update operation', 'error');
+            return;
+        }
+
         try {
             if (entityModal.mode === 'create') {
                 switch (type) {
                     case 'banners':
-                        await bannerMutations.createBanner(data);
+                        await bannerMutations.createBanner(data as CreateBannerRequest);
                         break;
                     case 'hero':
-                        await heroMutations.createHero(data);
+                        await heroMutations.createHero(data as CreateHeroRequest);
                         break;
                     case 'sections':
-                        await sectionMutations.createSection(data);
+                        await sectionMutations.createSection(data as CreateSectionRequest);
                         break;
                     case 'testimonials':
-                        await testimonialMutations.createTestimonial(data);
+                        await testimonialMutations.createTestimonial(data as CreateTestimonialRequest);
                         break;
                     case 'instagram':
-                        await instagramMutations.createInstagramPost(data);
+                        await instagramMutations.createInstagramPost(data as CreateInstagramPostRequest);
                         break;
                 }
                 showToastMessage(`${type} created successfully.`);
             } else {
                 switch (type) {
                     case 'banners':
-                        await bannerMutations.updateBanner(id, data);
+                        await bannerMutations.updateBanner({ id: id!, data });
                         break;
                     case 'hero':
-                        await heroMutations.updateHero(id, data);
+                        await heroMutations.updateHero({ id: id!, data });
                         break;
                     case 'sections':
-                        await sectionMutations.updateSection(id, data);
+                        await sectionMutations.updateSection({ id: id!, data });
                         break;
                     case 'testimonials':
-                        await testimonialMutations.updateTestimonial(id, data);
+                        await testimonialMutations.updateTestimonial({ id: id!, data });
                         break;
                     case 'instagram':
-                        await instagramMutations.updateInstagramPost(id, data);
+                        await instagramMutations.updateInstagramPost({ id: id!, data });
                         break;
                 }
                 showToastMessage(`${type} updated successfully.`);
@@ -317,7 +330,7 @@ const WebsitePage: React.FC = () => {
                         <WebsiteEntityForm
                             type={entityModal.type}
                             mode={entityModal.mode}
-                            initialValues={entityModal.mode === 'edit' ? entityModal.item : undefined}
+                            initialValues={entityModal.mode === 'edit' && entityModal.item ? entityModal.item : undefined}
                             isSubmitting={false}
                             onSubmit={handleSubmitEntity}
                             onCancel={closeEntityModal}

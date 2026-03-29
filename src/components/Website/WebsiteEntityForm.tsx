@@ -22,9 +22,9 @@ interface WebsiteEntityFormProps {
 
 const emptyDefaults: Record<WebsiteTab, Record<string, any>> = {
     banners: { 
-        title: "", 
+        // title: "", 
         text: "", 
-        subtitle: "", 
+        // subtitle: "", 
         isActive: true 
     },
     hero: {
@@ -77,17 +77,17 @@ const fieldsByType: Record<
     }>
 > = {
     banners: [
-        { 
-            key: "title", 
-            label: "Title", 
-            type: "text", 
-            required: true 
-        },
-        { 
-            key: "subtitle", 
-            label: "Subtitle", 
-            type: "text" 
-        },
+        // { 
+        //     key: "title", 
+        //     label: "Title", 
+        //     type: "text", 
+        //     required: true 
+        // },
+        // { 
+        //     key: "subtitle", 
+        //     label: "Subtitle", 
+        //     type: "text" 
+        // },
         { 
             key: "text", 
             label: "Text", 
@@ -277,9 +277,21 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
             setUploadingFields((prev) => new Set([...prev, key]));
             setUploadErrors((prev) => ({ ...prev, [key]: "" }));
 
+            // Dynamic folder based on type and field
+            const folderMap: Record<string, string> = {
+                hero: "website/hero",
+                sections: "website/sections",
+                banners: "website/banners",
+                testimonials: "website/testimonials",
+                instagram: "website/instagram",
+            };
+
+            // Set the folder based on type, defaulting to "website" if not found
+            const folder = folderMap[type] || "website";
+
             const formData = new FormData();
             formData.append("file", file, file.name);
-            formData.append("folder", "website/hero");
+            formData.append("folder", folder);
 
             // DEBUG: verify the form payload includes the file and folder
             for (const [key, value] of formData.entries()) {
@@ -303,7 +315,6 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                 handleInputChange(key, response.data.key);
             } else {
                 const message =
-                    response.data?.message ||
                     response.data?.url ||
                     "Upload succeeded but no key returned";
                 setUploadErrors((prev) => ({ ...prev, [key]: message }));
@@ -383,21 +394,58 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                         <span className="text-sm text-blue-600">Uploading...</span>
                                     )}
                                 </div>
+
+                                {/* Preview existing uploaded file */}
                                 {form[field.key] && (
-                                    <div className="flex items-center gap-2 rounded bg-green-50 p-2">
-                                        <CheckCircle size={16} className="text-green-600" />
-                                        <span className="text-sm text-green-700">
-                                            {form[field.key].split("/").pop()}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            onClick={() => handleInputChange(field.key, "")}
-                                            className="ml-auto text-green-600 hover:text-green-800"
-                                        >
-                                            <X size={16} />
-                                        </button>
+                                    <div className="space-y-2">
+                                        {field.accept?.includes("image") && form[field.key].startsWith("http") ? (
+                                            <div className="relative">
+                                                <img
+                                                    src={form[field.key]}
+                                                    alt="Preview"
+                                                    className="w-full max-w-xs h-32 object-cover rounded border"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </div>
+                                        ) : field.accept?.includes("video") && form[field.key].startsWith("http") ? (
+                                            <div className="relative">
+                                                <video
+                                                    src={form[field.key]}
+                                                    controls
+                                                    className="w-full max-w-xs h-32 object-cover rounded border"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                                >
+                                                    <X size={12} />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 rounded bg-green-50 p-2">
+                                                <CheckCircle size={16} className="text-green-600" />
+                                                <span className="text-sm text-green-700">
+                                                    {form[field.key].split("/").pop()}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    className="ml-auto text-green-600 hover:text-green-800"
+                                                >
+                                                    <X size={16} />
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
+
                                 {uploadErrors[field.key] && (
                                     <p className="text-sm text-red-600">{uploadErrors[field.key]}</p>
                                 )}
