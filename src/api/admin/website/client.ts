@@ -57,8 +57,8 @@ export const websiteApi = {
   },
 
   // ===================== HERO APIs =====================
-  getHero: async (): Promise<WebsiteApiResponse<Hero | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Hero | null>>(WEBSITE_HERO);
+  getHero: async (): Promise<WebsiteApiResponse<Hero[]>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Hero[]>>(WEBSITE_HERO);
     return response.data;
   },
 

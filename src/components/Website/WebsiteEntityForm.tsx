@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "../Button";
 import { Toggle } from "../Toggle";
+import { ConfirmDialog } from "../ConfirmDialog";
 import { apiClient } from "../../api";
 import { CheckCircle, X } from "@phosphor-icons/react";
 
@@ -261,6 +262,11 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
     }));
     const [uploadingFields, setUploadingFields] = useState<Set<string>>(new Set());
     const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
+    const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; fieldKey: string | null; fieldLabel: string }>({
+        isOpen: false,
+        fieldKey: null,
+        fieldLabel: "",
+    });
 
     useEffect(() => {
         setForm({ ...emptyDefaults[type], ...initialValues });
@@ -270,6 +276,25 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
 
     const handleInputChange = (key: string, value: any) => {
         setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const handleDeleteClick = (fieldKey: string, fieldLabel: string) => {
+        setConfirmDialog({
+            isOpen: true,
+            fieldKey,
+            fieldLabel,
+        });
+    };
+
+    const handleConfirmDelete = () => {
+        if (confirmDialog.fieldKey) {
+            handleInputChange(confirmDialog.fieldKey, "");
+            setConfirmDialog({ isOpen: false, fieldKey: null, fieldLabel: "" });
+        }
+    };
+
+    const handleCancelDelete = () => {
+        setConfirmDialog({ isOpen: false, fieldKey: null, fieldLabel: "" });
     };
 
     const handleFileUpload = async (key: string, file: File) => {
@@ -407,7 +432,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    onClick={() => handleDeleteClick(field.key, field.label)}
                                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                                                 >
                                                     <X size={12} />
@@ -422,7 +447,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                                 />
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    onClick={() => handleDeleteClick(field.key, field.label)}
                                                     className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
                                                 >
                                                     <X size={12} />
@@ -436,7 +461,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                                 </span>
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleInputChange(field.key, "")}
+                                                    onClick={() => handleDeleteClick(field.key, field.label)}
                                                     className="ml-auto text-green-600 hover:text-green-800"
                                                 >
                                                     <X size={16} />
@@ -489,6 +514,17 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                     </Button>
                 </div>
             </form>
+
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                title="Delete File"
+                description={`Are you sure you want to delete "${confirmDialog.fieldLabel}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isDangerous={true}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
         </div>
     );
 };

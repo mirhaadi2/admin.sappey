@@ -3,6 +3,7 @@ import { Plus, Eye, Check, Upload, Image as ImageIcon } from '@phosphor-icons/re
 import { Card, CardHeader, CardBody } from '../components/Card';
 import { Button } from '../components/Button';
 import { ErrorAlert } from '../components/ErrorAlert';
+import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components';
 import WebsiteEntityForm from '../components/Website/WebsiteEntityForm';
 import { BannerList, HeroList, SectionList, TestimonialList, InstagramList } from '../components/Website/index';
@@ -39,6 +40,12 @@ const WebsitePage: React.FC = () => {
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
     const [toastType, setToastType] = useState<'success' | 'error'>('success');
+    const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; type: WebsiteTab; id: string; label?: string }>({
+        isOpen: false,
+        type: 'banners',
+        id: '',
+        label: '',
+    });
     const [entityModal, setEntityModal] = useState<{
         open: boolean;
         mode: 'create' | 'edit';
@@ -84,7 +91,13 @@ const WebsitePage: React.FC = () => {
     };
 
     const handleDeleteEntity = async (type: WebsiteTab, id: string, label?: string) => {
-        if (!window.confirm(`Delete ${label ?? type} permanently?`)) return;
+        setDeleteConfirm({ isOpen: true, type, id, label });
+    };
+
+    const handleConfirmDelete = async () => {
+        const { type, id, label } = deleteConfirm;
+        setDeleteConfirm({ isOpen: false, type: 'banners', id: '', label: '' });
+
         try {
             switch (type) {
                 case 'banners':
@@ -107,6 +120,10 @@ const WebsitePage: React.FC = () => {
         } catch (error: any) {
             showToastMessage(`Failed to delete ${label ?? type}: ${error?.message || String(error)}`, 'error');
         }
+    };
+
+    const handleCancelDelete = () => {
+        setDeleteConfirm({ isOpen: false, type: 'banners', id: '', label: '' });
     };
 
     const handleToggleActive = async (type: WebsiteTab, item: any) => {
@@ -314,6 +331,17 @@ const WebsitePage: React.FC = () => {
                     onClose={() => setShowToast(false)}
                 />
             )}
+
+            <ConfirmDialog
+                isOpen={deleteConfirm.isOpen}
+                title="Delete Item"
+                description={`Delete ${deleteConfirm.label ?? deleteConfirm.type} permanently? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                isDangerous={true}
+                onConfirm={handleConfirmDelete}
+                onCancel={handleCancelDelete}
+            />
 
             {entityModal.open && (
                 <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
