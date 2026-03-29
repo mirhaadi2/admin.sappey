@@ -191,7 +191,7 @@ const fieldsByType: Record<
     ],
     testimonials: [
         { 
-            key: "name", 
+            key: "author", 
             label: "Author Name", 
             type: "text", 
             required: true 
@@ -202,20 +202,27 @@ const fieldsByType: Record<
             type: "text" 
         },
         { 
-            key: "content", 
+            key: "comment", 
             label: "Comment", 
             type: "textarea", 
             required: true 
         },
         { 
             key: "imageUrl", 
-            label: "Image URL", 
-            type: "text" 
+            label: "Image", 
+            type: "file",
+            accept: "image/*"
         },
         { 
             key: "rating", 
             label: "Rating (1-5)", 
             type: "number", 
+            required: true 
+        },
+        { 
+            key: "location", 
+            label: "Location", 
+            type: "text", 
             required: true 
         },
     ],
