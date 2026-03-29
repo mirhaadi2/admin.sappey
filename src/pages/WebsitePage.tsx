@@ -61,6 +61,7 @@ const WebsitePage: React.FC = () => {
     ];
 
     const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
+        setShowToast(false);
         setToastMessage(message);
         setToastType(type);
         setShowToast(true);
@@ -105,19 +106,19 @@ const WebsitePage: React.FC = () => {
             const payload = { isActive: !item.isActive };
             switch (type) {
                 case 'banners':
-                    await bannerMutations.updateBanner(item.id, payload);
+                    await bannerMutations.updateBanner({ id: item.id, data: payload });
                     break;
                 case 'hero':
-                    await heroMutations.updateHero(item.id, payload);
+                    await heroMutations.updateHero({ id: item.id, data: payload });
                     break;
                 case 'sections':
-                    await sectionMutations.updateSection(item.id, payload);
+                    await sectionMutations.updateSection({ id: item?.id, data: payload });
                     break;
                 case 'testimonials':
-                    await testimonialMutations.updateTestimonial(item.id, payload);
+                    await testimonialMutations.updateTestimonial({ id: item.id, data: payload });
                     break;
                 case 'instagram':
-                    await instagramMutations.updateInstagramPost(item.id, payload);
+                    await instagramMutations.updateInstagramPost({ id: item.id, data: payload });
                     break;
             }
             showToastMessage(`${item.title ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);

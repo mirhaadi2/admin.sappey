@@ -16,9 +16,17 @@ const Toast: React.FC<ToastProps> = ({
   duration = 4000,
   onClose,
 }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
   useEffect(() => {
-    const timer = setTimeout(onClose, duration);
-    return () => clearTimeout(timer);
+    const hideDelay = Math.max(300, duration - 300);
+    const hideTimer = setTimeout(() => setIsVisible(false), hideDelay);
+    const closeTimer = setTimeout(onClose, duration);
+
+    return () => {
+      clearTimeout(hideTimer);
+      clearTimeout(closeTimer);
+    };
   }, [duration, onClose]);
 
   const typeStyles = {
@@ -35,7 +43,7 @@ const Toast: React.FC<ToastProps> = ({
 
   return (
     <div
-      className={`fixed top-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-in fade-in slide-in-from-right-4 ${typeStyles[type]}`}
+      className={`fixed top-4 right-4 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg transition-all duration-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'} ${typeStyles[type]} z-[9999]`}
     >
       {type === 'success' && <CheckCircle size={20} className={iconColor[type]} weight="fill" />}
       {type === 'error' && <X size={20} className={iconColor[type]} weight="bold" />}

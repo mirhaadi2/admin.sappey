@@ -302,12 +302,12 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                 type={field.type}
                                 value={form[field.key] ?? ""}
                                 onChange={(e) =>
-                                handleInputChange(
-                                    field.key,
-                                    field.type === "number"
-                                    ? Number(e.target.value)
-                                    : e.target.value,
-                                )
+                                    handleInputChange(
+                                        field.key,
+                                        field.type === "number"
+                                        ? Number(e.target.value)
+                                        : e.target.value,
+                                    )
                                 }
                                 className="w-full rounded border border-slate-300 p-2"
                                 required={field.required}
