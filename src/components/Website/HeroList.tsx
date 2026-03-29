@@ -47,6 +47,11 @@ export const HeroList: React.FC<HeroListProps> = ({
 
     return (
         <div className="space-y-4">
+            <div className="flex justify-end">
+                <Button variant="primary" icon={<Plus size={16} />} onClick={onAdd}>
+                    Add Hero Section
+                </Button>
+            </div>
             <Card>
                 <CardBody>
                     <div className="flex items-start gap-6">
@@ -95,18 +100,18 @@ export const HeroList: React.FC<HeroListProps> = ({
                                     <span className="font-medium text-gray-700">Subtitle:</span>
                                     <p className="text-gray-600">{hero.subtitle}</p>
                                 </div>
-                                {hero.ctaText && (
+                                {hero.buttonText && (
                                     <div>
-                                        <span className="font-medium text-gray-700">CTA Text:</span>
-                                        <p className="text-gray-600">{hero.ctaText}</p>
+                                        <span className="font-medium text-gray-700">Button Text:</span>
+                                        <p className="text-gray-600">{hero.buttonText}</p>
                                     </div>
                                 )}
 
-                                {(hero.buttonUrl || (hero as any).ctaLink) && (
+                                {(hero.buttonUrl || (hero as any).buttonLink) && (
                                     <div>
-                                        <span className="font-medium text-gray-700">CTA Link:</span>
+                                        <span className="font-medium text-gray-700">Button Link:</span>
                                         <p className="text-gray-600 break-all">
-                                            {(hero as any).ctaLink || hero.buttonUrl}
+                                            {(hero as any).buttonLink || hero.buttonUrl}
                                         </p>
                                     </div>
                                 )}

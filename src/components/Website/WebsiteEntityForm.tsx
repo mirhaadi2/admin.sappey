@@ -106,7 +106,7 @@ const fieldsByType: Record<
             key: "description", 
             label: "Description", 
             type: "textarea", 
-            required: true 
+            required: false 
         },
         { 
             key: "imageUrl", 
@@ -267,9 +267,9 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
 
     return (
         <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-slate-900">
+            {/* <h3 className="text-lg font-semibold text-slate-900">
                 {mode === "create" ? "Create" : "Edit"} {type}
-            </h3>
+            </h3> */}
             <form onSubmit={handleSubmit} className="space-y-4">
                 {fields.map((field) => (
                     <div key={field.key} className="space-y-1">

@@ -247,50 +247,52 @@ const WebsitePage: React.FC = () => {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Website Management</h1>
-                    <p className="text-gray-600">Manage your website content and appearance</p>
+        <>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Website Management</h1>
+                        <p className="text-gray-600">Manage your website content and appearance</p>
+                    </div>
                 </div>
-            </div>
 
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200">
-                <nav className="flex space-x-8">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                                activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                            }`}
-                        >
-                            {tab.icon}
-                            {tab.label}
-                            {tab.count > 0 && (
-                                <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
-                                    {tab.count}
-                                </span>
-                            )}
-                        </button>
-                    ))}
-                </nav>
-            </div>
+                {/* Tab Navigation */}
+                <div className="border-b border-gray-200">
+                    <nav className="flex space-x-8">
+                        {tabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                                    activeTab === tab.id
+                                        ? 'border-blue-500 text-blue-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                            >
+                                {tab.icon}
+                                {tab.label}
+                                {tab.count > 0 && (
+                                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+                                        {tab.count}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </nav>
+                </div>
 
-            {/* Content Area */}
-            <Card>
-                <CardHeader>
-                    <h2 className="text-lg font-semibold">
-                        {tabs.find(tab => tab.id === activeTab)?.label}
-                    </h2>
-                </CardHeader>
-                <CardBody>
-                    {renderContent()}
-                </CardBody>
-            </Card>
+                {/* Content Area */}
+                <Card>
+                    <CardHeader>
+                        <h2 className="text-lg font-semibold">
+                            {tabs.find(tab => tab.id === activeTab)?.label}
+                        </h2>
+                    </CardHeader>
+                    <CardBody>
+                        {renderContent()}
+                    </CardBody>
+                </Card>
+            </div>
 
             {showToast && (
                 <Toast
@@ -323,7 +325,7 @@ const WebsitePage: React.FC = () => {
                     </div>
                 </div>
             )}
-        </div>
+        </>
     );
 };
 
