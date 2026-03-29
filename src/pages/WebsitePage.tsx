@@ -40,7 +40,7 @@ const WebsitePage: React.FC = () => {
 
     // API hooks
     const { banners, isLoading: bannersLoading, error: bannersError } = useWebsiteBanners();
-    const { hero, isLoading: heroLoading, error: heroError } = useWebsiteHero();
+    const { heroes, isLoading: heroLoading, error: heroError } = useWebsiteHero();
     const { sections, isLoading: sectionsLoading, error: sectionsError } = useWebsiteSections();
     const { testimonials, isLoading: testimonialsLoading, error: testimonialsError } = useWebsiteTestimonials();
     const { instagramPosts, isLoading: instagramLoading, error: instagramError } = useWebsiteInstagramPosts();
@@ -54,7 +54,7 @@ const WebsitePage: React.FC = () => {
 
     const tabs = [
         { id: 'banners' as WebsiteTab, label: 'Banners', icon: <ImageIcon size={16} />, count: banners?.length || 0 },
-        { id: 'hero' as WebsiteTab, label: 'Hero Section', icon: <Eye size={16} />, count: hero ? 1 : 0 },
+        { id: 'hero' as WebsiteTab, label: 'Hero Section', icon: <Eye size={16} />, count: heroes?.length || 0 },
         { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
@@ -200,7 +200,7 @@ const WebsitePage: React.FC = () => {
             case 'hero':
                 return (
                     <HeroList
-                        hero={hero}
+                        heroes={heroes}
                         isLoading={heroLoading}
                         onAdd={() => openEntityModal('hero', 'create')}
                         onEdit={(hero) => openEntityModal('hero', 'edit', hero)}

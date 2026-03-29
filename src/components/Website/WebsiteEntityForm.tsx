@@ -124,7 +124,7 @@ const fieldsByType: Record<
             type: "text" 
         },
         { 
-            key: "buttonUrl", 
+            key: "buttonLink", 
             label: "Button URL", 
             type: "text" 
         },
