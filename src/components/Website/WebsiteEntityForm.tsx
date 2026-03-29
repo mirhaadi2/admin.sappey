@@ -229,8 +229,9 @@ const fieldsByType: Record<
     instagram: [
         { 
             key: "imageUrl", 
-            label: "Image URL", 
-            type: "text", 
+            label: "Image", 
+            type: "file", 
+            accept: "image/*",
             required: true 
         },
         { 
