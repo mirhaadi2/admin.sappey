@@ -14,6 +14,7 @@ import {
   WEBSITE_PRIVACY_POLICY,
   WEBSITE_TERMS_CONDITIONS,
   WEBSITE_SITEMAP,
+  WEBSITE_SUPPORT_PAGES,
 } from './endpoints';
 import {
   Banner,
@@ -207,115 +208,110 @@ export const websiteApi = {
     return response.data;
   },
 
+  // ===================== SUPPORT PAGE APIs (GENERIC) =====================
+  getSupportPage: async (slug: string): Promise<WebsiteApiResponse<Page | null>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(`${WEBSITE_SUPPORT_PAGES}/${slug}`);
+    return response.data;
+  },
+
+  updateSupportPage: async (slug: string, data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Page>>(`${WEBSITE_SUPPORT_PAGES}/${slug}`, data);
+    return response.data;
+  },
+
+  deleteSupportPage: async (slug: string): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(`${WEBSITE_SUPPORT_PAGES}/${slug}`);
+    return response.data;
+  },
+
   // ===================== ABOUT US APIs =====================
   getAboutUs: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_ABOUT_US);
-    return response.data;
+    return await websiteApi.getSupportPage('about-us');
   },
 
   updateAboutUs: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_ABOUT_US, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('about-us', data);
   },
 
   deleteAboutUs: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_ABOUT_US);
-    return response.data;
+    return await websiteApi.deleteSupportPage('about-us');
   },
 
   // ===================== SHIPPING POLICY APIs =====================
   getShippingPolicy: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_SHIPPING_POLICY);
-    return response.data;
+    return await websiteApi.getSupportPage('shipping-policy');
   },
 
   updateShippingPolicy: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_SHIPPING_POLICY, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('shipping-policy', data);
   },
 
   deleteShippingPolicy: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_SHIPPING_POLICY);
-    return response.data;
+    return await websiteApi.deleteSupportPage('shipping-policy');
   },
 
   // ===================== RETURNS & REFUNDS APIs =====================
   getReturnsRefunds: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_RETURNS_REFUNDS);
-    return response.data;
+    return await websiteApi.getSupportPage('returns-refunds');
   },
 
   updateReturnsRefunds: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_RETURNS_REFUNDS, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('returns-refunds', data);
   },
 
   deleteReturnsRefunds: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_RETURNS_REFUNDS);
-    return response.data;
+    return await websiteApi.deleteSupportPage('returns-refunds');
   },
 
   // ===================== FAQs APIs =====================
   getFAQs: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_FAQS);
-    return response.data;
+    return await websiteApi.getSupportPage('faqs');
   },
 
   updateFAQs: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_FAQS, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('faqs', data);
   },
 
   deleteFAQs: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_FAQS);
-    return response.data;
+    return await websiteApi.deleteSupportPage('faqs');
   },
 
-  // ===================== PRIVACY POLICY APIs =====================
+  // ===================== PRIVACY POLICY APIs (wrapper) =====================
   getPrivacyPolicy: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_PRIVACY_POLICY);
-    return response.data;
+    return await websiteApi.getSupportPage('privacy-policy');
   },
 
   updatePrivacyPolicy: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_PRIVACY_POLICY, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('privacy-policy', data);
   },
 
   deletePrivacyPolicy: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_PRIVACY_POLICY);
-    return response.data;
+    return await websiteApi.deleteSupportPage('privacy-policy');
   },
 
-  // ===================== TERMS & CONDITIONS APIs =====================
+  // ===================== TERMS & CONDITIONS APIs (wrapper) =====================
   getTermsConditions: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_TERMS_CONDITIONS);
-    return response.data;
+    return await websiteApi.getSupportPage('terms-and-conditions');
   },
 
   updateTermsConditions: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_TERMS_CONDITIONS, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('terms-and-conditions', data);
   },
 
   deleteTermsConditions: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_TERMS_CONDITIONS);
-    return response.data;
+    return await websiteApi.deleteSupportPage('terms-and-conditions');
   },
 
-  // ===================== SITEMAP APIs =====================
+  // ===================== SITEMAP APIs (wrapper) =====================
   getSitemap: async (): Promise<WebsiteApiResponse<Page | null>> => {
-    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_SITEMAP);
-    return response.data;
+    return await websiteApi.getSupportPage('sitemap');
   },
 
   updateSitemap: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
-    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_SITEMAP, data);
-    return response.data;
+    return await websiteApi.updateSupportPage('sitemap', data);
   },
 
   deleteSitemap: async (): Promise<WebsiteApiResponse<void>> => {
-    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_SITEMAP);
-    return response.data;
+    return await websiteApi.deleteSupportPage('sitemap');
   },
 };

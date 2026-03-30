@@ -20,8 +20,9 @@ export const WEBSITE_SETTINGS = `${WEBSITE_BASE}/settings`;
 
 // Page endpoints
 export const WEBSITE_PAGES = `${WEBSITE_BASE}/pages`;
+export const WEBSITE_SUPPORT_PAGES = `${WEBSITE_BASE}/pages`;
 
-// Support page endpoints
+// Support page endpoints (old aliases)
 export const WEBSITE_ABOUT_US = `${WEBSITE_BASE}/about-us`;
 export const WEBSITE_SHIPPING_POLICY = `${WEBSITE_BASE}/shipping-policy`;
 export const WEBSITE_RETURNS_REFUNDS = `${WEBSITE_BASE}/returns-refunds`;
