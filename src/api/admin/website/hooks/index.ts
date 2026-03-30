@@ -324,6 +324,8 @@ export const useWebsitePageMutations = () => {
   });
 
   return {
+    createWebsitePage: createMutation.mutateAsync,
+    updateWebsitePage: updateMutation.mutateAsync,
     deleteWebsitePage: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,

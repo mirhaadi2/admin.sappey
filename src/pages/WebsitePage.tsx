@@ -6,6 +6,7 @@ import { ErrorAlert } from '../components/ErrorAlert';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components';
 import WebsiteEntityForm from '../components/Website/WebsiteEntityForm';
+import WebsitePageForm from '../components/Website/WebsitePageForm';
 import { BannerList, HeroList, SectionList, TestimonialList, InstagramList } from '../components/Website/index';
 import {
     useWebsiteBanners,
@@ -48,7 +49,7 @@ import {
     WebsitePage as WebsitePageType,
 } from '../api/admin/index';
 
-type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
+type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
 type WebsiteTab = WebsiteContentTab;
 type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
 type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
@@ -71,11 +72,17 @@ const WebsitePage = () => {
         item: Banner | Hero | Section | Testimonial | InstagramPost | WebsitePageType | null;
     }>({ open: false, mode: 'create', type: 'banners', item: null });
 
-    const [supportPageForms, setSupportPageForms] = useState<Record<SupportPageKey, { title: string; content: string; metaTitle?: string; metaDescription?: string; isPublished: boolean }>>({
-        'about-us': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
-        'shipping-policy': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
-        'returns-refunds': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
-        'faqs': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
+    const [pageModal, setPageModal] = useState<{
+        open: boolean;
+        mode: 'create' | 'edit';
+        item: WebsitePageType | null;
+    }>({ open: false, mode: 'create', item: null });
+
+    const [supportPageForms, setSupportPageForms] = useState<Record<SupportPageKey, { title: string; content: string; metaTitle?: string; metaDescription?: string; isPublished: boolean; slug: string }>>({
+        'about-us': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'about-us' },
+        'shipping-policy': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'shipping-policy' },
+        'returns-refunds': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'returns-and-refunds' },
+        'faqs': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'frequently-asked-questions' },
     });
 
     // API hooks
@@ -109,6 +116,7 @@ const WebsitePage = () => {
                 ...prev,
                 'about-us': {
                     title: aboutUs.title,
+                    slug: aboutUs.slug,
                     content: aboutUs.content,
                     metaTitle: aboutUs.metaTitle || '',
                     metaDescription: aboutUs.metaDescription || '',
@@ -124,6 +132,7 @@ const WebsitePage = () => {
                 ...prev,
                 'shipping-policy': {
                     title: shippingPolicy.title,
+                    slug: shippingPolicy.slug,
                     content: shippingPolicy.content,
                     metaTitle: shippingPolicy.metaTitle || '',
                     metaDescription: shippingPolicy.metaDescription || '',
@@ -139,6 +148,7 @@ const WebsitePage = () => {
                 ...prev,
                 'returns-refunds': {
                     title: returnsRefunds.title,
+                    slug: returnsRefunds.slug,
                     content: returnsRefunds.content,
                     metaTitle: returnsRefunds.metaTitle || '',
                     metaDescription: returnsRefunds.metaDescription || '',
@@ -154,6 +164,7 @@ const WebsitePage = () => {
                 ...prev,
                 'faqs': {
                     title: faqs.title,
+                    slug: faqs.slug,
                     content: faqs.content,
                     metaTitle: faqs.metaTitle || '',
                     metaDescription: faqs.metaDescription || '',
@@ -184,6 +195,7 @@ const WebsitePage = () => {
         { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
+        { id: 'website-pages' as WebsiteTab, label: 'Website Pages', icon: <List size={16} />, count: pages?.length || 0 },
         { id: 'about-us' as WebsiteTab, label: 'About Us', icon: <List size={16} />, count: aboutUs ? 1 : 0 },
         { id: 'shipping-policy' as WebsiteTab, label: 'Shipping Policy', icon: <List size={16} />, count: shippingPolicy ? 1 : 0 },
         { id: 'returns-refunds' as WebsiteTab, label: 'Returns & Refunds', icon: <List size={16} />, count: returnsRefunds ? 1 : 0 },
@@ -230,6 +242,9 @@ const WebsitePage = () => {
                 case 'instagram':
                     await instagramMutations.deleteInstagramPost(id);
                     break;
+                case 'website-pages':
+                    await pageMutations.deleteWebsitePage(id);
+                    break;
             }
             showToastMessage(`${label ?? type} deleted successfully.`);
         } catch (error: any) {
@@ -259,6 +274,9 @@ const WebsitePage = () => {
                     break;
                 case 'instagram':
                     await instagramMutations.updateInstagramPost({ id: item.id, data: payload });
+                    break;
+                case 'website-pages':
+                    await pageMutations.updateWebsitePage({ id: item.slug, data: { isPublished: !item.isPublished } });
                     break;
             }
             showToastMessage(`${item.title ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);
@@ -323,6 +341,36 @@ const WebsitePage = () => {
         }
     };
 
+    const openPageModal = (mode: 'create' | 'edit', item: WebsitePageType | null = null) => {
+        setPageModal({ open: true, mode, item });
+    };
+
+    const closePageModal = () => {
+        setPageModal((prev) => ({ ...prev, open: false, item: null }));
+    };
+
+    const handleSubmitPage = async (data: CreateWebsitePageRequest | UpdateWebsitePageRequest) => {
+        try {
+            if (pageModal.mode === 'create') {
+                await pageMutations.createWebsitePage(data as CreateWebsitePageRequest);
+                showToastMessage('Website page created successfully.');
+            } else {
+                const slug = pageModal.item?.slug;
+                if (!slug) {
+                    showToastMessage('Page slug is required for update.', 'error');
+                    return;
+                }
+                await pageMutations.updateWebsitePage({ id: slug, data: data as UpdateWebsitePageRequest });
+                showToastMessage('Website page updated successfully.');
+            }
+
+            closePageModal();
+            refetchPages();
+        } catch (error: any) {
+            showToastMessage(`Failed to ${pageModal.mode} page: ${error?.message || String(error)}`, 'error');
+        }
+    };
+
     const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs', data: any) => {
         try {
             switch (type) {
@@ -351,6 +399,132 @@ const WebsitePage = () => {
             showToastMessage(`Failed to update ${type}: ${error?.message || String(error)}`, 'error');
         }
     };
+
+  const renderSupportPageForm = (key: SupportPageKey, label: string) => {
+    const formData = supportPageForms[key];
+
+    // Helper to update specific fields in the state
+    const updateField = (field: keyof typeof formData, value: any) => {
+        setSupportPageForms(prev => ({
+            ...prev,
+            [key]: { ...prev[key], [field]: value }
+        }));
+    };
+
+    return (
+        <div className="max-w-3xl">
+            <div className="bg-white rounded-lg">
+                <div className="space-y-6">
+                    {/* Title and Slug Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Title *
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={(e) => updateField('title', e.target.value)}
+                                placeholder={`Enter ${label} title`}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                URL Slug (Required for SEO) *
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.slug || ''}
+                                onChange={(e) => updateField('slug', e.target.value.toLowerCase().replace(/\s+/g, '-'))}
+                                placeholder="e.g. shipping-policy"
+                                className="w-full px-4 py-3 border border-gray-200 bg-gray-50 text-gray-500 rounded-lg outline-none transition font-mono text-xs"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Content Area */}
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-900 mb-2">
+                            Content (HTML or Markdown) *
+                        </label>
+                        <textarea
+                            value={formData.content}
+                            onChange={(e) => updateField('content', e.target.value)}
+                            placeholder={`Enter ${label} content`}
+                            rows={12}
+                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition font-mono text-sm"
+                        />
+                    </div>
+
+                    {/* SEO Section */}
+                    <div className="bg-gray-50 p-4 rounded-xl space-y-4">
+                        <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Search Engine Optimization (SEO)</h4>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                    Meta Title
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.metaTitle || ''}
+                                    onChange={(e) => updateField('metaTitle', e.target.value)}
+                                    placeholder="Page title for Google"
+                                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                                />
+                            </div>
+
+                            <div className="flex items-end pb-3">
+                                <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={formData.isPublished}
+                                        onChange={(e) => updateField('isPublished', e.target.checked)}
+                                        className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                    />
+                                    Publish Page (Visible to public)
+                                </label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-900 mb-2">
+                                Meta Description
+                            </label>
+                            <textarea
+                                value={formData.metaDescription || ''}
+                                onChange={(e) => updateField('metaDescription', e.target.value)}
+                                placeholder="Brief summary for search results..."
+                                maxLength={160}
+                                rows={2}
+                                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <p className="text-xs text-gray-400">Recommended: 150-160 characters</p>
+                                <p className={`text-xs ${formData?.metaDescription && formData?.metaDescription?.length > 160 ? 'text-red-500' : 'text-gray-500'}`}>
+                                    {formData.metaDescription?.length || 0}/160
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 !mt-0 border-t border-gray-100">
+                        <Button 
+                            variant="primary" 
+                            onClick={() => handleSubmitSupportPage(key, formData)}
+                            className="flex items-center gap-2 px-6 py-2.5 shadow-sm"
+                            icon={<Check size={18} />}
+                        >
+                            Save {label} Settings
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
 
     const renderContent = () => {
         const error = bannersError || heroError || sectionsError || testimonialsError || instagramError || pagesError || aboutUsError || shippingPolicyError || returnsRefundsError || faqsError;
@@ -415,130 +589,86 @@ const WebsitePage = () => {
                         onToggle={(post) => handleToggleActive('instagram', post)}
                     />
                 );
+            case 'website-pages':
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">Website Pages</h3>
+                            <Button variant="primary" onClick={() => openPageModal('create')}>
+                                Add Page
+                            </Button>
+                        </div>
+
+                        {pagesLoading ? (
+                            <p>Loading pages...</p>
+                        ) : (
+                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                <table className="min-w-full divide-y divide-gray-200 text-sm">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-4 py-2 text-left text-gray-600">Slug</th>
+                                            <th className="px-4 py-2 text-left text-gray-600">Title</th>
+                                            <th className="px-4 py-2 text-left text-gray-600">Published</th>
+                                            <th className="px-4 py-2 text-left text-gray-600">Order</th>
+                                            <th className="px-4 py-2 text-left text-gray-600">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200 bg-white">
+                                        {pages.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={5} className="px-4 py-3 text-center text-sm text-gray-500">
+                                                    No website pages available.
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            pages.map((page) => (
+                                                <tr key={page.id}>
+                                                    <td className="px-4 py-2">{page.slug}</td>
+                                                    <td className="px-4 py-2">{page.title}</td>
+                                                    <td className="px-4 py-2">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                            page.isPublished ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                                        }`}>
+                                                            {page.isPublished ? 'Published' : 'Draft'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-4 py-2">{page.order}</td>
+                                                    <td className="px-4 py-2 flex gap-1 flex-wrap">
+                                                        <Button size="sm" onClick={() => openPageModal('edit', page)}>
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="secondary"
+                                                            onClick={() => handleToggleActive('website-pages', page)}
+                                                        >
+                                                            {page.isPublished ? 'Unpublish' : 'Publish'}
+                                                        </Button>
+                                                        <Button
+                                                            size="sm"
+                                                            variant="danger"
+                                                            onClick={() => handleDeleteEntity('website-pages', page.slug, page.title)}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+                );
             case 'about-us':
-                return (
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">About Us</h3>
-                        </div>
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-slate-700">
-                                Title
-                                <input
-                                    type="text"
-                                    value={supportPageForms['about-us'].title}
-                                    onChange={handleTitleChange('about-us')}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <label className="block text-sm font-medium text-slate-700">
-                                Content
-                                <textarea
-                                    value={supportPageForms['about-us'].content}
-                                    onChange={handleContentChange('about-us')}
-                                    rows={10}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <Button variant="primary" onClick={() => handleSubmitSupportPage('about-us', supportPageForms['about-us'])}>
-                                Save Changes
-                            </Button>
-                        </div>
-                    </div>
-                );
+                return renderSupportPageForm('about-us', 'About Us');
             case 'shipping-policy':
-                return (
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">Shipping Policy</h3>
-                        </div>
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-slate-700">
-                                Title
-                                <input
-                                    type="text"
-                                    value={supportPageForms['shipping-policy'].title}
-                                    onChange={handleTitleChange('shipping-policy')}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <label className="block text-sm font-medium text-slate-700">
-                                Content
-                                <textarea
-                                    value={supportPageForms['shipping-policy'].content}
-                                    onChange={handleContentChange('shipping-policy')}
-                                    rows={10}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <Button variant="primary" onClick={() => handleSubmitSupportPage('shipping-policy', supportPageForms['shipping-policy'])}>
-                                Save Changes
-                            </Button>
-                        </div>
-                    </div>
-                );
+                return renderSupportPageForm('shipping-policy', 'Shipping Policy');
             case 'returns-refunds':
-                return (
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">Returns & Refunds</h3>
-                        </div>
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-slate-700">
-                                Title
-                                <input
-                                    type="text"
-                                    value={supportPageForms['returns-refunds'].title}
-                                    onChange={handleTitleChange('returns-refunds')}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <label className="block text-sm font-medium text-slate-700">
-                                Content
-                                <textarea
-                                    value={supportPageForms['returns-refunds'].content}
-                                    onChange={handleContentChange('returns-refunds')}
-                                    rows={10}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <Button variant="primary" onClick={() => handleSubmitSupportPage('returns-refunds', supportPageForms['returns-refunds'])}>
-                                Save Changes
-                            </Button>
-                        </div>
-                    </div>
-                );
+                return renderSupportPageForm('returns-refunds', 'Returns & Refunds');
             case 'faqs':
-                return (
-                    <div>
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">FAQs</h3>
-                        </div>
-                        <div className="space-y-4">
-                            <label className="block text-sm font-medium text-slate-700">
-                                Title
-                                <input
-                                    type="text"
-                                    value={supportPageForms['faqs'].title}
-                                    onChange={handleTitleChange('faqs')}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <label className="block text-sm font-medium text-slate-700">
-                                Content
-                                <textarea
-                                    value={supportPageForms['faqs'].content}
-                                    onChange={handleContentChange('faqs')}
-                                    rows={10}
-                                    className="w-full rounded border border-slate-300 p-2 mt-1"
-                                />
-                            </label>
-                            <Button variant="primary" onClick={() => handleSubmitSupportPage('faqs', supportPageForms['faqs'])}>
-                                Save Changes
-                            </Button>
-                        </div>
-                    </div>
-                );
+                return renderSupportPageForm('faqs', 'FAQs');
             default:
                 return null;
         }
@@ -554,29 +684,59 @@ const WebsitePage = () => {
                     </div>
                 </div>
 
-                {/* Tab Navigation */}
-                <div className="border-b border-gray-200">
-                    <nav className="flex space-x-8">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                                    activeTab === tab.id
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                            >
-                                {tab.icon}
-                                {tab.label}
-                                {tab.count > 0 && (
-                                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
-                                        {tab.count}
-                                    </span>
-                                )}
-                            </button>
-                        ))}
-                    </nav>
+                {/* Tab Navigation - Scrollable Container */}
+                <div className="mt-6 border-b border-gray-200 overflow-hidden">
+                    {/* Content Tabs */}
+                    <div className="overflow-x-auto">
+                        <nav className="flex space-x-1 min-w-min px-1">
+                            {tabs.filter(tab => ['banners', 'hero', 'sections', 'testimonials', 'instagram'].includes(tab.id)).map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center gap-2 py-3 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                                        activeTab === tab.id
+                                            ? 'border-blue-500 text-blue-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                                    title={tab.label}
+                                >
+                                    {tab.icon}
+                                    <span className="hidden sm:inline">{tab.label}</span>
+                                    {tab.count > 0 && (
+                                        <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full text-xs font-semibold">
+                                            {tab.count}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+
+                    {/* Support Pages Tabs */}
+                    <div className="border-t border-gray-100 bg-gray-50 overflow-x-auto">
+                        <nav className="flex space-x-1 min-w-min px-1">
+                            {tabs.filter(tab => ['about-us', 'shipping-policy', 'returns-refunds', 'faqs'].includes(tab.id)).map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center gap-2 py-3 px-3 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                                        activeTab === tab.id
+                                            ? 'border-green-500 text-green-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    }`}
+                                    title={tab.label}
+                                >
+                                    {tab.icon}
+                                    <span className="hidden sm:inline">{tab.label}</span>
+                                    {tab.count > 0 && (
+                                        <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full text-xs font-semibold">
+                                            {tab.count}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
                 </div>
 
                 {/* Content Area */}
