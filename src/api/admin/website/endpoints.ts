@@ -21,12 +21,3 @@ export const WEBSITE_SETTINGS = `${WEBSITE_BASE}/settings`;
 // Page endpoints
 export const WEBSITE_PAGES = `${WEBSITE_BASE}/pages`;
 export const WEBSITE_SUPPORT_PAGES = `${WEBSITE_BASE}/pages`;
-
-// Support page endpoints (old aliases)
-export const WEBSITE_ABOUT_US = `${WEBSITE_BASE}/about-us`;
-export const WEBSITE_SHIPPING_POLICY = `${WEBSITE_BASE}/shipping-policy`;
-export const WEBSITE_RETURNS_REFUNDS = `${WEBSITE_BASE}/returns-refunds`;
-export const WEBSITE_FAQS = `${WEBSITE_BASE}/faqs`;
-export const WEBSITE_PRIVACY_POLICY = `${WEBSITE_BASE}/privacy-policy`;
-export const WEBSITE_TERMS_CONDITIONS = `${WEBSITE_BASE}/terms-and-conditions`;
-export const WEBSITE_SITEMAP = `${WEBSITE_BASE}/sitemap`;
