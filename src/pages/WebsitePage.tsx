@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Plus, Eye, Check, Upload, Image as ImageIcon } from '@phosphor-icons/react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Eye, Check, Upload, Image as ImageIcon, List } from '@phosphor-icons/react';
 import { Card, CardHeader, CardBody } from '../components/Card';
 import { Button } from '../components/Button';
 import { ErrorAlert } from '../components/ErrorAlert';
@@ -18,11 +18,22 @@ import {
     useWebsiteTestimonialMutations,
     useWebsiteInstagramPosts,
     useWebsiteInstagramMutations,
+    useWebsitePages,
+    useWebsitePageMutations,
+    useAboutUs,
+    useAboutUsMutations,
+    useShippingPolicy,
+    useShippingPolicyMutations,
+    useReturnsRefunds,
+    useReturnsRefundsMutations,
+    useFAQs,
+    useFAQsMutations,
     Banner,
     Hero,
     Section,
     Testimonial,
-    InstagramPost,    CreateBannerRequest,
+    InstagramPost,
+    CreateBannerRequest,
     UpdateBannerRequest,
     CreateHeroRequest,
     UpdateHeroRequest,
@@ -31,11 +42,18 @@ import {
     CreateTestimonialRequest,
     UpdateTestimonialRequest,
     CreateInstagramPostRequest,
-    UpdateInstagramPostRequest,} from '../api/admin/index';
+    UpdateInstagramPostRequest,
+    CreateWebsitePageRequest,
+    UpdateWebsitePageRequest,
+    WebsitePage as WebsitePageType,
+} from '../api/admin/index';
 
-type WebsiteTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
+type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
+type WebsiteTab = WebsiteContentTab;
+type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
+type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
 
-const WebsitePage: React.FC = () => {
+const WebsitePage = () => {
     const [activeTab, setActiveTab] = useState<WebsiteTab>('banners');
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
@@ -49,9 +67,16 @@ const WebsitePage: React.FC = () => {
     const [entityModal, setEntityModal] = useState<{
         open: boolean;
         mode: 'create' | 'edit';
-        type: WebsiteTab;
-        item: Banner | Hero | Section | Testimonial | InstagramPost | null;
+        type: EntityTab;
+        item: Banner | Hero | Section | Testimonial | InstagramPost | WebsitePageType | null;
     }>({ open: false, mode: 'create', type: 'banners', item: null });
+
+    const [supportPageForms, setSupportPageForms] = useState<Record<SupportPageKey, { title: string; content: string; metaTitle?: string; metaDescription?: string; isPublished: boolean }>>({
+        'about-us': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
+        'shipping-policy': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
+        'returns-refunds': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
+        'faqs': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false },
+    });
 
     // API hooks
     const { banners, isLoading: bannersLoading, error: bannersError } = useWebsiteBanners();
@@ -59,6 +84,11 @@ const WebsitePage: React.FC = () => {
     const { sections, isLoading: sectionsLoading, error: sectionsError } = useWebsiteSections();
     const { testimonials, isLoading: testimonialsLoading, error: testimonialsError } = useWebsiteTestimonials();
     const { instagramPosts, isLoading: instagramLoading, error: instagramError } = useWebsiteInstagramPosts();
+    const { pages, isLoading: pagesLoading, error: pagesError, refetch: refetchPages } = useWebsitePages();
+    const { aboutUs, isLoading: aboutUsLoading, error: aboutUsError, refetch: refetchAboutUs } = useAboutUs();
+    const { shippingPolicy, isLoading: shippingPolicyLoading, error: shippingPolicyError, refetch: refetchShippingPolicy } = useShippingPolicy();
+    const { returnsRefunds, isLoading: returnsRefundsLoading, error: returnsRefundsError, refetch: refetchReturnsRefunds } = useReturnsRefunds();
+    const { faqs, isLoading: faqsLoading, error: faqsError, refetch: refetchFAQs } = useFAQs();
 
     // Mutation hooks
     const bannerMutations = useWebsiteBannerMutations();
@@ -66,6 +96,87 @@ const WebsitePage: React.FC = () => {
     const sectionMutations = useWebsiteSectionMutations();
     const testimonialMutations = useWebsiteTestimonialMutations();
     const instagramMutations = useWebsiteInstagramMutations();
+    const pageMutations = useWebsitePageMutations();
+    const aboutUsMutations = useAboutUsMutations();
+    const shippingPolicyMutations = useShippingPolicyMutations();
+    const returnsRefundsMutations = useReturnsRefundsMutations();
+    const faqsMutations = useFAQsMutations();
+
+    // Sync support page forms with data
+    useEffect(() => {
+        if (aboutUs) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'about-us': {
+                    title: aboutUs.title,
+                    content: aboutUs.content,
+                    metaTitle: aboutUs.metaTitle || '',
+                    metaDescription: aboutUs.metaDescription || '',
+                    isPublished: aboutUs.isPublished,
+                }
+            }));
+        }
+    }, [aboutUs]);
+
+    useEffect(() => {
+        if (shippingPolicy) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'shipping-policy': {
+                    title: shippingPolicy.title,
+                    content: shippingPolicy.content,
+                    metaTitle: shippingPolicy.metaTitle || '',
+                    metaDescription: shippingPolicy.metaDescription || '',
+                    isPublished: shippingPolicy.isPublished,
+                }
+            }));
+        }
+    }, [shippingPolicy]);
+
+    useEffect(() => {
+        if (returnsRefunds) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'returns-refunds': {
+                    title: returnsRefunds.title,
+                    content: returnsRefunds.content,
+                    metaTitle: returnsRefunds.metaTitle || '',
+                    metaDescription: returnsRefunds.metaDescription || '',
+                    isPublished: returnsRefunds.isPublished,
+                }
+            }));
+        }
+    }, [returnsRefunds]);
+
+    useEffect(() => {
+        if (faqs) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'faqs': {
+                    title: faqs.title,
+                    content: faqs.content,
+                    metaTitle: faqs.metaTitle || '',
+                    metaDescription: faqs.metaDescription || '',
+                    isPublished: faqs.isPublished,
+                }
+            }));
+        }
+    }, [faqs]);
+
+    // Form handlers
+    const handleTitleChange = (key: SupportPageKey) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSupportPageForms(prev => ({
+            ...prev,
+            [key]: { ...prev[key], title: e.target.value }
+        }));
+    };
+
+    const handleContentChange = (key: SupportPageKey) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setSupportPageForms(prev => ({
+            ...prev,
+            [key]: { ...prev[key], content: e.target.value }
+        }));
+    };
 
     const tabs = [
         { id: 'banners' as WebsiteTab, label: 'Banners', icon: <ImageIcon size={16} />, count: banners?.length || 0 },
@@ -73,6 +184,10 @@ const WebsitePage: React.FC = () => {
         { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
+        { id: 'about-us' as WebsiteTab, label: 'About Us', icon: <List size={16} />, count: aboutUs ? 1 : 0 },
+        { id: 'shipping-policy' as WebsiteTab, label: 'Shipping Policy', icon: <List size={16} />, count: shippingPolicy ? 1 : 0 },
+        { id: 'returns-refunds' as WebsiteTab, label: 'Returns & Refunds', icon: <List size={16} />, count: returnsRefunds ? 1 : 0 },
+        { id: 'faqs' as WebsiteTab, label: 'FAQs', icon: <List size={16} />, count: faqs ? 1 : 0 },
     ];
 
     const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
@@ -82,7 +197,7 @@ const WebsitePage: React.FC = () => {
         setShowToast(true);
     };
 
-    const openEntityModal = (type: WebsiteTab, mode: 'create' | 'edit', item: any = null) => {
+    const openEntityModal = (type: EntityTab, mode: 'create' | 'edit', item: any = null) => {
         setEntityModal({ open: true, mode, type, item });
     };
 
@@ -208,8 +323,37 @@ const WebsitePage: React.FC = () => {
         }
     };
 
+    const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs', data: any) => {
+        try {
+            switch (type) {
+                case 'about-us':
+                    await aboutUsMutations.updateAboutUs(data);
+                    showToastMessage('About Us updated successfully.');
+                    refetchAboutUs();
+                    break;
+                case 'shipping-policy':
+                    await shippingPolicyMutations.updateShippingPolicy(data);
+                    showToastMessage('Shipping Policy updated successfully.');
+                    refetchShippingPolicy();
+                    break;
+                case 'returns-refunds':
+                    await returnsRefundsMutations.updateReturnsRefunds(data);
+                    showToastMessage('Returns & Refunds updated successfully.');
+                    refetchReturnsRefunds();
+                    break;
+                case 'faqs':
+                    await faqsMutations.updateFAQs(data);
+                    showToastMessage('FAQs updated successfully.');
+                    refetchFAQs();
+                    break;
+            }
+        } catch (error: any) {
+            showToastMessage(`Failed to update ${type}: ${error?.message || String(error)}`, 'error');
+        }
+    };
+
     const renderContent = () => {
-        const error = bannersError || heroError || sectionsError || testimonialsError || instagramError;
+        const error = bannersError || heroError || sectionsError || testimonialsError || instagramError || pagesError || aboutUsError || shippingPolicyError || returnsRefundsError || faqsError;
 
         if (error) {
             return <ErrorAlert message={`Failed to load ${activeTab}: ${error.message}`} />;
@@ -270,6 +414,130 @@ const WebsitePage: React.FC = () => {
                         onDelete={(id) => handleDeleteEntity('instagram', id)}
                         onToggle={(post) => handleToggleActive('instagram', post)}
                     />
+                );
+            case 'about-us':
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">About Us</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="block text-sm font-medium text-slate-700">
+                                Title
+                                <input
+                                    type="text"
+                                    value={supportPageForms['about-us'].title}
+                                    onChange={handleTitleChange('about-us')}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <label className="block text-sm font-medium text-slate-700">
+                                Content
+                                <textarea
+                                    value={supportPageForms['about-us'].content}
+                                    onChange={handleContentChange('about-us')}
+                                    rows={10}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <Button variant="primary" onClick={() => handleSubmitSupportPage('about-us', supportPageForms['about-us'])}>
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                );
+            case 'shipping-policy':
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">Shipping Policy</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="block text-sm font-medium text-slate-700">
+                                Title
+                                <input
+                                    type="text"
+                                    value={supportPageForms['shipping-policy'].title}
+                                    onChange={handleTitleChange('shipping-policy')}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <label className="block text-sm font-medium text-slate-700">
+                                Content
+                                <textarea
+                                    value={supportPageForms['shipping-policy'].content}
+                                    onChange={handleContentChange('shipping-policy')}
+                                    rows={10}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <Button variant="primary" onClick={() => handleSubmitSupportPage('shipping-policy', supportPageForms['shipping-policy'])}>
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                );
+            case 'returns-refunds':
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">Returns & Refunds</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="block text-sm font-medium text-slate-700">
+                                Title
+                                <input
+                                    type="text"
+                                    value={supportPageForms['returns-refunds'].title}
+                                    onChange={handleTitleChange('returns-refunds')}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <label className="block text-sm font-medium text-slate-700">
+                                Content
+                                <textarea
+                                    value={supportPageForms['returns-refunds'].content}
+                                    onChange={handleContentChange('returns-refunds')}
+                                    rows={10}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <Button variant="primary" onClick={() => handleSubmitSupportPage('returns-refunds', supportPageForms['returns-refunds'])}>
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
+                );
+            case 'faqs':
+                return (
+                    <div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-lg font-semibold">FAQs</h3>
+                        </div>
+                        <div className="space-y-4">
+                            <label className="block text-sm font-medium text-slate-700">
+                                Title
+                                <input
+                                    type="text"
+                                    value={supportPageForms['faqs'].title}
+                                    onChange={handleTitleChange('faqs')}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <label className="block text-sm font-medium text-slate-700">
+                                Content
+                                <textarea
+                                    value={supportPageForms['faqs'].content}
+                                    onChange={handleContentChange('faqs')}
+                                    rows={10}
+                                    className="w-full rounded border border-slate-300 p-2 mt-1"
+                                />
+                            </label>
+                            <Button variant="primary" onClick={() => handleSubmitSupportPage('faqs', supportPageForms['faqs'])}>
+                                Save Changes
+                            </Button>
+                        </div>
+                    </div>
                 );
             default:
                 return null;

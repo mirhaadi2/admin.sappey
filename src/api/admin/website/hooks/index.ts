@@ -8,6 +8,8 @@ import {
   InstagramPost,
   WebsiteSetting,
   WebsitePage,
+  Page,
+  PageType,
   CreateBannerRequest,
   UpdateBannerRequest,
   CreateHeroRequest,
@@ -22,6 +24,7 @@ import {
   UpdateWebsiteSettingRequest,
   CreateWebsitePageRequest,
   UpdateWebsitePageRequest,
+  WebsiteApiResponse,
 } from '../types';
 
 // ===================== BANNER HOOKS =====================
@@ -274,6 +277,219 @@ export const useWebsiteInstagramMutations = () => {
     updateInstagramPost: updateMutation.mutateAsync,
     deleteInstagramPost: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== WEBSITE PAGE HOOKS =====================
+export const useWebsitePages = () => {
+  const query = useQuery<WebsiteApiResponse<WebsitePage[]>, Error>({
+    queryKey: ['website-pages-admin'],
+    queryFn: () => websiteApi.getWebsitePages(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    pages: query.data?.data || [] as WebsitePage[],
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useWebsitePageMutations = () => {
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: websiteApi.createWebsitePage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-pages-admin'] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateWebsitePageRequest }) =>
+      websiteApi.updateWebsitePage(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-pages-admin'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => websiteApi.deleteWebsitePage(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-pages-admin'] });
+    },
+  });
+
+  return {
+    deleteWebsitePage: deleteMutation.mutateAsync,
+    createLoading: createMutation.isPending,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== ABOUT US HOOKS =====================
+export const useAboutUs = () => {
+  const query = useQuery<WebsiteApiResponse<Page | null>, Error>({
+    queryKey: ['website-about-us-admin'],
+    queryFn: () => websiteApi.getAboutUs(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    aboutUs: query.data?.data || null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useAboutUsMutations = () => {
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationFn: websiteApi.updateAboutUs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-about-us-admin'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deleteAboutUs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-about-us-admin'] });
+    },
+  });
+
+  return {
+    updateAboutUs: updateMutation.mutateAsync,
+    deleteAboutUs: deleteMutation.mutateAsync,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== SHIPPING POLICY HOOKS =====================
+export const useShippingPolicy = () => {
+  const query = useQuery<WebsiteApiResponse<Page | null>, Error>({
+    queryKey: ['website-shipping-policy-admin'],
+    queryFn: () => websiteApi.getShippingPolicy(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    shippingPolicy: query.data?.data || null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useShippingPolicyMutations = () => {
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationFn: websiteApi.updateShippingPolicy,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-shipping-policy-admin'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deleteShippingPolicy,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-shipping-policy-admin'] });
+    },
+  });
+
+  return {
+    updateShippingPolicy: updateMutation.mutateAsync,
+    deleteShippingPolicy: deleteMutation.mutateAsync,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== RETURNS & REFUNDS HOOKS =====================
+export const useReturnsRefunds = () => {
+  const query = useQuery<WebsiteApiResponse<Page | null>, Error>({
+    queryKey: ['website-returns-refunds-admin'],
+    queryFn: () => websiteApi.getReturnsRefunds(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    returnsRefunds: query.data?.data || null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useReturnsRefundsMutations = () => {
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationFn: websiteApi.updateReturnsRefunds,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-returns-refunds-admin'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deleteReturnsRefunds,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-returns-refunds-admin'] });
+    },
+  });
+
+  return {
+    updateReturnsRefunds: updateMutation.mutateAsync,
+    deleteReturnsRefunds: deleteMutation.mutateAsync,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== FAQs HOOKS =====================
+export const useFAQs = () => {
+  const query = useQuery<WebsiteApiResponse<Page | null>, Error>({
+    queryKey: ['website-faqs-admin'],
+    queryFn: () => websiteApi.getFAQs(),
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    faqs: query.data?.data || null,
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useFAQsMutations = () => {
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationFn: websiteApi.updateFAQs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-faqs-admin'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deleteFAQs,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-faqs-admin'] });
+    },
+  });
+
+  return {
+    updateFAQs: updateMutation.mutateAsync,
+    deleteFAQs: deleteMutation.mutateAsync,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
   };

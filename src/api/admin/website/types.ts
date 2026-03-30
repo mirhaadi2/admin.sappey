@@ -84,6 +84,74 @@ export interface WebsitePage {
   metaTitle?: string;
   metaDescription?: string;
   isPublished: boolean;
+  order?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Page types
+export enum PageType {
+  ABOUT_US = 'about_us',
+  SHIPPING_POLICY = 'shipping_policy',
+  RETURNS_REFUNDS = 'returns_refunds',
+  FAQS = 'faqs',
+  TERMS_CONDITIONS = 'terms_conditions'
+}
+
+export interface Page {
+  id: string;
+  type: PageType;
+  slug: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Legacy interfaces for backward compatibility
+export interface AboutUs {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ShippingPolicy {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReturnsRefunds {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FAQs {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -169,6 +237,16 @@ export interface CreateWebsitePageRequest {
 }
 
 export interface UpdateWebsitePageRequest extends Partial<CreateWebsitePageRequest> {}
+
+export interface CreateSupportPageRequest {
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished?: boolean;
+}
+
+export interface UpdateSupportPageRequest extends Partial<CreateSupportPageRequest> {}
 
 // API Response types
 export interface WebsiteApiResponse<T> {

@@ -114,6 +114,16 @@ export {
   useWebsiteTestimonialMutations,
   useWebsiteInstagramPosts,
   useWebsiteInstagramMutations,
+  useWebsitePages,
+  useWebsitePageMutations,
+  useAboutUs,
+  useAboutUsMutations,
+  useShippingPolicy,
+  useShippingPolicyMutations,
+  useReturnsRefunds,
+  useReturnsRefundsMutations,
+  useFAQs,
+  useFAQsMutations,
 } from './website/index';
 export type {
   Banner,
@@ -137,4 +147,10 @@ export type {
   UpdateWebsiteSettingRequest,
   CreateWebsitePageRequest,
   UpdateWebsitePageRequest,
+  AboutUs,
+  ShippingPolicy,
+  ReturnsRefunds,
+  FAQs,
+  CreateSupportPageRequest,
+  UpdateSupportPageRequest,
 } from './website/types';

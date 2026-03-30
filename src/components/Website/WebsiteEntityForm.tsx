@@ -5,7 +5,7 @@ import { ConfirmDialog } from "../ConfirmDialog";
 import { apiClient } from "../../api";
 import { CheckCircle, X } from "@phosphor-icons/react";
 
-type WebsiteTab =
+type EntityTab =
     | "banners"
     | "hero"
     | "sections"
@@ -13,7 +13,7 @@ type WebsiteTab =
     | "instagram";
 
 interface WebsiteEntityFormProps {
-    type: WebsiteTab;
+    type: EntityTab;
     mode: "create" | "edit";
     initialValues?: Record<string, any>;
     isSubmitting?: boolean;
@@ -21,7 +21,7 @@ interface WebsiteEntityFormProps {
     onCancel: () => void;
 }
 
-const emptyDefaults: Record<WebsiteTab, Record<string, any>> = {
+const emptyDefaults: Record<EntityTab, Record<string, any>> = {
     banners: { 
         // title: "", 
         text: "", 
@@ -67,7 +67,7 @@ const emptyDefaults: Record<WebsiteTab, Record<string, any>> = {
 };
 
 const fieldsByType: Record<
-    WebsiteTab,
+    EntityTab,
     Array<{
         key: string;
         label: string;
