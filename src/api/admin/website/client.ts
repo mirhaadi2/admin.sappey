@@ -11,6 +11,9 @@ import {
   WEBSITE_SHIPPING_POLICY,
   WEBSITE_RETURNS_REFUNDS,
   WEBSITE_FAQS,
+  WEBSITE_PRIVACY_POLICY,
+  WEBSITE_TERMS_CONDITIONS,
+  WEBSITE_SITEMAP,
 } from './endpoints';
 import {
   Banner,
@@ -265,6 +268,54 @@ export const websiteApi = {
 
   deleteFAQs: async (): Promise<WebsiteApiResponse<void>> => {
     const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_FAQS);
+    return response.data;
+  },
+
+  // ===================== PRIVACY POLICY APIs =====================
+  getPrivacyPolicy: async (): Promise<WebsiteApiResponse<Page | null>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_PRIVACY_POLICY);
+    return response.data;
+  },
+
+  updatePrivacyPolicy: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_PRIVACY_POLICY, data);
+    return response.data;
+  },
+
+  deletePrivacyPolicy: async (): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_PRIVACY_POLICY);
+    return response.data;
+  },
+
+  // ===================== TERMS & CONDITIONS APIs =====================
+  getTermsConditions: async (): Promise<WebsiteApiResponse<Page | null>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_TERMS_CONDITIONS);
+    return response.data;
+  },
+
+  updateTermsConditions: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_TERMS_CONDITIONS, data);
+    return response.data;
+  },
+
+  deleteTermsConditions: async (): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_TERMS_CONDITIONS);
+    return response.data;
+  },
+
+  // ===================== SITEMAP APIs =====================
+  getSitemap: async (): Promise<WebsiteApiResponse<Page | null>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Page | null>>(WEBSITE_SITEMAP);
+    return response.data;
+  },
+
+  updateSitemap: async (data: CreateSupportPageRequest): Promise<WebsiteApiResponse<Page>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Page>>(WEBSITE_SITEMAP, data);
+    return response.data;
+  },
+
+  deleteSitemap: async (): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(WEBSITE_SITEMAP);
     return response.data;
   },
 };

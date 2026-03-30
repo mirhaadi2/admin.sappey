@@ -124,6 +124,12 @@ export {
   useReturnsRefundsMutations,
   useFAQs,
   useFAQsMutations,
+  usePrivacyPolicy,
+  usePrivacyPolicyMutations,
+  useTermsConditions,
+  useTermsConditionsMutations,
+  useSitemap,
+  useSitemapMutations,
 } from './website/index';
 export type {
   Banner,
@@ -151,6 +157,9 @@ export type {
   ShippingPolicy,
   ReturnsRefunds,
   FAQs,
+  PrivacyPolicy,
+  TermsConditions,
+  Sitemap,
   CreateSupportPageRequest,
   UpdateSupportPageRequest,
 } from './website/types';

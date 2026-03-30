@@ -29,6 +29,12 @@ import {
     useReturnsRefundsMutations,
     useFAQs,
     useFAQsMutations,
+    usePrivacyPolicy,
+    usePrivacyPolicyMutations,
+    useTermsConditions,
+    useTermsConditionsMutations,
+    useSitemap,
+    useSitemapMutations,
     Banner,
     Hero,
     Section,
@@ -49,10 +55,10 @@ import {
     WebsitePage as WebsitePageType,
 } from '../api/admin/index';
 
-type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
+type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 type WebsiteTab = WebsiteContentTab;
 type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
-type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs';
+type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 
 const WebsitePage = () => {
     const [activeTab, setActiveTab] = useState<WebsiteTab>('banners');
@@ -83,6 +89,9 @@ const WebsitePage = () => {
         'shipping-policy': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'shipping-policy' },
         'returns-refunds': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'returns-and-refunds' },
         'faqs': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'frequently-asked-questions' },
+        'privacy-policy': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'privacy-policy' },
+        'terms-and-conditions': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'terms-and-conditions' },
+        'sitemap': { title: '', content: '', metaTitle: '', metaDescription: '', isPublished: false, slug: 'sitemap' },
     });
 
     // API hooks
@@ -96,6 +105,9 @@ const WebsitePage = () => {
     const { shippingPolicy, isLoading: shippingPolicyLoading, error: shippingPolicyError, refetch: refetchShippingPolicy } = useShippingPolicy();
     const { returnsRefunds, isLoading: returnsRefundsLoading, error: returnsRefundsError, refetch: refetchReturnsRefunds } = useReturnsRefunds();
     const { faqs, isLoading: faqsLoading, error: faqsError, refetch: refetchFAQs } = useFAQs();
+    const { privacyPolicy, isLoading: privacyPolicyLoading, error: privacyPolicyError, refetch: refetchPrivacyPolicy } = usePrivacyPolicy();
+    const { termsConditions, isLoading: termsConditionsLoading, error: termsConditionsError, refetch: refetchTermsConditions } = useTermsConditions();
+    const { sitemap, isLoading: sitemapLoading, error: sitemapError, refetch: refetchSitemap } = useSitemap();
 
     // Mutation hooks
     const bannerMutations = useWebsiteBannerMutations();
@@ -108,6 +120,9 @@ const WebsitePage = () => {
     const shippingPolicyMutations = useShippingPolicyMutations();
     const returnsRefundsMutations = useReturnsRefundsMutations();
     const faqsMutations = useFAQsMutations();
+    const privacyPolicyMutations = usePrivacyPolicyMutations();
+    const termsConditionsMutations = useTermsConditionsMutations();
+    const sitemapMutations = useSitemapMutations();
 
     // Sync support page forms with data
     useEffect(() => {
@@ -174,6 +189,54 @@ const WebsitePage = () => {
         }
     }, [faqs]);
 
+    useEffect(() => {
+        if (privacyPolicy) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'privacy-policy': {
+                    title: privacyPolicy.title,
+                    slug: privacyPolicy.slug,
+                    content: privacyPolicy.content,
+                    metaTitle: privacyPolicy.metaTitle || '',
+                    metaDescription: privacyPolicy.metaDescription || '',
+                    isPublished: privacyPolicy.isPublished,
+                }
+            }));
+        }
+    }, [privacyPolicy]);
+
+    useEffect(() => {
+        if (termsConditions) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'terms-and-conditions': {
+                    title: termsConditions.title,
+                    slug: termsConditions.slug,
+                    content: termsConditions.content,
+                    metaTitle: termsConditions.metaTitle || '',
+                    metaDescription: termsConditions.metaDescription || '',
+                    isPublished: termsConditions.isPublished,
+                }
+            }));
+        }
+    }, [termsConditions]);
+
+    useEffect(() => {
+        if (sitemap) {
+            setSupportPageForms(prev => ({
+                ...prev,
+                'sitemap': {
+                    title: sitemap.title,
+                    slug: sitemap.slug,
+                    content: sitemap.content,
+                    metaTitle: sitemap.metaTitle || '',
+                    metaDescription: sitemap.metaDescription || '',
+                    isPublished: sitemap.isPublished,
+                }
+            }));
+        }
+    }, [sitemap]);
+
     // Form handlers
     const handleTitleChange = (key: SupportPageKey) => (e: React.ChangeEvent<HTMLInputElement>) => {
         setSupportPageForms(prev => ({
@@ -200,6 +263,9 @@ const WebsitePage = () => {
         { id: 'shipping-policy' as WebsiteTab, label: 'Shipping Policy', icon: <List size={16} />, count: shippingPolicy ? 1 : 0 },
         { id: 'returns-refunds' as WebsiteTab, label: 'Returns & Refunds', icon: <List size={16} />, count: returnsRefunds ? 1 : 0 },
         { id: 'faqs' as WebsiteTab, label: 'FAQs', icon: <List size={16} />, count: faqs ? 1 : 0 },
+        { id: 'privacy-policy' as WebsiteTab, label: 'Privacy Policy', icon: <List size={16} />, count: privacyPolicy ? 1 : 0 },
+        { id: 'terms-and-conditions' as WebsiteTab, label: 'Terms & Conditions', icon: <List size={16} />, count: termsConditions ? 1 : 0 },
+        { id: 'sitemap' as WebsiteTab, label: 'Sitemap', icon: <List size={16} />, count: sitemap ? 1 : 0 },
     ];
 
     const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
@@ -371,7 +437,7 @@ const WebsitePage = () => {
         }
     };
 
-    const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs', data: any) => {
+    const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap', data: any) => {
         try {
             switch (type) {
                 case 'about-us':
@@ -393,6 +459,21 @@ const WebsitePage = () => {
                     await faqsMutations.updateFAQs(data);
                     showToastMessage('FAQs updated successfully.');
                     refetchFAQs();
+                    break;
+                case 'privacy-policy':
+                    await privacyPolicyMutations.updatePrivacyPolicy(data);
+                    showToastMessage('Privacy Policy updated successfully.');
+                    refetchPrivacyPolicy();
+                    break;
+                case 'terms-and-conditions':
+                    await termsConditionsMutations.updateTermsConditions(data);
+                    showToastMessage('Terms & Conditions updated successfully.');
+                    refetchTermsConditions();
+                    break;
+                case 'sitemap':
+                    await sitemapMutations.updateSitemap(data);
+                    showToastMessage('Sitemap updated successfully.');
+                    refetchSitemap();
                     break;
             }
         } catch (error: any) {
@@ -669,6 +750,12 @@ const WebsitePage = () => {
                 return renderSupportPageForm('returns-refunds', 'Returns & Refunds');
             case 'faqs':
                 return renderSupportPageForm('faqs', 'FAQs');
+            case 'privacy-policy':
+                return renderSupportPageForm('privacy-policy', 'Privacy Policy');
+            case 'terms-and-conditions':
+                return renderSupportPageForm('terms-and-conditions', 'Terms & Conditions');
+            case 'sitemap':
+                return renderSupportPageForm('sitemap', 'Sitemap');
             default:
                 return null;
         }
@@ -715,7 +802,7 @@ const WebsitePage = () => {
                     {/* Support Pages Tabs */}
                     <div className="border-t border-gray-100 bg-gray-50 overflow-x-auto">
                         <nav className="flex space-x-1 min-w-min px-1">
-                            {tabs.filter(tab => ['about-us', 'shipping-policy', 'returns-refunds', 'faqs'].includes(tab.id)).map((tab) => (
+                            {tabs.filter(tab => ['about-us', 'shipping-policy', 'returns-refunds', 'faqs', 'privacy-policy', 'terms-and-conditions', 'sitemap'].includes(tab.id)).map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}

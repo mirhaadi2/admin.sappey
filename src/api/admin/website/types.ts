@@ -95,7 +95,9 @@ export enum PageType {
   SHIPPING_POLICY = 'shipping_policy',
   RETURNS_REFUNDS = 'returns_refunds',
   FAQS = 'faqs',
-  TERMS_CONDITIONS = 'terms_conditions'
+  TERMS_CONDITIONS = 'terms_conditions',
+  PRIVACY_POLICY = 'privacy_policy',
+  SITEMAP = 'sitemap'
 }
 
 export interface Page {
@@ -146,6 +148,39 @@ export interface ReturnsRefunds {
 }
 
 export interface FAQs {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PrivacyPolicy {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TermsConditions {
+  id: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Sitemap {
   id: string;
   title: string;
   content: string;
