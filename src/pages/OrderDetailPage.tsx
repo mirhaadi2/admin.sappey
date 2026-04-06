@@ -239,7 +239,7 @@ function OrderDetailPage() {
                   <div key={item.id} className="p-6 flex items-center gap-6">
                     <div className="h-20 w-20 bg-slate-100 rounded-2xl overflow-hidden border border-slate-100 flex-shrink-0">
                       <img
-                        src={`${API_URL}/${item.productImage?.[0]}`}
+                        src={item.productImage}
                         alt={item.productName}
                         className="h-full w-full object-cover"
                         onError={(e) =>
