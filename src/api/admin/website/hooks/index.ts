@@ -630,7 +630,6 @@ export const useWebsitePromotions = () => {
     queryFn: () => websiteApi.getPromotions(),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-
   return {
     promotions: query.data?.data || [],
     isLoading: query.isLoading,

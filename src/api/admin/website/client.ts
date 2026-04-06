@@ -316,7 +316,7 @@ export const websiteApi = {
   getPromotions: async (limit = 20, offset = 0): Promise<WebsiteListResponse<Promotion>> => {
     const url = `${WEBSITE_PROMOTIONS}?limit=${limit}&offset=${offset}`;
     const response = await apiMethods.get<WebsiteListResponse<Promotion>>(url);
-    return response.data;
+    return response.data?.data as any;
   },
 
   getPromotion: async (id: string): Promise<WebsiteApiResponse<Promotion>> => {

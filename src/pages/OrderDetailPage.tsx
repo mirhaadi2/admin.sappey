@@ -62,7 +62,6 @@ function OrderDetailPage() {
   } | null>(null);
 
   const order = orderResponse?.data;
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   // Permission Logic
   const canUpdate =
@@ -148,7 +147,7 @@ function OrderDetailPage() {
     }
   };
 
-  const handleCancel= async () => {
+  const handleCancel = async () => {
     if (!orderId) return;
     try {
       await cancelOrderMutation.mutateAsync({
@@ -243,8 +242,8 @@ function OrderDetailPage() {
                         alt={item.productName}
                         className="h-full w-full object-cover"
                         onError={(e) =>
-                          (e.currentTarget.src =
-                            "https://placehold.co/200x200?text=Product")
+                        (e.currentTarget.src =
+                          "https://placehold.co/200x200?text=Product")
                         }
                       />
                     </div>
@@ -392,6 +391,58 @@ function OrderDetailPage() {
               </div>
             </Card>
 
+            {/* 3. Promotional & Metadata Insights */}
+            {order?.metadata?.promotion && (
+              <Card className="p-6 border-blue-100 bg-blue-50/20 overflow-hidden relative">
+                {/* Decorative Background Icon */}
+                <div className="absolute -right-4 -top-4 opacity-10 text-blue-600 rotate-12">
+                  <ShoppingCart size={80} weight="fill" />
+                </div>
+
+                <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 mb-4 flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
+                  Applied Promotion
+                </h3>
+
+                <div className="relative z-10">
+                  <p className="text-sm font-black text-slate-900 leading-tight">
+                    {order.metadata.promotion.title}
+                  </p>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="px-2 py-1 bg-blue-600 text-[9px] font-black text-white rounded uppercase tracking-tighter">
+                      {order.metadata.promotion.type.replace('_', ' ')}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 italic">
+                      Applied: {new Date(order.metadata.appliedAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {/* Logic for different promotion types */}
+                  {order.metadata.promotion.type === 'free_gift' && (
+                    <div className="mt-4 p-3 bg-white/60 rounded-xl border border-blue-100 border-dashed">
+                      <p className="text-[10px] font-bold text-blue-800">
+                        LOGISTICS ACTION REQUIRED:
+                      </p>
+                      <p className="text-xs font-black text-slate-700 mt-1">
+                        Add 100g Bonus Pouch to Shipment
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {/* Future Metadata expansion placeholder */}
+            {Object.keys(order?.metadata || {}).filter(k => k !== 'promotion' && k !== 'appliedAt').length > 0 && (
+              <Card className="p-4 border-slate-200 bg-slate-100/50">
+                <h3 className="text-[9px] font-black uppercase text-slate-400 mb-2">Extended Metadata</h3>
+                <pre className="text-[10px] text-slate-500 font-mono overflow-x-auto">
+                  {JSON.stringify(order.metadata, null, 2)}
+                </pre>
+              </Card>
+            )}
+
             {/* Logistics Timeline */}
             <Card className="p-6 border-slate-200">
               <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6 flex items-center gap-2">
@@ -494,7 +545,7 @@ function OrderDetailPage() {
           </div>
 
           {/* Tracking ID: Shows only for Shipped or Out for Delivery */}
-          {["HANDOVER","SHIPPED", "OUT_FOR_DELIVERY"].includes(newStatus) && (
+          {["HANDOVER", "SHIPPED", "OUT_FOR_DELIVERY"].includes(newStatus) && (
             <div className="animate-in fade-in slide-in-from-top-2">
               <label className="text-[10px] font-black uppercase text-orange-600 ml-1">
                 Tracking Number / AWB

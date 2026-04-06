@@ -35,6 +35,16 @@ export interface AdminOrder {
   createdAt: string;
   updatedAt: string;
   refundedAt?: string;
+  metadata?: {
+    promotion?: {
+      id: string;
+      title: string;
+      type: 'free_gift' | 'percentage' | 'fixed_amount';
+      discountAmount: number;
+    };
+    appliedAt: string;
+    [key: string]: any; // Allows for future "lots of things"
+  };
 }
 
 export interface AdminOrdersResponse {
