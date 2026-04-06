@@ -16,8 +16,8 @@ interface AdminAuthContextType {
   signIn: (email: string, password: string) => void;
   signOut: () => void;
   // Error states
-  signInError: any;
-  signOutError: any;
+  signInError: Error | null;
+  signOutError: Error | null;
   // Loading states
   signInLoading: boolean;
   signOutLoading: boolean;

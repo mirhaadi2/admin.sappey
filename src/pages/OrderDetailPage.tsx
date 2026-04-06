@@ -126,10 +126,10 @@ function OrderDetailPage() {
         type: "success",
         message: "Order status updated successfully",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setToast({
         type: "error",
-        message: err.message || "Failed to update status",
+        message: (err instanceof Error) ? err.message : "Failed to update status",
       });
     }
   };
@@ -143,12 +143,12 @@ function OrderDetailPage() {
       });
       setShowRefundModal(false);
       setToast({ type: "success", message: "Refund processed" });
-    } catch (err: any) {
-      setToast({ type: "error", message: err.message });
+    } catch (err: unknown) {
+      setToast({ type: "error", message: (err instanceof Error) ? err.message : "Failed to cancel order" });
     }
   };
 
-  const handleCancel = async () => {
+  const handleCancel= async () => {
     if (!orderId) return;
     try {
       await cancelOrderMutation.mutateAsync({

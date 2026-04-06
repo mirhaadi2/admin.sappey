@@ -10,6 +10,7 @@ import {
 } from '@/api/exports';
 import type { AdminOrder, AdminOrdersListParams } from '@/api/admin/orders/types';
 import { Button, Table, Pagination, ConfirmDialog, Toast } from '@/components';
+import type { TableColumn } from '@/components/Table';
 import { formatCurrency, formatDate, getOrderStatusColor } from '@/utils/order';
 
 function OrdersPage() {
@@ -88,24 +89,24 @@ function OrdersPage() {
       setShowConfirm(false);
       setAction(null);
       await refetch();
-    } catch (err: any) {
-      setToastMessage({ type: 'error', message: err.message || 'Action failed' });
+    } catch (err: unknown) {
+      setToastMessage({ type: 'error', message: (err instanceof Error) ? err.message : 'Action failed' });
     }
   };
   console.log(ordersData,'or')
 
 
-  const tableColumns = [
+  const tableColumns: Array<TableColumn<AdminOrder>> = [
     {
       key: 'orderNumber',
       header: 'Order #',
       width: '12%',
-      render: (value: string, order: AdminOrder) => (
+      render: (value: unknown, order: AdminOrder) => (
         <button
           onClick={() => handleViewDetails(order)}
           className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
         >
-          {value}
+          {value as string}
         </button>
       ),
     },
@@ -113,7 +114,7 @@ function OrdersPage() {
       key: 'customerName',
       header: 'Customer',
       width: '15%',
-      render: (value: string) => <span className="text-slate-900">{value}</span>,
+      render: (value: unknown) => <span className="text-slate-900">{value as string}</span>,
     },
     // {
     //   key: 'sellerName',
@@ -125,19 +126,19 @@ function OrdersPage() {
       key: 'totalAmount',
       header: 'Amount',
       width: '12%',
-      render: (value: number) => (
-        <span className="font-semibold text-slate-900">{formatCurrency(value)}</span>
+      render: (value: unknown) => (
+        <span className="font-semibold text-slate-900">{formatCurrency(value as number)}</span>
       ),
     },
     {
       key: 'status',
       header: 'Status',
       width: '15%',
-      render: (value: string) => {
-        const { bg, text } = getOrderStatusColor(value);
+      render: (value: unknown) => {
+        const { bg, text } = getOrderStatusColor(value as string);
         return (
           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${bg} ${text}`}>
-            {value.charAt(0).toUpperCase() + value.slice(1)}
+            {(value as string).charAt(0).toUpperCase() + (value as string).slice(1)}
           </span>
         );
       },
@@ -146,13 +147,13 @@ function OrdersPage() {
       key: 'disputed',
       header: 'Disputed',
       width: '10%',
-      render: (value: boolean) => (
+      render: (value: unknown) => (
         <span
           className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-            value ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+            (value as boolean) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
           }`}
         >
-          {value ? (
+          {(value as boolean) ? (
             <>
               <Warning size={14} /> Yes
             </>
@@ -166,7 +167,7 @@ function OrdersPage() {
       key: 'createdAt',
       header: 'Date',
       width: '12%',
-      render: (value: string) => <span className="text-slate-600 text-sm">{formatDate(value)}</span>,
+      render: (value: unknown) => <span className="text-slate-600 text-sm">{formatDate(value as string)}</span>,
     },
   ];
 
@@ -237,10 +238,10 @@ function OrdersPage() {
           filterValues={{ status, disputed }}
           onFilterChange={(key, value) => {
             if (key === 'status') {
-              setStatus(value);
+              setStatus(value as string);
               setPage(1);
             } else if (key === 'disputed') {
-              setDisputed(value);
+              setDisputed(value as string);
               setPage(1);
             }
           }}

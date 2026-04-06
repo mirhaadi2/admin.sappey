@@ -6,8 +6,10 @@ import {
   useAdminUpdateCategory,
   useAdminDeleteCategory,
 } from '@/api/exports';
-import { Button, Table, ConfirmDialog } from '@/components';
+import { Button, Table } from '@/components';
+import type { TableColumn } from '@/components/Table';
 import type { AdminCategory } from '@/api/admin/categories/types';
+import { ConfirmDialog } from '@/components';
 
 const CategoriesPage = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -29,7 +31,7 @@ const CategoriesPage = () => {
     setShowCreateModal(true);
   };
 
-  const handleEdit = (category: any) => {
+  const handleEdit = (category: AdminCategory) => {
     setEditingCategoryId(category.id);
     setForm({ name: category.name || '', slug: category.slug || '', description: category.description || '' });
     setShowCreateModal(true);
@@ -60,30 +62,30 @@ const CategoriesPage = () => {
     }
   };
 
-  const columns = [
+  const columns: Array<TableColumn<AdminCategory>> = [
     {
       key: 'name',
       header: 'Category Name',
       width: '300px',
       column: true,
-      render: (name: string) => (
-        <span className="font-semibold text-slate-900">{name}</span>
+      render: (name: unknown) => (
+        <span className="font-semibold text-slate-900">{name as string}</span>
       ),
     },
     {
       key: 'slug',
       header: 'Slug',
       column: false,
-      render: (slug: string) => (
-        <span className="text-slate-600 font-mono text-sm">{slug}</span>
+      render: (slug: unknown) => (
+        <span className="text-slate-600 font-mono text-sm">{slug as string}</span>
       ),
     },
     {
       key: 'description',
       header: 'Description',
       column: true,
-      render: (description: string) => (
-        <span className="text-slate-500 text-sm">{description || '-'}</span>
+      render: (description: unknown) => (
+        <span className="text-slate-500 text-sm">{description as string || '-'}</span>
       ),
     },
     {
@@ -91,13 +93,13 @@ const CategoriesPage = () => {
       header: 'Status',
       column: true,
       align: 'center' as const,
-      render: (isActive: boolean) => (
+      render: (isActive: unknown) => (
         <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-semibold ${
-          isActive
+          (isActive as boolean)
             ? 'bg-emerald-100 text-emerald-700'
             : 'bg-slate-100 text-slate-700'
         }`}>
-          {isActive ? 'Active' : 'Inactive'}
+          {(isActive as boolean) ? 'Active' : 'Inactive'}
         </span>
       ),
     },

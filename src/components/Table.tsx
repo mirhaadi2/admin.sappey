@@ -22,7 +22,7 @@ export interface FilterConfig {
 export interface TableColumn<T> {
   key: keyof T | string;
   header: string;
-  render?: (value: any, row: T) => React.ReactNode;
+  render?: (value: unknown, row: T) => React.ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
   column?: boolean; // legacy support for `column: true|false` default visibility
@@ -44,8 +44,8 @@ interface TableProps<T extends { id: string | number }> {
   };
   searchValue?: string;
   onSearchChange?: (value: string) => void;
-  filterValues?: Record<string, any>;
-  onFilterChange?: (key: string, value: any) => void;
+  filterValues?: Record<string, unknown>;
+  onFilterChange?: (key: string, value: unknown) => void;
   showColumnSelector?: boolean;
   onVisibleColumnsChange?: (visibleColumns: (keyof T | string)[]) => void;
 }
@@ -190,7 +190,7 @@ export function Table<T extends { id: string | number }>({
                 {filter.type === 'select' && (
                   <select
                     className="pl-3 pr-8 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer"
-                    value={filterValues[filter.key] || 'all'}
+                    value={(filterValues[filter.key] as string) || 'all'}
                     onChange={(e) => onFilterChange?.(filter.key, e.target.value)}
                   >
                     <option value="all">{filter.label}</option>

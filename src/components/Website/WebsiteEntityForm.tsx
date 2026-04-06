@@ -326,7 +326,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
     onSubmit,
     onCancel,
 }) => {
-    const [form, setForm] = useState<Record<string, any>>(() => ({
+    const [form, setForm] = useState<Record<string, unknown>>(() => ({
         ...emptyDefaults[type],
         ...initialValues,
     }));
@@ -344,7 +344,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
 
     const fields = useMemo(() => fieldsByType[type], [type]);
 
-    const handleInputChange = (key: string, value: any) => {
+    const handleInputChange = (key: string, value: unknown) => {
         setForm((prev) => ({ ...prev, [key]: value }));
     };
 
@@ -450,7 +450,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                         </label>
                         {field.type === "textarea" ? (
                             <textarea
-                                value={form[field.key] || ""}
+                                value={(form[field.key] as string) || ""}
                                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                                 className="w-full rounded border border-slate-300 p-2"
                                 rows={3}
@@ -458,7 +458,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                             />
                         ) : field.type === "select" ? (
                             <select
-                                value={form[field.key] || ""}
+                                value={(form[field.key] as string) || ""}
                                 onChange={(e) => handleInputChange(field.key, e.target.value)}
                                 className="w-full rounded border border-slate-300 p-2"
                                 required={field.required}
@@ -490,13 +490,12 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                     )}
                                 </div>
 
-                                {/* Preview existing uploaded file */}
-                                {form[field.key] && (
+                                {(form[field.key] as any) && (
                                     <div className="space-y-2">
-                                        {field.accept?.includes("image") && form[field.key].startsWith("http") ? (
+                                        {field.accept?.includes("image") && String(form[field.key]).startsWith("http") ? (
                                             <div className="relative">
                                                 <img
-                                                    src={form[field.key]}
+                                                    src={String(form[field.key])}
                                                     alt="Preview"
                                                     className="w-full max-w-xs h-32 object-cover rounded border"
                                                 />
@@ -508,10 +507,10 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                                     <X size={12} />
                                                 </button>
                                             </div>
-                                        ) : field.accept?.includes("video") && form[field.key].startsWith("http") ? (
+                                        ) : field.accept?.includes("video") && String(form[field.key]).startsWith("http") ? (
                                             <div className="relative">
                                                 <video
-                                                    src={form[field.key]}
+                                                    src={String(form[field.key])}
                                                     controls
                                                     className="w-full max-w-xs h-32 object-cover rounded border"
                                                 />
@@ -527,7 +526,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                             <div className="flex items-center gap-2 rounded bg-green-50 p-2">
                                                 <CheckCircle size={16} className="text-green-600" />
                                                 <span className="text-sm text-green-700">
-                                                    {form[field.key].split("/").pop()}
+                                                    {String(form[field.key]).split("/").pop()}
                                                 </span>
                                                 <button
                                                     type="button"
@@ -548,7 +547,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                         ) : (
                             <input
                                 type={field.type}
-                                value={form[field.key] ?? ""}
+                                value={(form[field.key] ?? "") as string | number | readonly string[] | undefined}
                                 onChange={(e) =>
                                     handleInputChange(
                                         field.key,

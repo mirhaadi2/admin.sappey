@@ -284,8 +284,8 @@ const WebsitePage = () => {
         setShowToast(true);
     };
 
-    const openEntityModal = (type: EntityTab, mode: 'create' | 'edit', item: any = null) => {
-        setEntityModal({ open: true, mode, type, item });
+    const openEntityModal = (type: EntityTab, mode: 'create' | 'edit', item: Record<string, unknown> | null = null) => {
+        setEntityModal({ open: true, mode, type, item: item as Banner | Hero | Section | Testimonial | InstagramPost | Promotion | WebsitePageType | null });
     };
 
     const closeEntityModal = () => {
@@ -325,8 +325,8 @@ const WebsitePage = () => {
                     break;
             }
             showToastMessage(`${label ?? type} deleted successfully.`);
-        } catch (error: any) {
-            showToastMessage(`Failed to delete ${label ?? type}: ${error?.message || String(error)}`, 'error');
+        } catch (error: unknown) {
+            showToastMessage(`Failed to delete ${label ?? type}: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
     };
 
@@ -334,7 +334,7 @@ const WebsitePage = () => {
         setDeleteConfirm({ isOpen: false, type: 'banners', id: '', label: '' });
     };
 
-    const handleToggleActive = async (type: WebsiteTab, item: any) => {
+    const handleToggleActive = async (type: WebsiteTab, item: Record<string, any>) => {
         console.log(type,'type', item,'item');
         try {
             const payload = { isActive: !item.isActive };
@@ -362,12 +362,12 @@ const WebsitePage = () => {
                     break;
             }
             showToastMessage(`${item.title ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);
-        } catch (error: any) {
-            showToastMessage(`Failed to update status: ${error?.message || String(error)}`, 'error');
+        } catch (error: unknown) {
+            showToastMessage(`Failed to update status: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
     };
 
-    const handleSubmitEntity = async (data: Record<string, any>) => {
+    const handleSubmitEntity = async (data: Record<string, unknown>) => {
         const type = entityModal.type;
         const id = entityModal.item?.id;
 
@@ -380,22 +380,22 @@ const WebsitePage = () => {
             if (entityModal.mode === 'create') {
                 switch (type) {
                     case 'banners':
-                        await bannerMutations.createBanner(data as CreateBannerRequest);
+                        await bannerMutations.createBanner(data as unknown as CreateBannerRequest);
                         break;
                     case 'hero':
-                        await heroMutations.createHero(data as CreateHeroRequest);
+                        await heroMutations.createHero(data as unknown as CreateHeroRequest);
                         break;
                     case 'sections':
-                        await sectionMutations.createSection(data as CreateSectionRequest);
+                        await sectionMutations.createSection(data as unknown as CreateSectionRequest);
                         break;
                     case 'testimonials':
-                        await testimonialMutations.createTestimonial(data as CreateTestimonialRequest);
+                        await testimonialMutations.createTestimonial(data as unknown as CreateTestimonialRequest);
                         break;
                     case 'instagram':
-                        await instagramMutations.createInstagramPost(data as CreateInstagramPostRequest);
+                        await instagramMutations.createInstagramPost(data as unknown as CreateInstagramPostRequest);
                         break;
                     case 'promotions':
-                        await promotionMutations.createPromotion(data as CreatePromotionRequest);
+                        await promotionMutations.createPromotion(data as unknown as CreatePromotionRequest);
                         break;
                 }
                 showToastMessage(`${type} created successfully.`);
@@ -424,8 +424,8 @@ const WebsitePage = () => {
             }
 
             closeEntityModal();
-        } catch (error: any) {
-            showToastMessage(`Failed to ${entityModal.mode} ${type}: ${error?.message || String(error)}`, 'error');
+        } catch (error: unknown) {
+            showToastMessage(`Failed to ${entityModal.mode} ${type}: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
     };
 
@@ -454,52 +454,52 @@ const WebsitePage = () => {
 
             closePageModal();
             refetchPages();
-        } catch (error: any) {
-            showToastMessage(`Failed to ${pageModal.mode} page: ${error?.message || String(error)}`, 'error');
+        } catch (error: unknown) {
+            showToastMessage(`Failed to ${pageModal.mode} page: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
     };
 
-    const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap', data: any) => {
+    const handleSubmitSupportPage = async (type: 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap', data: Record<string, any>) => {
         try {
             switch (type) {
                 case 'about-us':
-                    await aboutUsMutations.updateAboutUs(data);
+                    await aboutUsMutations.updateAboutUs(data as unknown as any);
                     showToastMessage('About Us updated successfully.');
                     refetchAboutUs();
                     break;
                 case 'shipping-policy':
-                    await shippingPolicyMutations.updateShippingPolicy(data);
+                    await shippingPolicyMutations.updateShippingPolicy(data as unknown as any);
                     showToastMessage('Shipping Policy updated successfully.');
                     refetchShippingPolicy();
                     break;
                 case 'returns-refunds':
-                    await returnsRefundsMutations.updateReturnsRefunds(data);
+                    await returnsRefundsMutations.updateReturnsRefunds(data as unknown as any);
                     showToastMessage('Returns & Refunds updated successfully.');
                     refetchReturnsRefunds();
                     break;
                 case 'faqs':
-                    await faqsMutations.updateFAQs(data);
+                    await faqsMutations.updateFAQs(data as unknown as any);
                     showToastMessage('FAQs updated successfully.');
                     refetchFAQs();
                     break;
                 case 'privacy-policy':
-                    await privacyPolicyMutations.updatePrivacyPolicy(data);
+                    await privacyPolicyMutations.updatePrivacyPolicy(data as unknown as any);
                     showToastMessage('Privacy Policy updated successfully.');
                     refetchPrivacyPolicy();
                     break;
                 case 'terms-and-conditions':
-                    await termsConditionsMutations.updateTermsConditions(data);
+                    await termsConditionsMutations.updateTermsConditions(data as unknown as any);
                     showToastMessage('Terms & Conditions updated successfully.');
                     refetchTermsConditions();
                     break;
                 case 'sitemap':
-                    await sitemapMutations.updateSitemap(data);
+                    await sitemapMutations.updateSitemap(data as unknown as any);
                     showToastMessage('Sitemap updated successfully.');
                     refetchSitemap();
                     break;
             }
-        } catch (error: any) {
-            showToastMessage(`Failed to update ${type}: ${error?.message || String(error)}`, 'error');
+        } catch (error: unknown) {
+            showToastMessage(`Failed to update ${type}: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
     };
 
@@ -507,7 +507,7 @@ const WebsitePage = () => {
     const formData = supportPageForms[key];
 
     // Helper to update specific fields in the state
-    const updateField = (field: keyof typeof formData, value: any) => {
+    const updateField = (field: keyof typeof formData, value: string | number | boolean) => {
         setSupportPageForms(prev => ({
             ...prev,
             [key]: { ...prev[key], [field]: value }
@@ -643,7 +643,7 @@ const WebsitePage = () => {
                         banners={banners || []}
                         isLoading={bannersLoading}
                         onAdd={() => openEntityModal('banners', 'create')}
-                        onEdit={(banner) => openEntityModal('banners', 'edit', banner)}
+                        onEdit={(banner) => openEntityModal('banners', 'edit', banner as unknown as Record<string, unknown>)}
                         onDelete={(id, title) => handleDeleteEntity('banners', id, title)}
                         onToggle={(banner) => handleToggleActive('banners', banner)}
                     />
@@ -654,7 +654,7 @@ const WebsitePage = () => {
                         heroes={heroes}
                         isLoading={heroLoading}
                         onAdd={() => openEntityModal('hero', 'create')}
-                        onEdit={(hero) => openEntityModal('hero', 'edit', hero)}
+                        onEdit={(hero) => openEntityModal('hero', 'edit', hero as unknown as Record<string, unknown>)}
                         onDelete={(id, title) => handleDeleteEntity('hero', id, title)}
                         onToggle={(hero) => handleToggleActive('hero', hero)}
                     />
@@ -665,7 +665,7 @@ const WebsitePage = () => {
                         sections={sections || []}
                         isLoading={sectionsLoading}
                         onAdd={() => openEntityModal('sections', 'create')}
-                        onEdit={(section) => openEntityModal('sections', 'edit', section)}
+                        onEdit={(section) => openEntityModal('sections', 'edit', section as unknown as Record<string, unknown>)}
                         onDelete={(id, title) => handleDeleteEntity('sections', id, title)}
                         onToggle={(section) => handleToggleActive('sections', section)}
                     />
@@ -676,7 +676,7 @@ const WebsitePage = () => {
                         testimonials={testimonials || []}
                         isLoading={testimonialsLoading}
                         onAdd={() => openEntityModal('testimonials', 'create')}
-                        onEdit={(testimonial) => openEntityModal('testimonials', 'edit', testimonial)}
+                        onEdit={(testimonial) => openEntityModal('testimonials', 'edit', testimonial as unknown as Record<string, unknown>)}
                         onDelete={(id, author) => handleDeleteEntity('testimonials', id, author)}
                         onToggle={(testimonial) => handleToggleActive('testimonials', testimonial)}
                     />
@@ -687,7 +687,7 @@ const WebsitePage = () => {
                         posts={instagramPosts || []}
                         isLoading={instagramLoading}
                         onAdd={() => openEntityModal('instagram', 'create')}
-                        onEdit={(post) => openEntityModal('instagram', 'edit', post)}
+                        onEdit={(post) => openEntityModal('instagram', 'edit', post as unknown as Record<string, unknown>)}
                         onDelete={(id) => handleDeleteEntity('instagram', id)}
                         onToggle={(post) => handleToggleActive('instagram', post)}
                     />
@@ -695,10 +695,10 @@ const WebsitePage = () => {
             case 'promotions':
                 return (
                     <PromotionList
-                        promotions={promotions?.promotions || []}
+                        promotions={Array.isArray(promotions) ? promotions : []}
                         isLoading={promotionsLoading}
                         onAdd={() => openEntityModal('promotions', 'create')}
-                        onEdit={(promotion) => openEntityModal('promotions', 'edit', promotion)}
+                        onEdit={(promotion) => openEntityModal('promotions', 'edit', promotion as unknown as Record<string, unknown>)}
                         onDelete={(id, title) => handleDeleteEntity('promotions', id, title)}
                         onToggle={(promotion) => handleToggleActive('promotions', promotion)}
                     />

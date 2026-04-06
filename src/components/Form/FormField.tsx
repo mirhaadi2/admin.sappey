@@ -1,5 +1,5 @@
 import React from 'react';
-import { useFormContext, Controller, FieldPath, RegisterOptions } from 'react-hook-form';
+import { useFormContext, Controller, FieldPath, RegisterOptions, FieldError } from 'react-hook-form';
 import { Input } from './Input';
 import { Select } from './Select';
 import { TextArea } from './TextArea';
@@ -43,11 +43,12 @@ export function FormField<T extends FieldPath<any>>({
   const { control, formState: { errors } } = useFormContext();
 
   // Helper to find errors in nested paths (e.g., variants.0.price)
-  const getNestedError = (obj: any, path: string) => {
-    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  const getNestedError = (obj: unknown, path: string): FieldError | undefined => {
+    const result = path.split('.').reduce((acc: unknown, part) => (acc instanceof Object ? (acc as Record<string, unknown>)[part] : undefined), obj);
+    return (result as FieldError) || undefined;
   };
 
-  const error = getNestedError(errors, name as string);
+  const error: FieldError | undefined = getNestedError(errors, name as string);
 
   return (
     <div className={className}>
@@ -119,7 +120,7 @@ export function FormField<T extends FieldPath<any>>({
                   </div>
                 </div>
                 {error && (
-                  <p className="text-xs text-red-500 font-medium">{error.message}</p>
+                  <p className="text-xs text-red-500 font-medium">{(error as any)?.message}</p>
                 )}
               </div>
             );

@@ -23,7 +23,7 @@ export default function PendingApprovalsTable() {
       setError(null);
       const response = await adminClient.listSellers('PENDING', 1, 50);
       setSellers(response.data || []);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to load pending sellers');
       console.error('Error fetching pending sellers:', err);
     } finally {
@@ -36,7 +36,7 @@ export default function PendingApprovalsTable() {
       setActionLoading(sellerId);
       await adminClient.approveSeller(sellerId as any);
       setSellers(sellers.filter((s) => s.id !== sellerId));
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to approve seller');
       console.error('Error approving seller:', err);
     } finally {
@@ -53,7 +53,7 @@ export default function PendingApprovalsTable() {
       setSellers(sellers.filter((s) => s.id !== sellerId));
       setShowRejectModal(null);
       setRejectReason({});
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError('Failed to reject seller');
       console.error('Error rejecting seller:', err);
     } finally {

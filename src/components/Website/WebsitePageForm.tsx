@@ -43,7 +43,7 @@ export const WebsitePageForm: React.FC<WebsitePageFormProps> = ({
     setForm({ ...emptyValues, ...initialValues });
   }, [initialValues]);
 
-  const handleInputChange = (key: keyof WebsitePageFormData, value: any) => {
+  const handleInputChange = (key: keyof WebsitePageFormData, value: string | boolean | number) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
