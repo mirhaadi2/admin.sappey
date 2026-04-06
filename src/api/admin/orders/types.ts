@@ -12,10 +12,22 @@ export interface AdminOrder {
   customerId: string;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
+  taxAmount: number;
   sellerId: string;
   sellerName: string;
   items: AdminOrderItem[];
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+  shippingAddressPhone: string;
+  shippingAddressLine1: string;
+  shippingAddressLine2?: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
+  shippingCost: number;
+  paymentMethod: string;
+  finalAmount: number;
+  status:'pending' |'CONFIRMED' |'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
   disputed: boolean;
   totalAmount: number;
   shippingAddress: string;
@@ -28,7 +40,7 @@ export interface AdminOrder {
 export interface AdminOrdersResponse {
   success: boolean;
   data: {
-    orders: AdminOrder[];
+    data: AdminOrder[];
     total: number;
     page: number;
     limit: number;
@@ -53,8 +65,10 @@ export interface AdminOrdersListParams {
 }
 
 export interface AdminOrderStatusInput {
+  trackingNumber?: string;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   notes?: string;
+  statusReason?: string;
 }
 
 export interface AdminOrderRefundInput {

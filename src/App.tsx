@@ -5,6 +5,7 @@ import CustomersPage from './pages/CustomersPage';
 import SellersPage from './pages/SellersPage';
 import SellerDetailsPage from './pages/SellerDetailsPage';
 import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
 import ProductsPage from './pages/ProductsPage';
 import CategoriesPage from './pages/CategoriesPage';
 import ProductDetailsPage from './pages/ProductDetailsPage';
@@ -43,6 +44,7 @@ function App() {
             <Route path="/sellers" element={<SellersPage />} />
             <Route path="/sellers/:id" element={<SellerDetailsPage />} />
             <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailPage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/create" element={<ProductCreatePage />} />
             <Route path="/products/:id" element={<ProductDetailsPage />} />

@@ -11,6 +11,7 @@ interface ConfirmDialogProps {
   isLoading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
+  children?: React.ReactNode;
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -23,6 +24,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   isLoading = false,
   onConfirm,
   onCancel,
+  children,
 }) => {
   if (!isOpen) return null;
 
@@ -31,6 +33,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
       <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full mx-4">
         <h3 className="text-lg font-bold text-slate-900 mb-2">{title}</h3>
         <p className="text-slate-600 mb-6">{description}</p>
+        {children && <div className="mb-6">{children}</div>}
         <div className="flex gap-3">
           <Button
             variant="outline"
