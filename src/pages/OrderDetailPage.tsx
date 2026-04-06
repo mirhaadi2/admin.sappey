@@ -494,7 +494,7 @@ function OrderDetailPage() {
           </div>
 
           {/* Tracking ID: Shows only for Shipped or Out for Delivery */}
-          {["SHIPPED", "OUT_FOR_DELIVERY"].includes(newStatus) && (
+          {["HANDOVER","SHIPPED", "OUT_FOR_DELIVERY"].includes(newStatus) && (
             <div className="animate-in fade-in slide-in-from-top-2">
               <label className="text-[10px] font-black uppercase text-orange-600 ml-1">
                 Tracking Number / AWB
