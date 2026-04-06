@@ -8,6 +8,7 @@ import {
   WEBSITE_SETTINGS,
   WEBSITE_PAGES,
   WEBSITE_SUPPORT_PAGES,
+  WEBSITE_PROMOTIONS,
 } from './endpoints';
 import {
   Banner,
@@ -18,6 +19,7 @@ import {
   WebsiteSetting,
   WebsitePage,
   Page,
+  Promotion,
   CreateBannerRequest,
   UpdateBannerRequest,
   CreateHeroRequest,
@@ -32,6 +34,8 @@ import {
   UpdateWebsiteSettingRequest,
   CreateWebsitePageRequest,
   UpdateWebsitePageRequest,
+  CreatePromotionRequest,
+  UpdatePromotionRequest,
   AboutUs,
   ShippingPolicy,
   ReturnsRefunds,
@@ -306,5 +310,32 @@ export const websiteApi = {
 
   deleteSitemap: async (): Promise<WebsiteApiResponse<void>> => {
     return await websiteApi.deleteSupportPage('sitemap');
+  },
+
+  // ===================== PROMOTION APIs =====================
+  getPromotions: async (limit = 20, offset = 0): Promise<WebsiteListResponse<Promotion>> => {
+    const url = `${WEBSITE_PROMOTIONS}?limit=${limit}&offset=${offset}`;
+    const response = await apiMethods.get<WebsiteListResponse<Promotion>>(url);
+    return response.data;
+  },
+
+  getPromotion: async (id: string): Promise<WebsiteApiResponse<Promotion>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Promotion>>(`${WEBSITE_PROMOTIONS}/${id}`);
+    return response.data;
+  },
+
+  createPromotion: async (data: CreatePromotionRequest): Promise<WebsiteApiResponse<Promotion>> => {
+    const response = await apiMethods.post<WebsiteApiResponse<Promotion>>(WEBSITE_PROMOTIONS, data);
+    return response.data;
+  },
+
+  updatePromotion: async (id: string, data: UpdatePromotionRequest): Promise<WebsiteApiResponse<Promotion>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Promotion>>(`${WEBSITE_PROMOTIONS}/${id}`, data);
+    return response.data;
+  },
+
+  deletePromotion: async (id: string): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(`${WEBSITE_PROMOTIONS}/${id}`);
+    return response.data;
   },
 };

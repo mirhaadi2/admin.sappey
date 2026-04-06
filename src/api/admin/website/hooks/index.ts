@@ -10,6 +10,7 @@ import {
   WebsitePage,
   Page,
   PageType,
+  Promotion,
   CreateBannerRequest,
   UpdateBannerRequest,
   CreateHeroRequest,
@@ -24,6 +25,8 @@ import {
   UpdateWebsiteSettingRequest,
   CreateWebsitePageRequest,
   UpdateWebsitePageRequest,
+  CreatePromotionRequest,
+  UpdatePromotionRequest,
   WebsiteApiResponse,
 } from '../types';
 
@@ -615,6 +618,57 @@ export const useSitemapMutations = () => {
   return {
     updateSitemap: updateMutation.mutateAsync,
     deleteSitemap: deleteMutation.mutateAsync,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== PROMOTION HOOKS =====================
+export const useWebsitePromotions = () => {
+  const query = useQuery({
+    queryKey: ['website-promotions'],
+    queryFn: () => websiteApi.getPromotions(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  return {
+    promotions: query.data?.data || [],
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useWebsitePromotionMutations = () => {
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: websiteApi.createPromotion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-promotions'] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdatePromotionRequest }) =>
+      websiteApi.updatePromotion(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-promotions'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deletePromotion,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-promotions'] });
+    },
+  });
+
+  return {
+    createPromotion: createMutation.mutateAsync,
+    updatePromotion: updateMutation.mutateAsync,
+    deletePromotion: deleteMutation.mutateAsync,
+    createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,
   };

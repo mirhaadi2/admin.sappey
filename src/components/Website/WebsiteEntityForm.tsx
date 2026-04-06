@@ -10,7 +10,8 @@ type EntityTab =
     | "hero"
     | "sections"
     | "testimonials"
-    | "instagram";
+    | "instagram"
+    | "promotions";
 
 interface WebsiteEntityFormProps {
     type: EntityTab;
@@ -63,6 +64,18 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
         caption: "", 
         postUrl: "", 
         isActive: true 
+    },
+    promotions: {
+        title: "",
+        description: "",
+        type: "fixed_discount",
+        bannerText: "",
+        minOrderValue: undefined,
+        discountValue: undefined,
+        validFrom: "",
+        validUntil: "",
+        isActive: true,
+        priority: 0,
     },
 };
 
@@ -244,6 +257,63 @@ const fieldsByType: Record<
             key: "postUrl", 
             label: "Post URL", 
             type: "text" 
+        },
+    ],
+    promotions: [
+        { 
+            key: "title", 
+            label: "Promotion Title", 
+            type: "text", 
+            required: true 
+        },
+        { 
+            key: "description", 
+            label: "Description", 
+            type: "textarea" 
+        },
+        { 
+            key: "bannerText", 
+            label: "Banner Text", 
+            type: "text" 
+        },
+        { 
+            key: "type", 
+            label: "Type", 
+            type: "select",
+            options: [
+                { value: "fixed_discount", label: "Fixed Discount (₹)" },
+                { value: "percentage_discount", label: "Percentage Discount (%)" },
+                { value: "free_gift", label: "Free Gift" },
+                { value: "free_shipping", label: "Free Shipping" },
+                { value: "bundle", label: "Bundle Deal" },
+                { value: "tiered", label: "Tiered Pricing" },
+            ],
+            required: true 
+        },
+        { 
+            key: "minOrderValue", 
+            label: "Min Order Value (₹)", 
+            type: "number" 
+        },
+        { 
+            key: "discountValue", 
+            label: "Discount Value", 
+            type: "number" 
+        },
+        { 
+            key: "validFrom", 
+            label: "Valid From", 
+            type: "text" 
+        },
+        { 
+            key: "validUntil", 
+            label: "Valid Until", 
+            type: "text" 
+        },
+        { 
+            key: "priority", 
+            label: "Priority", 
+            type: "number" 
         },
     ],
 };

@@ -7,7 +7,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components';
 import WebsiteEntityForm from '../components/Website/WebsiteEntityForm';
 import WebsitePageForm from '../components/Website/WebsitePageForm';
-import { BannerList, HeroList, SectionList, TestimonialList, InstagramList } from '../components/Website/index';
+import { BannerList, HeroList, SectionList, TestimonialList, InstagramList, PromotionList } from '../components/Website/index';
 import {
     useWebsiteBanners,
     useWebsiteBannerMutations,
@@ -21,6 +21,8 @@ import {
     useWebsiteInstagramMutations,
     useWebsitePages,
     useWebsitePageMutations,
+    useWebsitePromotions,
+    useWebsitePromotionMutations,
     useAboutUs,
     useAboutUsMutations,
     useShippingPolicy,
@@ -40,6 +42,7 @@ import {
     Section,
     Testimonial,
     InstagramPost,
+    Promotion,
     CreateBannerRequest,
     UpdateBannerRequest,
     CreateHeroRequest,
@@ -52,12 +55,14 @@ import {
     UpdateInstagramPostRequest,
     CreateWebsitePageRequest,
     UpdateWebsitePageRequest,
+    CreatePromotionRequest,
+    UpdatePromotionRequest,
     WebsitePage as WebsitePageType,
 } from '../api/admin/index';
 
-type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
+type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 type WebsiteTab = WebsiteContentTab;
-type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram';
+type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions';
 type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 
 const WebsitePage = () => {
@@ -75,7 +80,7 @@ const WebsitePage = () => {
         open: boolean;
         mode: 'create' | 'edit';
         type: EntityTab;
-        item: Banner | Hero | Section | Testimonial | InstagramPost | WebsitePageType | null;
+        item: Banner | Hero | Section | Testimonial | InstagramPost | Promotion | WebsitePageType | null;
     }>({ open: false, mode: 'create', type: 'banners', item: null });
 
     const [pageModal, setPageModal] = useState<{
@@ -108,7 +113,9 @@ const WebsitePage = () => {
     const { privacyPolicy, isLoading: privacyPolicyLoading, error: privacyPolicyError, refetch: refetchPrivacyPolicy } = usePrivacyPolicy();
     const { termsConditions, isLoading: termsConditionsLoading, error: termsConditionsError, refetch: refetchTermsConditions } = useTermsConditions();
     const { sitemap, isLoading: sitemapLoading, error: sitemapError, refetch: refetchSitemap } = useSitemap();
+    const { promotions, isLoading: promotionsLoading, error: promotionsError } = useWebsitePromotions();
 
+    console.log(promotions,'promostions');
     // Mutation hooks
     const bannerMutations = useWebsiteBannerMutations();
     const heroMutations = useWebsiteHeroMutations();
@@ -116,6 +123,7 @@ const WebsitePage = () => {
     const testimonialMutations = useWebsiteTestimonialMutations();
     const instagramMutations = useWebsiteInstagramMutations();
     const pageMutations = useWebsitePageMutations();
+    const promotionMutations = useWebsitePromotionMutations();
     const aboutUsMutations = useAboutUsMutations();
     const shippingPolicyMutations = useShippingPolicyMutations();
     const returnsRefundsMutations = useReturnsRefundsMutations();
@@ -258,6 +266,7 @@ const WebsitePage = () => {
         { id: 'sections' as WebsiteTab, label: 'Sections', icon: <Upload size={16} />, count: sections?.length || 0 },
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
+        { id: 'promotions' as WebsiteTab, label: 'Promotions', icon: <Check size={16} />, count: promotions?.length || 0 },
         { id: 'website-pages' as WebsiteTab, label: 'Website Pages', icon: <List size={16} />, count: pages?.length || 0 },
         { id: 'about-us' as WebsiteTab, label: 'About Us', icon: <List size={16} />, count: aboutUs ? 1 : 0 },
         { id: 'shipping-policy' as WebsiteTab, label: 'Shipping Policy', icon: <List size={16} />, count: shippingPolicy ? 1 : 0 },
@@ -308,6 +317,9 @@ const WebsitePage = () => {
                 case 'instagram':
                     await instagramMutations.deleteInstagramPost(id);
                     break;
+                case 'promotions':
+                    await promotionMutations.deletePromotion(id);
+                    break;
                 case 'website-pages':
                     await pageMutations.deleteWebsitePage(id);
                     break;
@@ -323,6 +335,7 @@ const WebsitePage = () => {
     };
 
     const handleToggleActive = async (type: WebsiteTab, item: any) => {
+        console.log(type,'type', item,'item');
         try {
             const payload = { isActive: !item.isActive };
             switch (type) {
@@ -340,6 +353,9 @@ const WebsitePage = () => {
                     break;
                 case 'instagram':
                     await instagramMutations.updateInstagramPost({ id: item.id, data: payload });
+                    break;
+                case 'promotions':
+                    await promotionMutations.updatePromotion({ id: item.id, data: payload });
                     break;
                 case 'website-pages':
                     await pageMutations.updateWebsitePage({ id: item.slug, data: { isPublished: !item.isPublished } });
@@ -378,6 +394,9 @@ const WebsitePage = () => {
                     case 'instagram':
                         await instagramMutations.createInstagramPost(data as CreateInstagramPostRequest);
                         break;
+                    case 'promotions':
+                        await promotionMutations.createPromotion(data as CreatePromotionRequest);
+                        break;
                 }
                 showToastMessage(`${type} created successfully.`);
             } else {
@@ -396,6 +415,9 @@ const WebsitePage = () => {
                         break;
                     case 'instagram':
                         await instagramMutations.updateInstagramPost({ id: id!, data });
+                        break;
+                    case 'promotions':
+                        await promotionMutations.updatePromotion({ id: id!, data: data as UpdatePromotionRequest });
                         break;
                 }
                 showToastMessage(`${type} updated successfully.`);
@@ -670,6 +692,17 @@ const WebsitePage = () => {
                         onToggle={(post) => handleToggleActive('instagram', post)}
                     />
                 );
+            case 'promotions':
+                return (
+                    <PromotionList
+                        promotions={promotions?.promotions || []}
+                        isLoading={promotionsLoading}
+                        onAdd={() => openEntityModal('promotions', 'create')}
+                        onEdit={(promotion) => openEntityModal('promotions', 'edit', promotion)}
+                        onDelete={(id, title) => handleDeleteEntity('promotions', id, title)}
+                        onToggle={(promotion) => handleToggleActive('promotions', promotion)}
+                    />
+                );
             case 'website-pages':
                 return (
                     <div>
@@ -776,7 +809,7 @@ const WebsitePage = () => {
                     {/* Content Tabs */}
                     <div className="overflow-x-auto">
                         <nav className="flex space-x-1 min-w-min px-1">
-                            {tabs.filter(tab => ['banners', 'hero', 'sections', 'testimonials', 'instagram'].includes(tab.id)).map((tab) => (
+                            {tabs.filter(tab => ['banners', 'hero', 'sections', 'testimonials', 'instagram', 'promotions'].includes(tab.id)).map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}

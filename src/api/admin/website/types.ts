@@ -283,6 +283,67 @@ export interface CreateSupportPageRequest {
 
 export interface UpdateSupportPageRequest extends Partial<CreateSupportPageRequest> {}
 
+// Promotion types
+export type PromotionType = 'fixed_discount' | 'percentage_discount' | 'free_gift' | 'free_shipping' | 'bundle' | 'tiered';
+
+export interface Promotion {
+  id: string;
+  title: string;
+  description?: string;
+  type: PromotionType;
+  bannerText: string;
+  minOrderValue?: number;
+  maxOrderValue?: number;
+  minQuantity?: number;
+  maxQuantity?: number;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  excludeProducts?: string[];
+  discountValue?: number;
+  giftProductId?: string;
+  freeText?: string;
+  validFrom: string;
+  validUntil: string;
+  usageLimit?: number;
+  currentUsage?: number;
+  isActive: boolean;
+  priority: number;
+  displayOnHomepage: boolean;
+  displayOnCheckout: boolean;
+  displayOnProductPages: boolean;
+  badgeIcon?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePromotionRequest {
+  title: string;
+  description?: string;
+  type: PromotionType;
+  bannerText: string;
+  minOrderValue?: number;
+  maxOrderValue?: number;
+  minQuantity?: number;
+  maxQuantity?: number;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  excludeProducts?: string[];
+  discountValue?: number;
+  giftProductId?: string;
+  freeText?: string;
+  validFrom: string;
+  validUntil: string;
+  usageLimit?: number;
+  isActive?: boolean;
+  priority?: number;
+  displayOnHomepage?: boolean;
+  displayOnCheckout?: boolean;
+  displayOnProductPages?: boolean;
+  badgeIcon?: string;
+}
+
+export interface UpdatePromotionRequest extends Partial<CreatePromotionRequest> {}
+
 // API Response types
 export interface WebsiteApiResponse<T> {
   success: boolean;

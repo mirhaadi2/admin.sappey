@@ -15,6 +15,9 @@ export const WEBSITE_TESTIMONIALS = `${WEBSITE_BASE}/testimonials`;
 // Instagram endpoints
 export const WEBSITE_INSTAGRAM = `${WEBSITE_BASE}/instagram`;
 
+// Promotion endpoints
+export const WEBSITE_PROMOTIONS = `${WEBSITE_BASE}/promotions`;
+
 // Settings endpoints
 export const WEBSITE_SETTINGS = `${WEBSITE_BASE}/settings`;
 
