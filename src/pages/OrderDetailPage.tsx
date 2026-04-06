@@ -406,20 +406,20 @@ function OrderDetailPage() {
 
                 <div className="relative z-10">
                   <p className="text-sm font-black text-slate-900 leading-tight">
-                    {order.metadata.promotion.title}
+                    {order?.metadata?.promotion?.title}
                   </p>
 
                   <div className="mt-3 flex items-center gap-2">
                     <span className="px-2 py-1 bg-blue-600 text-[9px] font-black text-white rounded uppercase tracking-tighter">
-                      {order.metadata.promotion.type.replace('_', ' ')}
+                      {order?.metadata?.promotion?.type?.replace('_', ' ')}
                     </span>
                     <span className="text-[10px] font-bold text-slate-400 italic">
-                      Applied: {new Date(order.metadata.appliedAt).toLocaleDateString()}
+                      Applied: {new Date(order?.metadata?.appliedAt).toLocaleDateString()}
                     </span>
                   </div>
 
                   {/* Logic for different promotion types */}
-                  {order.metadata.promotion.type === 'free_gift' && (
+                  {order?.metadata?.promotion?.type === 'free_gift' && (
                     <div className="mt-4 p-3 bg-white/60 rounded-xl border border-blue-100 border-dashed">
                       <p className="text-[10px] font-bold text-blue-800">
                         LOGISTICS ACTION REQUIRED:
