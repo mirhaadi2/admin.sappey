@@ -253,7 +253,7 @@ function OrdersPage() {
                 onClick={() => handleViewDetails(order)}
                 title="View Details"
               />
-              {order.status !== 'delivered' && order.status !== 'cancelled' && order.status !== 'refunded' && (
+              {/* {order.status !== 'delivered' && order.status !== 'cancelled' && order.status !== 'refunded' && (
                 <>
                   <Button
                     variant="outline"
@@ -276,7 +276,7 @@ function OrdersPage() {
                 >
                   Refund
                 </Button>
-              )}
+              )} */}
               {order.status !== 'cancelled' && order.status !== 'refunded' && (
                 <Button
                   variant="danger"
