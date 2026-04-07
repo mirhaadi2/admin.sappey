@@ -52,7 +52,7 @@ function Dashboard() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+        <div className="p-5 rounded-[24px] border border-brand-brown/10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(139,115,85,0.15)] hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wide">Total Users</p>
@@ -65,7 +65,7 @@ function Dashboard() {
           <p className="mt-3 text-xs text-slate-500">Active accounts across all portals</p>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+        <div className="p-5 rounded-[24px] border border-brand-brown/10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(139,115,85,0.15)] hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wide">Total Sellers</p>
@@ -78,7 +78,7 @@ function Dashboard() {
           <p className="mt-3 text-xs text-slate-500">Approved and active sellers</p>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+        <div className="p-5 rounded-[24px] border border-brand-brown/10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(139,115,85,0.15)] hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wide">Total Orders</p>
@@ -91,7 +91,7 @@ function Dashboard() {
           <p className="mt-3 text-xs text-slate-500">Orders processed this month</p>
         </div>
 
-        <div className="p-5 rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition">
+        <div className="p-5 rounded-[24px] border border-brand-brown/10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:shadow-[0_30px_60px_rgba(139,115,85,0.15)] hover:-translate-y-1">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-wide">Platform Revenue</p>

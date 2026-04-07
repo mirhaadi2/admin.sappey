@@ -893,7 +893,7 @@ const WebsitePage = () => {
 
             {entityModal.open && (
                 <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 max-h-[90vh] overflow-y-auto">
+                    <div className="w-full max-w-2xl bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-6 max-h-[90vh] overflow-y-auto">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-lg font-bold text-slate-900">
                                 {entityModal.mode === 'create' ? 'Create' : 'Edit'} {entityModal.type}

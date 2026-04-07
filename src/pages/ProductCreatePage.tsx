@@ -77,7 +77,7 @@ function ProductCreatePage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2">
+        <div className="bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-brand-brown/10 p-2">
           <ProductForm
             title=""
             defaultValues={createDefaultValues}
