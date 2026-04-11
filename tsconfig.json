@@ -11,10 +11,9 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "noEmit": true,
-    "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
+    /* Remove baseUrl and ignoreDeprecations entirely */
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"] 
     }
   },
   "include": ["src"],
