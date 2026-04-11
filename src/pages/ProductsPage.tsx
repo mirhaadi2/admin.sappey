@@ -107,7 +107,7 @@ function ProductsPage() {
       key: "price",
       header: "Price",
       column: true,
-      render: (price: number) => (
+      render: (price: number, _product: any) => (
         <span className="font-semibold text-slate-700">
           ₹{price?.toLocaleString()}
         </span>
@@ -133,7 +133,7 @@ function ProductsPage() {
       header: "Rating",
       align: "center" as const,
       column: false,
-      render: (rating: number) => (
+      render: (rating: number, _product: any) => (
         <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
           <Star size={14} weight="fill" className="text-amber-400" />{" "}
           {rating?.toFixed(1) || "0.0"}
@@ -145,7 +145,7 @@ function ProductsPage() {
       header: "Variants",
       align: "center" as const,
       column: true,
-      render: (count: number) => (
+      render: (count: number, _product: any) => (
         <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
           {count}
         </div>

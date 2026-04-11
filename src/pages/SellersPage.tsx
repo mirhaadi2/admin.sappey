@@ -86,7 +86,7 @@ function SellersPage() {
       key: 'status',
       header: 'Status',
       column: true,
-      render: (value: string) => {
+      render: (value: string, _row: any) => {
         const normalized = value?.toLowerCase() || 'pending';
         const color = normalized === 'pending' ? 'bg-yellow-100 text-amber-800' : normalized === 'approved' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
         return <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${color}`}>{normalized.charAt(0).toUpperCase() + normalized.slice(1)}</span>;
@@ -96,7 +96,7 @@ function SellersPage() {
       key: 'createdAt',
       header: 'Joined',
       column: false,
-      render: (value: string) => new Date(value).toLocaleDateString(),
+      render: (value: string, _row: any) => new Date(value).toLocaleDateString(),
       width: '12%',
     },
   ];

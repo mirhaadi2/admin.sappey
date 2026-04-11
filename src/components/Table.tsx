@@ -22,7 +22,7 @@ export interface FilterConfig {
 export interface TableColumn<T> {
   key: keyof T | string;
   header: string;
-  render?: (value: unknown, row: T) => React.ReactNode;
+  render?: (value: any, row: T) => React.ReactNode;
   width?: string;
   align?: 'left' | 'center' | 'right';
   column?: boolean; // legacy support for `column: true|false` default visibility

@@ -105,7 +105,7 @@ function CustomersPage() {
     {
       key: "status",
       header: "Status",
-      render: (value: string) => (
+      render: (value: string, _row: any) => (
         <span
           className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
             value === "active"
@@ -120,7 +120,7 @@ function CustomersPage() {
     {
       key: "createdAt",
       header: "Joined",
-      render: (createdAt: string) => new Date(createdAt).toLocaleDateString(),
+      render: (createdAt: string, _row: any) => new Date(createdAt).toLocaleDateString(),
       width: "15%",
       column: false
     },

@@ -114,7 +114,7 @@ function OrdersPage() {
       key: 'customerName',
       header: 'Customer',
       width: '15%',
-      render: (value: unknown) => <span className="text-slate-900">{value as string}</span>,
+      render: (value: unknown, _order: AdminOrder) => <span className="text-slate-900">{value as string}</span>,
     },
     // {
     //   key: 'sellerName',
@@ -126,7 +126,7 @@ function OrdersPage() {
       key: 'totalAmount',
       header: 'Amount',
       width: '12%',
-      render: (value: unknown) => (
+      render: (value: unknown, _order: AdminOrder) => (
         <span className="font-semibold text-slate-900">{formatCurrency(value as number)}</span>
       ),
     },
@@ -134,7 +134,7 @@ function OrdersPage() {
       key: 'status',
       header: 'Status',
       width: '15%',
-      render: (value: unknown) => {
+      render: (value: unknown, _order: AdminOrder) => {
         const { bg, text } = getOrderStatusColor(value as string);
         return (
           <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${bg} ${text}`}>
@@ -147,7 +147,7 @@ function OrdersPage() {
       key: 'disputed',
       header: 'Disputed',
       width: '10%',
-      render: (value: unknown) => (
+      render: (value: unknown, _order: AdminOrder) => (
         <span
           className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
             (value as boolean) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
@@ -167,7 +167,7 @@ function OrdersPage() {
       key: 'createdAt',
       header: 'Date',
       width: '12%',
-      render: (value: unknown) => <span className="text-slate-600 text-sm">{formatDate(value as string)}</span>,
+      render: (value: unknown, _order: AdminOrder) => <span className="text-slate-600 text-sm">{formatDate(value as string)}</span>,
     },
   ];
 

@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
             <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
               <WarningCircle className="text-red-600 flex-shrink-0 mt-0.5" size={20} />
               <p className="text-red-800 text-sm">
-                {signInError?.response?.data?.message || signInError?.message || 'Login failed'}
+                {(signInError as any)?.response?.data?.message || signInError?.message || 'Login failed'}
               </p>
             </div>
           )}
