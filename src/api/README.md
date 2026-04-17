@@ -72,7 +72,7 @@ function Dashboard() {
 Or import from individual module exports:
 
 ```typescript
-import { useAdminUsersList } from '@/api/admin/users';
+import { useAdminUsersList } from '@/api/admin/customers';
 import { useAdminProductsList } from '@/api/admin/products';
 ```
 

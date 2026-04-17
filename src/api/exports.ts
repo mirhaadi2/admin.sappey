@@ -6,18 +6,18 @@ export { adminAuthApi } from './admin/client';
 export { useAdminAuth } from './admin/hooks';
 export type { AuthResponse, LoginData, AdminUser, AdminProfileResponse } from './admin/types';
 
-// Admin Management APIs & Hooks - Users
-export { adminUsersApi } from './admin/users/client';
+// Admin Management APIs & Hooks - Customers
+export { adminCustomersApi } from './admin/customers/client';
 export { 
-  useAdminUsersList, 
-  useAdminUserDetail, 
-  useAdminCreateUser, 
-  useAdminUpdateUser, 
-  useAdminDeleteUser,
-  useAdminBanUser,
-  useAdminUnbanUser
-} from './admin/users/hooks/index';
-export type { AdminUsersListParams, AdminUserCreateInput, AdminUserUpdateInput } from './admin/users/types';
+  useAdminCustomersList, 
+  useAdminCustomerDetail, 
+  useAdminCreateCustomer, 
+  useAdminUpdateCustomer, 
+  useAdminDeleteCustomer,
+  useAdminBanCustomer,
+  useAdminUnbanCustomer
+} from './admin/customers/hooks/index';
+export type { AdminCustomersListParams, AdminCustomerCreateInput, AdminCustomerUpdateInput } from './admin/customers/types';
 
 // Admin Management APIs & Hooks - Sellers
 export { adminSellersApi } from './admin/sellers/client';

@@ -17,7 +17,7 @@ export const adminClient = {
   // Users Management
   async listUsers(page?: number, limit?: number, search?: string): Promise<{ users: User[]; total: number }> {
     try {
-      const response = await apiClient.get<ListResponse<User>>(`${ADMIN_BASE_URL}/users`, {
+      const response = await apiClient.get<ListResponse<User>>(`${ADMIN_BASE_URL}/customers`, {
         params: { page, limit, search },
       });
       return { users: response.data.data, total: response.data.total };
@@ -28,7 +28,7 @@ export const adminClient = {
 
   async getUser(id: number): Promise<User> {
     try {
-      const response = await apiClient.get<ApiResponse<User>>(`${ADMIN_BASE_URL}/users/${id}`);
+      const response = await apiClient.get<ApiResponse<User>>(`${ADMIN_BASE_URL}/customers/${id}`);
       return response.data.data;
     } catch (error) {
       throw error;
@@ -37,7 +37,7 @@ export const adminClient = {
 
   async updateUserStatus(id: number, status: string): Promise<User> {
     try {
-      const response = await apiClient.patch<ApiResponse<User>>(`${ADMIN_BASE_URL}/users/${id}/status`, { status });
+      const response = await apiClient.patch<ApiResponse<User>>(`${ADMIN_BASE_URL}/customers/${id}/status`, { status });
       return response.data.data;
     } catch (error) {
       throw error;
@@ -46,7 +46,7 @@ export const adminClient = {
 
   async banUser(id: number, reason: string): Promise<User> {
     try {
-      const response = await apiClient.post<ApiResponse<User>>(`${ADMIN_BASE_URL}/users/${id}/ban`, { reason });
+      const response = await apiClient.post<ApiResponse<User>>(`${ADMIN_BASE_URL}/customers/${id}/ban`, { reason });
       return response.data.data;
     } catch (error) {
       throw error;

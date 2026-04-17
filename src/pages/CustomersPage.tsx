@@ -1,14 +1,14 @@
 ﻿import React, { useMemo, useState } from "react";
 import { Plus, Eye, Pencil, Trash } from "@phosphor-icons/react";
 import {
-  useAdminUsersList,
-  useAdminCreateUser,
-  useAdminUpdateUser,
-  useAdminDeleteUser,
-  useAdminBanUser,
-  useAdminUnbanUser,
+  useAdminCustomersList,
+  useAdminCreateCustomer,
+  useAdminUpdateCustomer,
+  useAdminDeleteCustomer,
+  useAdminBanCustomer,
+  useAdminUnbanCustomer,
 } from "@/api/exports";
-import type { AdminUser } from "@/api/admin/users/types";
+import type { AdminCustomer } from "@/api/admin/customers/types";
 import {
   Button,
   Table,
@@ -23,10 +23,10 @@ function CustomersPage() {
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "banned">("all");
-  const [showUserModal, setShowUserModal] = useState<
+  const [showCustomerModal, setShowCustomerModal] = useState<
     "create" | "edit" | "view" | null
   >(null);
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<AdminCustomer | null>(null);
   const [formInitialValues, setFormInitialValues] = useState<
     Partial<UserFormValues>
   >({
@@ -47,54 +47,54 @@ function CustomersPage() {
     [page, limit, search, status],
   );
 
-  const { data: usersData, isLoading, error } = useAdminUsersList(params);
-  const createUser = useAdminCreateUser();
-  const updateUser = useAdminUpdateUser();
-  const deleteUser = useAdminDeleteUser();
-  const banUser = useAdminBanUser();
-  const unbanUser = useAdminUnbanUser();
+  const { data: customersData, isLoading, error } = useAdminCustomersList(params);
+  const createCustomer = useAdminCreateCustomer();
+  const updateCustomer = useAdminUpdateCustomer();
+  const deleteCustomer = useAdminDeleteCustomer();
+  const banCustomer = useAdminBanCustomer();
+  const unbanCustomer = useAdminUnbanCustomer();
 
-  const users = usersData?.data || [];
+  const customers = customersData?.data || [];
 
   const openCreateModal = () => {
-    setSelectedUser(null);
+    setSelectedCustomer(null);
     setFormInitialValues({ email: "", name: "", phone: "", status: "active" });
-    setShowUserModal("create");
+    setShowCustomerModal("create");
   };
 
-  const openEditModal = (user: AdminUser) => {
-    setSelectedUser(user);
+  const openEditModal = (customer: AdminCustomer) => {
+    setSelectedCustomer(customer);
     setFormInitialValues({
-      email: user.email,
-      name: user.name || "",
-      phone: user.phone || "",
-      status: user.status as "active" | "banned",
+      email: customer.email,
+      name: customer.name || "",
+      phone: customer.phone || "",
+      status: customer.status as "active" | "banned",
     });
-    setShowUserModal("edit");
+    setShowCustomerModal("edit");
   };
 
-  const openViewModal = (user: AdminUser) => {
-    setSelectedUser(user);
-    setShowUserModal("view");
+  const openViewModal = (customer: AdminCustomer) => {
+    setSelectedCustomer(customer);
+    setShowCustomerModal("view");
   };
 
-  const handleDelete = (user: AdminUser) => {
-    setSelectedUser(user);
+  const handleDelete = (customer: AdminCustomer) => {
+    setSelectedCustomer(customer);
     setShowDeleteConfirm(true);
   };
 
   const confirmDelete = async () => {
-    if (!selectedUser) return;
-    await deleteUser.mutateAsync(selectedUser.id);
+    if (!selectedCustomer) return;
+    await deleteCustomer.mutateAsync(selectedCustomer.id);
     setShowDeleteConfirm(false);
-    setSelectedUser(null);
+    setSelectedCustomer(null);
   };
 
-  const toggleBan = async (user: AdminUser) => {
-    if (user.status === "banned") {
-      await unbanUser.mutateAsync(user.id);
+  const toggleBan = async (customer: AdminCustomer) => {
+    if (customer.status === "banned") {
+      await unbanCustomer.mutateAsync(customer.id);
     } else {
-      await banUser.mutateAsync(user.id);
+      await banCustomer.mutateAsync(customer.id);
     }
   };
 
@@ -149,11 +149,11 @@ function CustomersPage() {
         </div>
 
         <Table
-          data={users}
+          data={customers}
           columns={tableColumns}
           isLoading={isLoading}
           error={error ? (error as any).message || String(error) : null}
-          emptyMessage="No users found"
+          emptyMessage="No customers found"
           searchValue={search}
           onSearchChange={(value) => {
             setSearch(value);
@@ -180,28 +180,28 @@ function CustomersPage() {
               setPage(1);
             }
           }}
-          rowActions={(user: AdminUser) => (
+          rowActions={(customer: AdminCustomer) => (
             <div className="flex items-center justify-end gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 icon={<Eye size={14} />}
-                onClick={() => openViewModal(user)}
+                onClick={() => openViewModal(customer)}
               />
               <Button
                 variant="outline"
                 size="sm"
                 icon={<Pencil size={14} />}
-                onClick={() => openEditModal(user)}
+                onClick={() => openEditModal(customer)}
               />
-              {/* <Button variant="secondary" size="sm" onClick={() => toggleBan(user)}>
-              {user.status === 'banned' ? 'Unban' : 'Ban'}
+              {/* <Button variant="secondary" size="sm" onClick={() => toggleBan(customer)}>
+              {customer.status === 'banned' ? 'Unban' : 'Ban'}
             </Button> */}
               <Button
                 variant="danger"
                 size="sm"
                 icon={<Trash size={14} />}
-                onClick={() => handleDelete(user)}
+                onClick={() => handleDelete(customer)}
               />
             </div>
           )}
@@ -210,7 +210,7 @@ function CustomersPage() {
         <Pagination
           page={page}
           limit={limit}
-          total={usersData?.total || 0}
+          total={customersData?.total || 0}
           onPageChange={(next) => setPage(next)}
           onLimitChange={(nextLimit) => {
             setLimit(nextLimit);
@@ -220,84 +220,84 @@ function CustomersPage() {
       </div>
       <ConfirmDialog
         isOpen={showDeleteConfirm}
-        title="Delete User"
+        title="Delete Customer"
         description="This operation cannot be undone. Continue?"
         confirmText="Delete"
         isDangerous
-        isLoading={deleteUser.isPending}
+        isLoading={deleteCustomer.isPending}
         onConfirm={confirmDelete}
         onCancel={() => setShowDeleteConfirm(false)}
       />
 
-      {showUserModal && (
+      {showCustomerModal && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="w-full max-w-lg bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-slate-900">
-                {showUserModal === "create" && "Create User"}
-                {showUserModal === "edit" && "Edit User"}
-                {showUserModal === "view" && "User Details"}
+                {showCustomerModal === "create" && "Create Customer"}
+                {showCustomerModal === "edit" && "Edit Customer"}
+                {showCustomerModal === "view" && "Customer Details"}
               </h2>
               <button
-                onClick={() => setShowUserModal(null)}
+                onClick={() => setShowCustomerModal(null)}
                 className="text-slate-400 hover:text-slate-600"
               >
                 ×
               </button>
             </div>
 
-            {showUserModal === "view" && selectedUser && (
+            {showCustomerModal === "view" && selectedCustomer && (
               <div className="space-y-3 text-sm text-slate-700">
                 <div>
                   <div className="font-semibold">Email</div>
-                  <div>{selectedUser.email}</div>
+                  <div>{selectedCustomer.email}</div>
                 </div>
                 <div>
                   <div className="font-semibold">Name</div>
-                  <div>{selectedUser.name}</div>
+                  <div>{selectedCustomer.name}</div>
                 </div>
                 <div>
                   <div className="font-semibold">Phone</div>
-                  <div>{selectedUser.phone || "—"}</div>
+                  <div>{selectedCustomer.phone || "—"}</div>
                 </div>
                 <div>
                   <div className="font-semibold">Status</div>
-                  <div>{selectedUser.status}</div>
+                  <div>{selectedCustomer.status}</div>
                 </div>
                 <div>
                   <div className="font-semibold">Joined</div>
-                  <div>{new Date(selectedUser.createdAt).toLocaleString()}</div>
+                  <div>{new Date(selectedCustomer.createdAt).toLocaleString()}</div>
                 </div>
               </div>
             )}
 
-            {(showUserModal === "create" || showUserModal === "edit") && (
+            {(showCustomerModal === "create" || showCustomerModal === "edit") && (
               <UserForm
                 key={
-                  showUserModal === "edit"
-                    ? (selectedUser?.id ?? "edit")
+                  showCustomerModal === "edit"
+                    ? (selectedCustomer?.id ?? "edit")
                     : "create"
                 }
-                isEdit={showUserModal === "edit"}
-                isSubmitting={createUser.isPending || updateUser.isPending}
+                isEdit={showCustomerModal === "edit"}
+                isSubmitting={createCustomer.isPending || updateCustomer.isPending}
                 defaultValues={formInitialValues}
-                onCancel={() => setShowUserModal(null)}
+                onCancel={() => setShowCustomerModal(null)}
                 onSubmit={(values: UserFormValues) => {
-                  if (showUserModal === "create") {
-                    createUser
+                  if (showCustomerModal === "create") {
+                    createCustomer
                       .mutateAsync({
                         email: values.email,
                         name: values.name,
                         phone: values.phone || undefined,
                       })
                       .then(() => {
-                        setShowUserModal(null);
+                        setShowCustomerModal(null);
                         setPage(1);
                       });
-                  } else if (showUserModal === "edit" && selectedUser) {
-                    updateUser
+                  } else if (showCustomerModal === "edit" && selectedCustomer) {
+                    updateCustomer
                       .mutateAsync({
-                        id: selectedUser.id,
+                        id: selectedCustomer.id,
                         data: {
                           name: values.name,
                           phone: values.phone || undefined,
@@ -305,8 +305,8 @@ function CustomersPage() {
                         },
                       })
                       .then(() => {
-                        setShowUserModal(null);
-                        setSelectedUser(null);
+                        setShowCustomerModal(null);
+                        setSelectedCustomer(null);
                       });
                   }
                 }}

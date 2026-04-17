@@ -15,23 +15,23 @@ export { useAdminAuth } from './hooks';
 export { adminClient } from './management-client';
 export { adminClient as default } from './management-client';
 
-// Submodules (Users, Sellers, Orders, Products) - Import without export * to avoid conflicts
+// Submodules (Customers, Sellers, Orders, Products) - Import without export * to avoid conflicts
 export { 
-  adminUsersApi,
-  useAdminUsersList,
-  useAdminUserDetail,
-  useAdminCreateUser,
-  useAdminUpdateUser,
-  useAdminDeleteUser,
-  useAdminBanUser,
-  useAdminUnbanUser
-} from './users/index';
+  adminCustomersApi,
+  useAdminCustomersList,
+  useAdminCustomerDetail,
+  useAdminCreateCustomer,
+  useAdminUpdateCustomer,
+  useAdminDeleteCustomer,
+  useAdminBanCustomer,
+  useAdminUnbanCustomer
+} from './customers/index';
 export type { 
-  AdminUser as User,
-  AdminUsersListParams,
-  AdminUserCreateInput,
-  AdminUserUpdateInput
-} from './users/types';
+  AdminCustomer as Customer,
+  AdminCustomersListParams,
+  AdminCustomerCreateInput,
+  AdminCustomerUpdateInput
+} from './customers/types';
 
 export { 
   adminSellersApi,
