@@ -13,7 +13,7 @@ export { Pagination } from './Pagination';
 export { Table, type TableColumn } from './Table';
 export { ConfirmDialog } from './ConfirmDialog';
 export { StatusBadge } from './StatusBadge';
-export { SearchFilter } from './SearchFilter';
+// export { SearchFilter } from './SearchFilter';
 export { Card, CardHeader, CardBody } from './Card';
 export { Badge } from './Badge';
 export { ErrorAlert } from './ErrorAlert';
