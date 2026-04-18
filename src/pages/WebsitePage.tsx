@@ -115,7 +115,6 @@ const WebsitePage = () => {
     const { sitemap, isLoading: sitemapLoading, error: sitemapError, refetch: refetchSitemap } = useSitemap();
     const { promotions, isLoading: promotionsLoading, error: promotionsError } = useWebsitePromotions();
 
-    console.log(promotions,'promostions');
     // Mutation hooks
     const bannerMutations = useWebsiteBannerMutations();
     const heroMutations = useWebsiteHeroMutations();
@@ -335,7 +334,6 @@ const WebsitePage = () => {
     };
 
     const handleToggleActive = async (type: WebsiteTab, item: Record<string, any>) => {
-        console.log(type,'type', item,'item');
         try {
             const payload = { isActive: !item.isActive };
             switch (type) {

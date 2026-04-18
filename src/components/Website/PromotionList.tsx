@@ -67,7 +67,6 @@ export const PromotionList: React.FC<PromotionListProps> = ({
                 </div>
             ) : (
                 promotions?.map((promotion) => {
-                    console.log(promotion,'promotion');
                     const isExpired = new Date(promotion.validUntil) < new Date();
                     const isNotYetActive = new Date(promotion.validFrom) > new Date();
 

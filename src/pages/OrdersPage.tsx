@@ -93,8 +93,6 @@ function OrdersPage() {
       setToastMessage({ type: 'error', message: (err instanceof Error) ? err.message : 'Action failed' });
     }
   };
-  console.log(ordersData,'or')
-
 
   const tableColumns: Array<TableColumn<AdminOrder>> = [
     {

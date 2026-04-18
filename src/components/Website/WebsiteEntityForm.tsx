@@ -388,10 +388,6 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
             formData.append("file", file, file.name);
             formData.append("folder", folder);
 
-            // DEBUG: verify the form payload includes the file and folder
-            for (const [key, value] of formData.entries()) {
-                console.log("upload formData entry", key, value);
-            }
 
             const response = await apiClient.post<{
                 success: boolean;

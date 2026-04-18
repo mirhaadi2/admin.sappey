@@ -146,8 +146,6 @@ function ProductEditPage() {
     );
   };
 
-  console.log(initialValues,'intialValues')
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Sticky Top Bar with Back Button */}

@@ -45,8 +45,6 @@ export const HeroList: React.FC<HeroListProps> = ({
         );
     }
 
-    console.log(heroes,'heroes')
-
     return (
         <div className="space-y-4">
             <div className="flex justify-end">

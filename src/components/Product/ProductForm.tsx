@@ -49,7 +49,6 @@ export function ProductForm({
   onSubmit,
   onDirtyChange,
 }: ProductFormProps) {
-  console.log("ProductForm rendered with defaultValues:", defaultValues);
   const formMethods = useForm<ProductFormValues>({
     defaultValues: {
       name: "",
