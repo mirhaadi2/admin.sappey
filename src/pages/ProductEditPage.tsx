@@ -56,6 +56,10 @@ function ProductEditPage() {
         isCustomerFavourites: false,
         isBestseller: false,
         stock: 0,
+        benefits: [],
+        ingredients: [],
+        nutritionFacts: [],
+        variants: [],
       };
     }
 
@@ -71,6 +75,8 @@ function ProductEditPage() {
       isCustomerFavourites: Boolean(product?.isCustomerFavourites),
       isBestseller: Boolean(product?.isBestseller),
       variants: Array.isArray(product.variants) ? product.variants : [],
+      benefits: Array.isArray(product.benefits) ? product.benefits : [],
+      ingredients: Array.isArray(product.ingredients) ? product.ingredients : [],
     };
   }, [product]);
 
@@ -178,7 +184,6 @@ function ProductEditPage() {
         <div className="mx-auto max-w-5xl bg-white rounded-xl border border-slate-200 p-2 shadow-sm">
           <ProductForm
             title="General Information"
-            submitLabel="Update Product"
             isSubmitting={isUpdating}
             defaultValues={initialValues}
             categories={categoriesResponse?.data?.categories || []}

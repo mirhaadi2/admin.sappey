@@ -8,9 +8,10 @@ import {
   TrendUp,
   Calendar,
   Tag,
-  CurrencyInr,
-  Percent,
   Image as ImageIcon,
+  Heart,
+  ListChecks,
+  Flask,
 } from "@phosphor-icons/react";
 import { useAdminProductDetail } from "@/api/exports";
 import { Button, VariantsSection, Pagination } from "@/components";
@@ -67,6 +68,11 @@ function ProductDetailsPage() {
 
   const product = productResponse.data;
 
+  // Logic to determine the display price (fallback to first variant if base price is 0)
+  const displayPrice = product.price > 0
+    ? product.price
+    : product.variants?.[0]?.price || 0;
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -92,11 +98,10 @@ function ProductDetailsPage() {
             </div>
             <div className="flex items-center gap-3">
               <span
-                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  product.status === "published"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-yellow-100 text-yellow-800"
-                }`}
+                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${product.status === "published"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+                  }`}
               >
                 {product.status === "published" ? "Published" : "Draft"}
               </span>
@@ -111,10 +116,10 @@ function ProductDetailsPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto pt-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="max-w-7xl mx-auto pt-6 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-2">
+          <div className="lg:col-span-2 space-y-6">
             {/* Product Images */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center gap-2 mb-6">
@@ -128,23 +133,20 @@ function ProductDetailsPage() {
                   {product.images.map((image, index) => (
                     <div
                       key={index}
-                      className="aspect-square rounded-lg overflow-hidden border border-slate-200"
+                      className="aspect-square rounded-lg overflow-hidden border border-slate-200 bg-slate-50"
                     >
                       <img
                         src={image}
                         alt={`${product.name} - ${index + 1}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                        className="w-full h-full object-contain hover:scale-105 transition-transform duration-200"
                       />
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="aspect-square bg-slate-100 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300">
+                <div className="aspect-video bg-slate-100 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-300">
                   <div className="text-center">
-                    <ImageIcon
-                      size={48}
-                      className="text-slate-400 mx-auto mb-2"
-                    />
+                    <ImageIcon size={48} className="text-slate-400 mx-auto mb-2" />
                     <p className="text-slate-500">No images available</p>
                   </div>
                 </div>
@@ -152,80 +154,58 @@ function ProductDetailsPage() {
             </div>
 
             {/* Product Description */}
+            {/* Product Description */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <h2 className="text-lg font-semibold text-slate-900 mb-4">
                 Description
               </h2>
               {product.description ? (
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-slate-700 leading-relaxed">
-                    {product.description}
-                  </p>
-                </div>
+                <div
+                  /* 'prose' restores bullets and headings.
+                     'prose-slate' sets the color theme.
+                     'max-w-none' ensures it fills your card width.
+                  */
+                  className="prose prose-slate max-w-none text-slate-700 leading-relaxed break-words"
+                  dangerouslySetInnerHTML={{ __html: product.description }}
+                />
               ) : (
                 <p className="text-slate-500 italic">No description provided</p>
               )}
             </div>
-
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-2">
+          <div className="space-y-6">
             {/* Pricing Card */}
-            {/* <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <div className="flex items-center gap-2 mb-6">
-                <CurrencyInr size={20} className="text-slate-600" />
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Pricing
-                </h2>
-              </div>
-              <div className="space-y-2">
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">
+                Pricing Overview
+              </h2>
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Base Price</span>
-                  <span className="text-lg font-bold text-slate-900">
-                    ₹{product.price?.toLocaleString()}
+                  <span className="text-slate-600">Base Price</span>
+                  <span className="text-2xl font-bold text-slate-900">
+                    ₹{displayPrice.toLocaleString()}
                   </span>
                 </div>
-                {product.discountedPrice && (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-600">
-                        Discounted Price
-                      </span>
-                      <span className="text-lg font-bold text-green-600">
-                        ₹{product.discountedPrice?.toLocaleString()}
-                      </span>
-                    </div>
-                    {product.discountedPercent && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-600">Discount</span>
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          {product.discountedPercent.toFixed(1)}% off
-                        </span>
-                      </div>
-                    )}
-                  </>
-                )}
                 {product.gst_rate && (
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <span className="text-sm text-slate-600">GST Rate</span>
-                    <span className="text-sm text-slate-900">
+                    <span className="text-sm font-medium text-slate-900">
                       {product.gst_rate}%
                     </span>
                   </div>
                 )}
               </div>
-            </div> */}
+            </div>
 
             {/* Statistics Card */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center gap-2 mb-6">
                 <TrendUp size={20} className="text-slate-600" />
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Statistics
-                </h2>
+                <h2 className="text-lg font-semibold text-slate-900">Statistics</h2>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Eye size={16} className="text-slate-400" />
@@ -244,46 +224,31 @@ function ProductDetailsPage() {
                     {product.orders?.toLocaleString() || 0}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Star size={16} className="text-slate-400" />
-                    <span className="text-sm text-slate-600">Rating</span>
-                  </div>
-                  <span className="text-sm font-semibold text-slate-900">
-                    {product.rating?.toFixed(1) || "0.0"}
-                  </span>
-                </div>
               </div>
             </div>
 
-            {/* Timestamps Card */}
+            {/* Timeline Card */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center gap-2 mb-6">
                 <Calendar size={20} className="text-slate-600" />
-                <h2 className="text-lg font-semibold text-slate-900">
-                  Timeline
-                </h2>
+                <h2 className="text-lg font-semibold text-slate-900">Timeline</h2>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
-                      Created
-                    </p>
+                    <p className="text-sm font-medium text-slate-900">Created</p>
                     <p className="text-xs text-slate-500">
-                      {format(new Date(product.createdAt), "PPP p")}
+                      {product.createdAt ? format(new Date(product.createdAt), "PPP p") : "N/A"}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
-                      Last Updated
-                    </p>
+                    <p className="text-sm font-medium text-slate-900">Last Updated</p>
                     <p className="text-xs text-slate-500">
-                      {format(new Date(product.updatedAt), "PPP p")}
+                      {product.updatedAt ? format(new Date(product.updatedAt), "PPP p") : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -292,9 +257,7 @@ function ProductDetailsPage() {
 
             {/* Quick Actions */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                Quick Actions
-              </h2>
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
               <div className="space-y-3">
                 <Button
                   variant="outline"
@@ -313,62 +276,109 @@ function ProductDetailsPage() {
                 >
                   View in Store
                 </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start"
-                  size="sm"
-                  icon={<ShoppingCart size={16} />}
-                >
-                  View Analytics
-                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Full Width: Specifications */}
-        <div className="space-y-4 mt-4">
+        {/* Full Width Sections */}
+        <div className="mt-6 space-y-6">
+          {/* Specifications */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">
-              Specifications
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm font-medium text-slate-600">Category</span>
-                <span className="text-sm text-slate-900">{product.categoryName || "N/A"}</span>
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Specifications</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-500 uppercase mb-1">Category</p>
+                <p className="text-sm font-semibold text-slate-900">{product.categoryName || "N/A"}</p>
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm font-medium text-slate-600">Stock Level</span>
-                <span className="text-sm text-slate-900">{product.stock} KG</span>
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-500 uppercase mb-1">Stock Level</p>
+                <p className="text-sm font-semibold text-slate-900">{product.stock} KG</p>
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm font-medium text-slate-600">Rating</span>
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-500 uppercase mb-1">Rating</p>
                 <div className="flex items-center gap-1">
                   <Star size={16} weight="fill" className="text-amber-400" />
-                  <span className="text-sm text-slate-900">{product.rating?.toFixed(1) || "0.0"}</span>
+                  <span className="text-sm font-semibold text-slate-900">{product.rating?.toFixed(1) || "0.0"}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm font-medium text-slate-600">Reviews</span>
-                <span className="text-sm text-slate-900">{product.reviews || 0}</span>
+              <div className="p-3 bg-slate-50 rounded-lg">
+                <p className="text-xs font-medium text-slate-500 uppercase mb-1">Variants</p>
+                <p className="text-sm font-semibold text-slate-900">{product.variantsCount || 0} Registered</p>
               </div>
             </div>
           </div>
 
-          {/* Full Width: Product Variants */}
+          {/* Health & Ingredients Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Benefits Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Heart size={20} className="text-red-500" weight="fill" />
+                <h2 className="text-lg font-semibold text-slate-900">Health Benefits</h2>
+              </div>
+              {product.benefits && product.benefits.length > 0 ? (
+                <ul className="space-y-3">
+                  {product.benefits.map((benefit, index) => (
+                    <li key={index} className="flex gap-3 text-sm text-slate-600">
+                      <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0" />
+                      {benefit}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-slate-500 italic">No specific benefits listed.</p>
+              )}
+            </div>
+
+            {/* Ingredients & Nutrition Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+              <div className="flex items-center gap-2 mb-4">
+                <ListChecks size={20} className="text-slate-600" />
+                <h2 className="text-lg font-semibold text-slate-900">Ingredients</h2>
+              </div>
+              {product.ingredients && product.ingredients.length > 0 ? (
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  {product.ingredients.join(", ")}
+                </p>
+              ) : (
+                <p className="text-sm text-slate-500 italic">Ingredients not specified.</p>
+              )}
+
+              {/* Nutrition Facts Sub-section */}
+              <div className="mt-6 pt-6 border-t border-slate-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <Flask size={20} className="text-slate-600" />
+                  <h3 className="font-semibold text-slate-900">Nutrition Facts</h3>
+                </div>
+                {product.nutritionFacts && product.nutritionFacts.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                    {product.nutritionFacts.map((fact, index) => (
+                      <div key={index} className="flex justify-between border-b border-slate-50 pb-1">
+                        <span className="text-xs text-slate-500 uppercase">{fact.label}</span>
+                        <span className="text-sm font-medium text-slate-900">{fact.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500 italic">Nutrition data unavailable.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Product Variants Section */}
           <VariantsSection
-            variants={product.variants}
+            variants={product.variants || []}
             variantsCount={product.variantsCount || 0}
           />
 
-          {/* Full Width: Seller Offerings */}
+          {/* Seller Offerings Section */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
             <div className="flex items-center gap-2 mb-6">
               <ShoppingCart size={20} className="text-slate-600" />
-              <h2 className="text-lg font-semibold text-slate-900">
-                Seller Offerings
-              </h2>
-              <span className="text-sm text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
+              <h2 className="text-lg font-semibold text-slate-900">Seller Offerings</h2>
+              <span className="text-sm text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
                 {product.sellerOfferingsPagination?.total || 0} sellers
               </span>
             </div>
@@ -378,79 +388,39 @@ function ProductDetailsPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 font-semibold text-slate-700">
-                        Seller
-                      </th>
-                      <th className="text-left py-3 px-4 font-semibold text-slate-700">
-                        Contact
-                      </th>
-                      <th className="text-right py-3 px-4 font-semibold text-slate-700">
-                        Price
-                      </th>
-                      <th className="text-right py-3 px-4 font-semibold text-slate-700">
-                        Available Stock
-                      </th>
-                      <th className="text-right py-3 px-4 font-semibold text-slate-700">
-                        Total Stock
-                      </th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-700">Seller</th>
+                      <th className="text-left py-3 px-4 font-semibold text-slate-700">Contact</th>
+                      <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
+                      <th className="text-right py-3 px-4 font-semibold text-slate-700">Available Stock</th>
                     </tr>
                   </thead>
                   <tbody>
                     {product.sellerOfferings.map((offering, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-slate-100 hover:bg-slate-50"
-                      >
+                      <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                         <td className="py-4 px-4">
-                          <div>
-                            <div className="font-medium text-slate-900">
-                              {offering.sellerBusinessName}
-                            </div>
-                            <div className="text-sm text-slate-600">
-                              {offering.sellerOwnerName}
-                            </div>
-                          </div>
+                          <div className="font-medium text-slate-900">{offering.sellerBusinessName}</div>
+                          <div className="text-xs text-slate-500">{offering.sellerOwnerName}</div>
                         </td>
                         <td className="py-4 px-4">
-                          <div className="text-sm">
-                            <div className="text-slate-700">
-                              {offering.sellerOwnerEmail}
-                            </div>
-                            <div className="text-slate-500">
-                              {offering.sellerBusinessPhone}
-                            </div>
-                          </div>
+                          <div className="text-slate-600">{offering.sellerOwnerEmail}</div>
+                          <div className="text-xs text-slate-400">{offering.sellerBusinessPhone}</div>
+                        </td>
+                        <td className="py-4 px-4 text-right font-semibold text-slate-900">
+                          ₹{offering.sellerPrice?.toLocaleString()}
                         </td>
                         <td className="py-4 px-4 text-right">
-                          <div className="font-semibold text-slate-900">
-                            ₹{offering.sellerPrice?.toLocaleString()}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span
-                            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              offering.availableStock > 10
-                                ? "bg-green-100 text-green-800"
-                                : offering.availableStock > 0
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                            }`}
-                          >
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${offering.availableStock > 10 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
+                            }`}>
                             {offering.availableStock}
                           </span>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="text-slate-700">
-                            {offering.totalStock}
-                          </div>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
 
-                {product?.sellerOfferingsPagination && product?.sellerOfferingsPagination?.totalPages > 1 && (
-                  <div className="mt-6">
+                {/* {product.sellerOfferingsPagination?.totalPages > 1 && (
+                  <div className="mt-6 border-t pt-4">
                     <Pagination
                       page={product.sellerOfferingsPagination.page}
                       limit={product.sellerOfferingsPagination.limit}
@@ -459,20 +429,13 @@ function ProductDetailsPage() {
                       onLimitChange={setSellerOfferingsLimit}
                     />
                   </div>
-                )}
+                )} */}
               </div>
             ) : (
-              <div className="text-center py-8">
-                <ShoppingCart
-                  size={48}
-                  className="text-slate-400 mx-auto mb-4"
-                />
-                <h3 className="text-lg font-medium text-slate-900 mb-2">
-                  No Seller Offerings
-                </h3>
-                <p className="text-slate-500">
-                  This product is not currently offered by any sellers.
-                </p>
+              <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200">
+                <ShoppingCart size={40} className="text-slate-300 mx-auto mb-3" />
+                <h3 className="text-slate-900 font-medium">No active offerings</h3>
+                <p className="text-slate-500 text-sm">No sellers are currently providing this product.</p>
               </div>
             )}
           </div>

@@ -40,6 +40,16 @@ export interface AdminProduct {
   id: string;
   name: string;
   description: string;
+  descriptionDetails?: Array<{
+    type: 'text' | 'highlight' | 'point';
+    content: string;
+  }>;
+  benefits?: string[];
+  ingredients?: string[];
+  nutritionFacts?: Array<{
+    label: string;
+    value: string;
+  }>;
   price: number;
   discountedPrice?: number;
   discountedPercent?: number;
@@ -117,11 +127,21 @@ export interface AdminProductCreateInput {
   name: string;
   slug?: string;
   description: string;
+  descriptionDetails?: Array<{
+    type: 'text' | 'highlight' | 'point';
+    content: string;
+  }>;
   gst_rate?: number;
   status?: "ACTIVE" | "INACTIVE";
   category: string;
   images?: string[];
   stock?: number;
+  benefits?: string[];
+  ingredients?: string[];
+  nutritionFacts?: Array<{
+    label: string;
+    value: string;
+  }>;
   variants?: Array<{
     price: number;
     discountedPrice?: number;
@@ -135,6 +155,10 @@ export interface AdminProductCreateInput {
 export interface AdminProductUpdateInput {
   name?: string;
   description?: string;
+  descriptionDetails?: Array<{
+    type: 'text' | 'highlight' | 'point';
+    content: string;
+  }>;
   gst_rate?: number;
   status?: "ACTIVE" | "INACTIVE";
   category?: string;
@@ -143,6 +167,12 @@ export interface AdminProductUpdateInput {
   isNew?: boolean;
   isCustomerFavourites?: boolean;
   isBestseller?: boolean;
+  benefits?: string[];
+  ingredients?: string[];
+  nutritionFacts?: Array<{
+    label: string;
+    value: string;
+  }>;
   variants?: Array<{
     price: number;
     discountedPrice?: number;

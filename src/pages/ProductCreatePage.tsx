@@ -83,7 +83,6 @@ function ProductCreatePage() {
             defaultValues={createDefaultValues}
             categories={categoriesData}
             isSubmitting={isCreatingProduct}
-            submitLabel={isCreatingProduct ? "Creating Product..." : "Create Product"}
             onSubmit={onCreateProduct}
             onCancel={() => navigate('/admin/products')}
           />

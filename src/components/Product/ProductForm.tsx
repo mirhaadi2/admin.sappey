@@ -1,15 +1,42 @@
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider, useFieldArray } from "react-hook-form";
+import { useForm, FormProvider, useFieldArray, Controller } from "react-hook-form";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+
 import { apiMethods } from "@/api/index";
 import { FormField } from "@/components/Form/FormField";
 import { Button } from "@/components";
+import { cn } from "@/lib/utils";
 import type { AdminCategory } from "@/api/admin/categories/types";
-import { Trash } from "lucide-react";
+import { 
+  Trash, Plus, Settings, Package, 
+  FileText, ImageIcon, ListTree, 
+  Sparkles, BarChart3, X 
+} from "lucide-react";
+
+// Professional styling for the Quill editor to match the Admin UI
+const quillStyles = `
+  .ql-container { border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; font-family: inherit; min-height: 250px; font-size: 16px; }
+  .ql-toolbar { border-top-left-radius: 12px; border-top-right-radius: 12px; background: #f8fafc; border-color: #e2e8f0 !important; }
+  .ql-container.ql-snow { border-color: #e2e8f0 !important; }
+  .ql-editor.ql-blank::before { color: #94a3b8; font-style: normal; }
+`;
+
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'align': [] }],
+    ['clean']
+  ],
+};
 
 export type ProductFormValues = {
   name: string;
   slug?: string;
   description: string;
+  descriptionDetails?: Array<{ type: 'text' | 'highlight' | 'point'; content: string; }>;
   gst_rate?: number;
   status?: "ACTIVE" | "INACTIVE";
   category: string;
@@ -18,10 +45,12 @@ export type ProductFormValues = {
   isNew?: boolean;
   isCustomerFavourites?: boolean;
   isBestseller?: boolean;
+  benefits?: string[];
+  ingredients?: string[];
+  nutritionFacts?: Array<{ label: string; value: string; }>;
   variants?: Array<{
     price: number;
     discountedPrice?: number;
-    discountedPercent?: number;
     weight?: number;
     weightUnit?: "G" | "KG";
     status?: "ACTIVE" | "INACTIVE";
@@ -30,8 +59,8 @@ export type ProductFormValues = {
 
 interface ProductFormProps {
   title?: string;
-  submitLabel?: string;
   isSubmitting?: boolean;
+  submitLabel?: string;
   defaultValues?: Partial<ProductFormValues>;
   categories?: AdminCategory[];
   onCancel: () => void;
@@ -40,8 +69,7 @@ interface ProductFormProps {
 }
 
 export function ProductForm({
-  title = "Product Details",
-  submitLabel = "Save Product",
+  title = "Product Management",
   isSubmitting = false,
   defaultValues = {},
   categories = [],
@@ -49,457 +77,286 @@ export function ProductForm({
   onSubmit,
   onDirtyChange,
 }: ProductFormProps) {
+  const [activeTab, setActiveTab] = useState<"general" | "content" | "inventory" | "variants" | "media">("general");
+  const [uploading, setUploading] = useState(false);
+  const [benefits, setBenefits] = useState<string[]>(defaultValues.benefits || []);
+  const [ingredients, setIngredients] = useState<string[]>(defaultValues.ingredients || []);
+
   const formMethods = useForm<ProductFormValues>({
+    shouldUnregister: false,
     defaultValues: {
-      name: "",
-      slug: "",
-      description: "",
-      gst_rate: 18,
-      status: "ACTIVE",
-      category: "",
-      images: [],
-      stock: 0,
-      isNew: false,
-      isCustomerFavourites: false,
-      isBestseller: false,
-      variants: [],
+      name: "", slug: "", description: "", descriptionDetails: [],
+      gst_rate: 18, status: "ACTIVE", category: "", images: [],
+      stock: 0, isNew: false, isCustomerFavourites: false, isBestseller: false,
+      benefits: [], ingredients: [], nutritionFacts: [], variants: [],
       ...defaultValues,
     },
   });
 
-  const { handleSubmit, reset, setValue, watch, control, formState } =
-    formMethods;
+  const { handleSubmit, reset, setValue, watch, control, formState: { isDirty } } = formMethods;
 
-  const {
-    fields: variantFields,
-    append: appendVariant,
-    remove: removeVariant,
-  } = useFieldArray({
-    control,
-    name: "variants",
-  });
+  const variants = useFieldArray({ control, name: "variants" });
+  const nutrition = useFieldArray({ control, name: "nutritionFacts" });
 
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [submitAction, setSubmitAction] = useState<"continue" | "return">(
-    "continue",
-  );
+  useEffect(() => { onDirtyChange?.(isDirty); }, [isDirty, onDirtyChange]);
 
   useEffect(() => {
-    onDirtyChange?.(formState.isDirty ?? false);
-  }, [formState.isDirty, onDirtyChange]);
+    if (!isDirty) reset({ ...formMethods.getValues(), ...defaultValues });
+  }, [defaultValues, reset]);
 
   useEffect(() => {
-    if (formState.isDirty) return;
-
-    // Explicitly map the boolean flags to ensure they aren't undefined
-    const merged: ProductFormValues = {
-      name: defaultValues.name ?? "",
-      slug: defaultValues.slug ?? "",
-      description: defaultValues.description ?? "",
-      gst_rate: defaultValues.gst_rate ?? 18,
-      status: defaultValues.status ?? "ACTIVE",
-      category: defaultValues.category ?? "",
-      images: defaultValues.images ?? [],
-      stock: defaultValues.stock ?? 0,
-      // Ensure these are explicitly boolean
-      isNew: !!defaultValues.isNew,
-      isCustomerFavourites: !!defaultValues.isCustomerFavourites,
-      isBestseller: !!defaultValues.isBestseller,
-      variants: defaultValues.variants ?? [],
-    };
-
-    reset(merged);
-  }, [defaultValues, reset, formState.isDirty]);
-
-  const currentImages = watch("images");
+    setBenefits(defaultValues.benefits || []);
+    setIngredients(defaultValues.ingredients || []);
+  }, [defaultValues.benefits, defaultValues.ingredients]);
 
   const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
-
     setUploading(true);
-    setUploadError(null);
-
     try {
       const existingImages = watch("images") || [];
       const uploadedKeys: string[] = [];
-
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
         const formData = new FormData();
-        formData.append("file", file);
+        formData.append("file", files[i]);
         formData.append("folder", "products");
-
-        const response = await apiMethods.upload<{ url: string; key: string }>(
-          "/uploads",
-          formData,
-        );
+        const response = await apiMethods.upload<{ url: string; key: string }>("/uploads", formData);
         const key = response.data?.key || response.data?.url;
-        if (key) {
-          uploadedKeys.push(key);
-        }
+        if (key) uploadedKeys.push(key);
       }
-
-      setValue("images", [...existingImages, ...uploadedKeys], {
-        shouldValidate: true,
-      });
+      setValue("images", [...existingImages, ...uploadedKeys], { shouldValidate: true, shouldDirty: true });
     } catch (error) {
-      setUploadError("Image upload failed, please try again.");
-      console.error("ProductForm upload error", error);
+      console.error("Upload failed", error);
     } finally {
       setUploading(false);
       if (event.target) event.target.value = "";
     }
   };
 
+  const tabs = [
+    { id: "general", label: "General", icon: Settings },
+    { id: "inventory", label: "Inventory", icon: Package },
+    { id: "content", label: "Content & Health", icon: FileText },
+    { id: "variants", label: "Variants", icon: ListTree },
+    { id: "media", label: "Media", icon: ImageIcon },
+  ] as const;
+
   return (
-    <div className="space-y-6 p-6 bg-slate-50 rounded-xl shadow-sm">
-      {title && (
-        <div className="flex justify-between items-center border-b border-slate-200 pb-3">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
-            <p className="text-sm text-slate-500 mt-1">
-              Enter the product details and configure variants. SKU values are
-              auto-generated by backend for consistency.
-            </p>
-          </div>
+    <div className="w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+      <style>{quillStyles}</style>
+      
+      {/* Top Header */}
+      <div className="px-8 py-6 bg-slate-900 text-white flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
+          <p className="text-slate-400 text-sm mt-1 uppercase tracking-wider font-medium">Sappey Foods Admin</p>
         </div>
-      )}
+        <div className="flex gap-3">
+          <Button variant="outline" className="text-white border-slate-700 hover:bg-slate-800" onClick={onCancel}>Cancel</Button>
+          <Button variant="primary" disabled={isSubmitting} onClick={handleSubmit((data) => onSubmit({ ...data, benefits, ingredients }, "return"))}>
+            {isSubmitting ? "Saving..." : "Save Product"}
+          </Button>
+        </div>
+      </div>
 
-      <FormProvider {...formMethods}>
-        <form
-          onSubmit={handleSubmit((values) => {
-            const normalizedVariants = Array.isArray(values.variants)
-              ? values.variants
-                  .filter((variant) => variant.price !== undefined)
-                  .map((variant) => ({
-                    price: Number(variant.price),
-                    discountedPrice:
-                      variant.discountedPrice !== undefined
-                        ? Number(variant.discountedPrice)
-                        : undefined,
-                    discountedPercent:
-                      variant.discountedPercent !== undefined
-                        ? Number(variant.discountedPercent)
-                        : undefined,
-                    weight:
-                      variant.weight !== undefined
-                        ? Number(variant.weight)
-                        : undefined,
-                    weightUnit: variant.weightUnit || "G",
-                    status: variant.status || "ACTIVE",
-                  }))
-              : [];
+      <div className="flex flex-col md:flex-row min-h-[650px]">
+        {/* Sidebar Navigation */}
+        <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-4 space-y-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+                activeTab === tab.id ? "bg-blue-600 text-white shadow-lg" : "text-slate-600 hover:bg-slate-200"
+              )}
+            >
+              <tab.icon size={18} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
 
-            const normalized: ProductFormValues = {
-              ...values,
-              gst_rate: values.gst_rate ?? 18,
-              images: values.images || [],
-              variants: normalizedVariants,
-            };
-            onSubmit(normalized, submitAction);
-          })}
-          className="grid grid-cols-2 gap-4"
-        >
-          <FormField
-            name="name"
-            label="Product Name"
-            required
-            className="col-span-2"
-          />
-          <FormField
-            name="slug"
-            label="Slug"
-            className="col-span-2"
-            helperText="Helpful for clean URLs"
-          />
-          <FormField
-            name="description"
-            label="Description"
-            type="textarea"
-            className="col-span-2"
-            required
-          />
-          <FormField
-            name="gst_rate"
-            label="GST Rate %"
-            type="select"
-            required
-            options={[
-              { value: "0", label: "0%" },
-              { value: "5", label: "5%" },
-              { value: "12", label: "12%" },
-              { value: "18", label: "18%" },
-              { value: "28", label: "28%" },
-            ]}
-          />
-          <FormField
-            name="status"
-            label="Status"
-            type="select"
-            required
-            options={[
-              { value: "ACTIVE", label: "Active" },
-              { value: "INACTIVE", label: "Inactive" },
-            ]}
-          />
-          <FormField
-            name="category"
-            label="Category"
-            type="select"
-            required
-            options={categories.map((cat) => ({
-              value: cat.id,
-              label: cat.name,
-            }))}
-          />
-          <FormField name="stock" label="Stock (kg)" type="number" />
-
-          <div className="col-span-2 space-y-4 mt-4">
-            <h3 className="text-sm font-semibold text-slate-800 border-b border-slate-200 pb-2">
-              Product Flags
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-              <div className="max-w-xs">
-                <FormField
-                  name="isNew"
-                  label="Mark as New Arrival"
-                  type="checkbox"
-                  helperText="Display this product in the 'New Arrivals' section"
-                />
-              </div>
-
-              <div className="max-w-xs">
-                <FormField
-                  name="isCustomerFavourites"
-                  label="Mark as Customer Favourite"
-                  type="checkbox"
-                  helperText="Highlight this product as a customer favorite"
-                />
-              </div>
-
-              <div className="max-w-xs">
-                <FormField
-                  name="isBestseller"
-                  label="Mark as Bestseller"
-                  type="checkbox"
-                  helperText="Display this product in the 'Bestsellers' section"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="col-span-2 rounded-md border border-slate-200 p-4 bg-white">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-slate-800">
-                Product Variants/Options
-              </h3>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() =>
-                  appendVariant({
-                    price: 0,
-                    discountedPrice: undefined,
-                    discountedPercent: undefined,
-                    weight: 0,
-                    weightUnit: "G",
-                    status: "ACTIVE",
-                  })
-                }
-              >
-                Add Variant
-              </Button>
-            </div>
-
-            {variantFields.length === 0 && (
-              <p className="text-xs text-slate-500">No variants added yet.</p>
-            )}
-
-            <div className="grid grid-cols-12 gap-2">
-              {variantFields.map((variant, index) => (
-                <div
-                  className="col-span-12 grid grid-cols-12 gap-2 border rounded-lg p-3 bg-slate-50 items-start"
-                  key={variant.id}
-                >
-                  <FormField
-                    name={`variants.${index}.weightUnit`}
-                    label="Unit"
-                    type="select"
-                    options={[
-                      { value: "G", label: "Grams (G)" },
-                      { value: "KG", label: "Kilograms (KG)" },
-                    ]}
-                    className="col-span-4"
-                  />
-                  <FormField
-                    name={`variants.${index}.weight`}
-                    label="Weight"
-                    type="number"
-                    className="col-span-4"
-                  />
-                  <FormField
-                    name={`variants.${index}.price`}
-                    label="Price"
-                    type="number"
-                    required
-                    className="col-span-4"
-                  />
-                  <FormField
-                    name={`variants.${index}.discountedPrice`}
-                    label="Discounted Price"
-                    type="number"
-                    className="col-span-4"
-                  />
-                  <FormField
-                    name={`variants.${index}.discountedPercent`}
-                    label="Discount %"
-                    type="number"
-                    className="col-span-4"
-                  />
-                  <FormField
-                    name={`variants.${index}.status`}
-                    label="Status"
-                    type="select"
-                    options={[
-                      { value: "ACTIVE", label: "Active" },
-                      { value: "INACTIVE", label: "Inactive" },
-                    ]}
-                    className="col-span-3"
-                  />
-
-                  {/* FIXED BUTTON CONTAINER */}
-                  <div className="col-span-1 flex flex-col justify-end pb-1.5 h-full">
-                    <Button
-                      type="button"
-                      variant="danger"
-                      className="w-8 h-8 p-0 flex items-center justify-center min-w-0"
-                      onClick={() => removeVariant(index)}
-                    >
-                      <Trash size={16} />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="col-span-2 space-y-2">
-            <label className="block text-sm font-medium text-slate-700">
-              Product Images
-            </label>
-            <input
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleUpload}
-              disabled={uploading}
-              className="block w-full text-slate-600 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-            />
-            {uploading && (
-              <p className="text-xs text-blue-600">Uploading images...</p>
-            )}
-            {uploadError && (
-              <p className="text-xs text-red-500">{uploadError}</p>
-            )}
-            <div className="grid grid-cols-3 gap-2 mt-2">
-              {currentImages && currentImages.length > 0 ? (
-                currentImages.map((url, index) => (
-                  <div
-                    key={index}
-                    className="aspect-square rounded-md overflow-hidden border border-slate-200 bg-slate-50 relative"
-                  >
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.currentTarget;
-                        // Only swap if we aren't already showing the placeholder
-                        // This stops the infinite loop even if placeholder.png is missing
-                        if (!target.src.includes("placeholder.png")) {
-                          target.src = "/placeholder.png";
-                        }
-                      }}
+        {/* Content Area */}
+        <div className="flex-1 p-8 overflow-y-auto max-h-[800px]">
+          <FormProvider {...formMethods}>
+            <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
+              
+              {/* TAB: GENERAL */}
+              {activeTab === "general" && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  <div className="grid grid-cols-2 gap-6">
+                    <FormField name="name" label="Product Name" required className="col-span-2" />
+                    <FormField name="slug" label="URL Slug" className="col-span-2" helperText="Helpful for SEO" />
+                    <FormField name="category" label="Category" type="select" required 
+                      options={categories.map(c => ({ value: c.id, label: c.name }))} 
                     />
-                    {/* Optional: Add a remove button here since we're fixing the UI */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newImages = currentImages.filter(
-                          (_, i) => i !== index,
-                        );
-                        setValue("images", newImages, { shouldDirty: true });
-                      }}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-3 w-3"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
+                    <FormField name="gst_rate" label="GST Rate" type="select" 
+                      options={["0", "5", "12", "18", "28"].map(v => ({ value: v, label: `${v}%` }))} 
+                    />
+                    <FormField name="status" label="Product Status" type="select" 
+                      options={[{ value: "ACTIVE", label: "Active" }, { value: "INACTIVE", label: "Inactive" }]} 
+                    />
                   </div>
-                ))
-              ) : (
-                <div className="col-span-3 py-8 border-2 border-dashed border-slate-200 rounded-md flex flex-col items-center justify-center">
-                  <p className="text-sm text-slate-400 font-medium">
-                    No images uploaded yet
-                  </p>
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className="col-span-2 flex justify-between gap-3 pt-4 border-t border-slate-200">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
+              {/* TAB: INVENTORY */}
+              {activeTab === "inventory" && (
+                <div className="space-y-8 animate-in fade-in duration-300">
+                  <section>
+                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Stock Levels</h4>
+                    <FormField name="stock" label="Total Inventory (kg)" type="number" />
+                  </section>
+                  <section className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
+                    <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2"><Sparkles size={18}/> Marketing Badges</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField name="isNew" label="New Arrival" type="checkbox" />
+                      <FormField name="isBestseller" label="Bestseller" type="checkbox" />
+                      <FormField name="isCustomerFavourites" label="Customer Favourite" type="checkbox" />
+                    </div>
+                  </section>
+                </div>
+              )}
 
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => {
-                  setSubmitAction("continue");
-                  handleSubmit((values) => onSubmit(values, "continue"))();
-                }}
-                disabled={isSubmitting}
-              >
-                Save & Continue
-              </Button>
+              {/* TAB: CONTENT & HEALTH (Quill Implementation) */}
+              {activeTab === "content" && (
+                <div className="space-y-8 animate-in fade-in duration-300">
+                  <div className="space-y-3">
+                    <label className="text-sm font-bold text-slate-700 uppercase tracking-wider">Detailed Description</label>
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <ReactQuill 
+                          theme="snow"
+                          {...field}
+                          onChange={(content) => field.onChange(content)}
+                          modules={quillModules}
+                          placeholder="Craft a compelling product story..."
+                        />
+                      )}
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Benefits */}
+                    <div className="p-5 bg-amber-50 rounded-2xl border border-amber-100">
+                      <div className="flex justify-between items-center mb-4 text-amber-900 font-bold">
+                        <span>✨ Benefits</span>
+                        <Button size="sm" variant="secondary" onClick={() => setBenefits([...benefits, ""])}><Plus size={14}/></Button>
+                      </div>
+                      {benefits.map((benefit, i) => (
+                        <div key={i} className="flex gap-2 mb-2">
+                          <input 
+                            value={benefit} 
+                            onChange={(e) => {
+                              const newBenefits = [...benefits];
+                              newBenefits[i] = e.target.value;
+                              setBenefits(newBenefits);
+                            }}
+                            className="flex-1 p-2 border rounded-lg text-sm bg-white" 
+                            placeholder="e.g. Rich in Omega-3" 
+                          />
+                          <button onClick={() => setBenefits(benefits.filter((_, idx) => idx !== i))} className="text-red-500"><Trash size={16}/></button>
+                        </div>
+                      ))}
+                    </div>
 
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  setSubmitAction("return");
-                  handleSubmit((values) => onSubmit(values, "return"))();
-                }}
-                disabled={isSubmitting}
-              >
-                Save & Return
-              </Button>
-            </div>
-          </div>
-        </form>
-      </FormProvider>
+                    {/* Ingredients */}
+                    <div className="p-5 bg-green-50 rounded-2xl border border-green-100">
+                      <div className="flex justify-between items-center mb-4 text-green-900 font-bold">
+                        <span>🌿 Ingredients</span>
+                        <Button size="sm" variant="secondary" onClick={() => setIngredients([...ingredients, ""])}><Plus size={14}/></Button>
+                      </div>
+                      {ingredients.map((ingredient, i) => (
+                        <div key={i} className="flex gap-2 mb-2">
+                          <input 
+                            value={ingredient} 
+                            onChange={(e) => {
+                              const newIngredients = [...ingredients];
+                              newIngredients[i] = e.target.value;
+                              setIngredients(newIngredients);
+                            }}
+                            className="flex-1 p-2 border rounded-lg text-sm bg-white" 
+                            placeholder="e.g. Kashmiri Walnuts" 
+                          />
+                          <button onClick={() => setIngredients(ingredients.filter((_, idx) => idx !== i))} className="text-red-500"><Trash size={16}/></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Nutrition */}
+                  <div className="p-5 bg-slate-900 rounded-2xl border border-slate-800 shadow-lg">
+                    <div className="flex justify-between items-center mb-4 font-bold text-white">
+                      <span className="flex items-center gap-2"><BarChart3 size={18} className="text-blue-400"/> Nutrition Facts</span>
+                      <Button size="sm" variant="secondary" className="bg-white/10 text-white hover:bg-white/20 border-none" onClick={() => nutrition.append({ label: "", value: "" })}><Plus size={14}/></Button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {nutrition.fields.map((f, i) => (
+                        <div key={f.id} className="flex gap-2 bg-white/5 p-2 rounded-xl border border-white/10">
+                          <input {...formMethods.register(`nutritionFacts.${i}.label`)} className="w-1/2 p-2 text-sm bg-transparent text-blue-200 focus:outline-none" placeholder="Label" />
+                          <input {...formMethods.register(`nutritionFacts.${i}.value`)} className="w-1/2 p-2 text-sm bg-transparent text-white border-l border-white/10 focus:outline-none font-mono" placeholder="Value" />
+                          <button onClick={() => nutrition.remove(i)} className="text-white/20 hover:text-red-400"><X size={16}/></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: VARIANTS */}
+              {activeTab === "variants" && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-bold text-lg">Pricing & Sizes</h3>
+                    <Button variant="secondary" onClick={() => variants.append({ price: 0, weight: 0, weightUnit: "G", status: "ACTIVE" })}>
+                      <Plus size={16} className="mr-2" /> Add Variant
+                    </Button>
+                  </div>
+                  <div className="space-y-4">
+                    {variants.fields.map((f, i) => (
+                      <div key={f.id} className="p-6 bg-slate-50 border rounded-2xl grid grid-cols-12 gap-4 items-end relative shadow-sm hover:shadow-md transition-shadow">
+                        <div className="col-span-3"><FormField name={`variants.${i}.weight`} label="Weight" type="number" /></div>
+                        <div className="col-span-2"><FormField name={`variants.${i}.weightUnit`} label="Unit" type="select" options={[{value:"G",label:"G"},{value:"KG",label:"KG"}]} /></div>
+                        <div className="col-span-3"><FormField name={`variants.${i}.price`} label="Base Price" type="number" /></div>
+                        <div className="col-span-3"><FormField name={`variants.${i}.discountedPrice`} label="Sale Price" type="number" /></div>
+                        <div className="col-span-1"><Button variant="danger" className="w-full p-2 h-10" onClick={() => variants.remove(i)}><Trash size={18}/></Button></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB: MEDIA */}
+              {activeTab === "media" && (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  <div className="p-8 border-2 border-dashed border-slate-300 rounded-2xl text-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
+                    <input type="file" multiple accept="image/*" onChange={handleUpload} className="absolute inset-0 opacity-0 cursor-pointer" disabled={uploading} />
+                    <ImageIcon className="mx-auto text-slate-400 mb-2" size={48} />
+                    <p className="text-sm font-semibold text-slate-600">{uploading ? "Uploading..." : "Click or drag images here to upload"}</p>
+                  </div>
+                  <div className="grid grid-cols-4 gap-4 mt-4">
+                    {watch("images")?.map((url, idx) => (
+                      <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-slate-200 relative group">
+                        <img src={url} alt="Product" className="w-full h-full object-cover" />
+                        <button 
+                          onClick={() => setValue("images", watch("images").filter((_, i) => i !== idx), { shouldDirty: true })}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </form>
+          </FormProvider>
+        </div>
+      </div>
     </div>
   );
 }
