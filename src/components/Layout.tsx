@@ -15,6 +15,7 @@ import {
   CaretLeft,
   CaretRight,
   Globe,
+  QrCode,
 } from '@phosphor-icons/react';
 import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
@@ -38,6 +39,7 @@ function Layout() {
     { label: 'Products', path: '/products', icon: <Package size={20} weight="duotone" /> },
     { label: 'Categories', path: '/categories', icon: <Tag size={20} weight="duotone" /> },
     { label: 'Website', path: '/website', icon: <Globe size={20} weight="duotone" /> },
+    { label: 'Tools', path: '/tools', icon: <QrCode size={20} weight="duotone" /> },
     { label: 'Reports', path: '/reports', icon: <ChartBar size={20} weight="duotone" /> },
     { label: 'Settings', path: '/settings', icon: <Gear size={20} weight="duotone" /> },
   ];

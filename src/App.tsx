@@ -14,6 +14,7 @@ import ProductCreatePage from './pages/ProductCreatePage';
 import ReportsPage from './pages/ReportsPage';
 import SettingsPage from './pages/SettingsPage';
 import WebsitePage from './pages/WebsitePage';
+import ToolsPage from './pages/ToolsPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
@@ -52,6 +53,7 @@ function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/website" element={<WebsitePage />} />
+            <Route path="/tools" element={<ToolsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Route>
 

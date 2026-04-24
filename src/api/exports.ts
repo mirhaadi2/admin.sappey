@@ -91,6 +91,10 @@ export type {
   DashboardStatsResponse,
 } from './admin/dashboard/types';
 
+// Admin Tools APIs
+export { adminToolsApi } from './admin/tools/client';
+export type { GenerateCodeRequest, GenerateCodeResponse } from './admin/tools/types';
+
 // API utilities
 export { ApiService, createApiHooks, createApiService } from './utils';
 
