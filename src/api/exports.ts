@@ -61,6 +61,27 @@ export {
 } from './admin/products/hooks/index';
 export type { AdminProductsListParams, AdminProductCreateInput, AdminProductUpdateInput } from './admin/products/types';
 
+// Admin Management APIs & Hooks - Inventory
+export { adminInventoryApi } from './admin/inventory/client';
+export {
+  useAdminInventoryList,
+  useAdminInventoryStats,
+  useAdminProductInventory,
+  useAdminUpdateInventory,
+  useAdminAddStock,
+  useAdminRemoveStock,
+  useAdminInventoryHistory,
+} from './admin/inventory/hooks/index';
+export type {
+  AdminInventoryItem,
+  AdminInventoryQuery,
+  AdminInventoryUpdateInput,
+  AdminAddStockInput,
+  AdminRemoveStockInput,
+  AdminInventoryStats,
+  AdminInventoryHistoryItem,
+} from './admin/inventory/types';
+
 // Admin Management APIs & Hooks - Categories
 export { adminCategoriesApi } from './admin/categories/client';
 export { 

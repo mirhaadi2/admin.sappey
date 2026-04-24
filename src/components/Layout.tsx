@@ -16,6 +16,7 @@ import {
   CaretRight,
   Globe,
   QrCode,
+  Stack,
 } from '@phosphor-icons/react';
 import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
@@ -37,6 +38,7 @@ function Layout() {
     { label: 'Sellers', path: '/sellers', icon: <Buildings size={20} weight="duotone" /> },
     { label: 'Orders', path: '/orders', icon: <ShoppingBagOpen size={20} weight="duotone" /> },
     { label: 'Products', path: '/products', icon: <Package size={20} weight="duotone" /> },
+    { label: 'Inventory', path: '/inventory', icon: <Stack size={20} weight="duotone" /> },
     { label: 'Categories', path: '/categories', icon: <Tag size={20} weight="duotone" /> },
     { label: 'Website', path: '/website', icon: <Globe size={20} weight="duotone" /> },
     { label: 'Tools', path: '/tools', icon: <QrCode size={20} weight="duotone" /> },
