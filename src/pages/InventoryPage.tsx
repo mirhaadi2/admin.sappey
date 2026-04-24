@@ -154,22 +154,22 @@ function InventoryPage() {
             render: (name: string, item: AdminInventoryItem) => (
                 <div className="flex flex-col">
                     <span className="font-semibold text-slate-900">{name}</span>
-                    <span className="text-xs text-slate-500">SKU: {item.sku}</span>
+                    {/* <span className="text-xs text-slate-500">SKU: {item.sku}</span> */}
                 </div>
             ),
         },
-        {
-            key: "sellerName",
-            header: "Seller",
-            width: "180px",
-            column: true,
-            render: (name: string) => (
-                <span className="text-slate-700">{name}</span>
-            ),
-        },
+        // {
+        //     key: "sellerName",
+        //     header: "Seller",
+        //     width: "180px",
+        //     column: true,
+        //     render: (name: string) => (
+        //         <span className="text-slate-700">{name}</span>
+        //     ),
+        // },
         {
             key: "totalStock",
-            header: "Total Stock",
+            header: "Total Stock (KG)",
             align: "center" as const,
             column: true,
             render: (stock: number) => (
@@ -178,7 +178,7 @@ function InventoryPage() {
         },
         {
             key: "availableStock",
-            header: "Available",
+            header: "Available Stock (KG)",
             align: "center" as const,
             column: true,
             render: (stock: number, item: AdminInventoryItem) => {
@@ -192,9 +192,9 @@ function InventoryPage() {
         },
         {
             key: "reservedStock",
-            header: "Reserved",
+            header: "Reserved Stock (KG)",
             align: "center" as const,
-            column: true,
+            column: false,
             render: (stock: number) => (
                 <span className="text-slate-600">{stock}</span>
             ),
@@ -213,15 +213,15 @@ function InventoryPage() {
                 );
             },
         },
-        {
-            key: "reorderLevel",
-            header: "Reorder Level",
-            align: "center" as const,
-            column: true,
-            render: (level: number) => (
-                <span className="text-slate-600">{level}</span>
-            ),
-        },
+        // {
+        //     key: "reorderLevel",
+        //     header: "Reorder Level",
+        //     align: "center" as const,
+        //     column: true,
+        //     render: (level: number) => (
+        //         <span className="text-slate-600">{level}</span>
+        //     ),
+        // },
     ];
 
     const stats = statsData;
@@ -318,16 +318,16 @@ function InventoryPage() {
                     }}
                     rowActions={(item) => (
                         <div className="flex justify-end gap-2">
-                            <Button
+                            {/* <Button
                                 variant="outline"
                                 size="sm"
                                 icon={<Eye />}
                                 onClick={() => navigate(`/inventory/${item.id}`)}
-                            />
+                            /> */}
                             <Button
                                 variant="outline"
                                 size="sm"
-                                icon={<Plus />}
+                                // icon={<Plus />}
                                 onClick={() => {
                                     setSelectedInventory(item);
                                     setShowAddStockDialog(true);
@@ -338,7 +338,7 @@ function InventoryPage() {
                             <Button
                                 variant="outline"
                                 size="sm"
-                                icon={<TrendDown />}
+                                // icon={<TrendDown />}
                                 onClick={() => {
                                     setSelectedInventory(item);
                                     setShowRemoveStockDialog(true);
@@ -381,7 +381,7 @@ function InventoryPage() {
             <ConfirmDialog
                 isOpen={showAddStockDialog}
                 title="Add Stock"
-                description={`Add stock to ${selectedInventory?.productName} (${selectedInventory?.sku})`}
+                description={`Add stock to ${selectedInventory?.productName}`}
                 confirmText="Add Stock"
                 isLoading={isAddingStock}
                 onConfirm={handleAddStock}
@@ -395,7 +395,7 @@ function InventoryPage() {
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Quantity to Add
+                            Weight (KG)
                         </label>
                         <input
                             type="number"
@@ -403,7 +403,7 @@ function InventoryPage() {
                             value={stockQuantity}
                             onChange={(e) => setStockQuantity(e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter quantity"
+                            placeholder="Enter weight"
                         />
                     </div>
                     <div>
@@ -425,7 +425,7 @@ function InventoryPage() {
             <ConfirmDialog
                 isOpen={showRemoveStockDialog}
                 title="Remove Stock"
-                description={`Remove stock from ${selectedInventory?.productName} (${selectedInventory?.sku})`}
+                description={`Remove stock from ${selectedInventory?.productName}`}
                 confirmText="Remove Stock"
                 isLoading={isRemovingStock}
                 onConfirm={handleRemoveStock}
@@ -440,7 +440,7 @@ function InventoryPage() {
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                            Quantity to Remove
+                            Weight (KG)
                         </label>
                         <input
                             type="number"
@@ -449,7 +449,7 @@ function InventoryPage() {
                             value={stockQuantity}
                             onChange={(e) => setStockQuantity(e.target.value)}
                             className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter quantity"
+                            placeholder="Enter weight"
                         />
                     </div>
                     <div>
@@ -489,7 +489,7 @@ function InventoryPage() {
             <ConfirmDialog
                 isOpen={showUpdateDialog}
                 title="Update Inventory"
-                description={`Update inventory for ${selectedInventory?.productName} (${selectedInventory?.sku})`}
+                description={`Update inventory for ${selectedInventory?.productName}`}
                 confirmText="Update Inventory"
                 isLoading={isUpdating}
                 onConfirm={handleUpdateInventory}

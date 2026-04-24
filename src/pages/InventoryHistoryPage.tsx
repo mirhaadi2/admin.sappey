@@ -89,25 +89,25 @@ function InventoryHistoryPage() {
             render: (name: string, item: AdminInventoryHistoryItem) => (
                 <div className="flex flex-col">
                     <span className="font-semibold text-slate-900">{name}</span>
-                    <span className="text-xs text-slate-500">SKU: {item.sellerSku}</span>
+                    {/* <span className="text-xs text-slate-500">SKU: {item.sellerSku}</span> */}
                 </div>
             ),
         },
-        {
-            key: "sellerName",
-            header: "Seller",
-            width: "150px",
-            column: true,
-            render: (name: string) => (
-                <div className="flex items-center gap-2">
-                    <User size={16} className="text-slate-400" />
-                    <span className="text-slate-700">{name}</span>
-                </div>
-            ),
-        },
+        // {
+        //     key: "sellerName",
+        //     header: "Seller",
+        //     width: "150px",
+        //     column: true,
+        //     render: (name: string) => (
+        //         <div className="flex items-center gap-2">
+        //             <User size={16} className="text-slate-400" />
+        //             <span className="text-slate-700">{name}</span>
+        //         </div>
+        //     ),
+        // },
         {
             key: "quantity",
-            header: "Quantity",
+            header: "Weight Change (KG)",
             align: "center" as const,
             column: true,
             render: (quantity: number, item: AdminInventoryHistoryItem) => {
@@ -142,7 +142,7 @@ function InventoryHistoryPage() {
             key: "reference",
             header: "Reference",
             width: "120px",
-            column: true,
+            column: false,
             render: (reference: string) => reference ? (
                 <span className="text-xs bg-slate-100 text-slate-700 px-2 py-1 rounded">
                     {reference}
@@ -154,7 +154,7 @@ function InventoryHistoryPage() {
         {
             key: "notes",
             header: "Notes",
-            column: true,
+            column: false,
             render: (notes: string) => notes ? (
                 <div className="max-w-xs truncate text-sm text-slate-600" title={notes}>
                     {notes}
