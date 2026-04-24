@@ -261,12 +261,26 @@ function OrderDetailPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-bold text-slate-400">
-                        {item.quantity} x ₹{item.unitPrice}
-                      </p>
-                      <p className="text-sm font-black text-slate-900">
-                        ₹{item.subtotal}
-                      </p>
+                      <div className="flex flex-col items-end gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-400">
+                            {item.quantity} x ₹{item.discountedPrice || item.unitPrice}
+                          </span>
+                          {item.discountedPercent && item.discountedPercent > 0 && (
+                            <span className="text-[10px] font-black px-1.5 py-0.5 bg-rose-50 text-rose-600 rounded">
+                              -{item.discountedPercent}%
+                            </span>
+                          )}
+                        </div>
+                        {item.discountedPercent && item.discountedPercent > 0 && (
+                          <span className="text-[10px] line-through text-slate-400">
+                            ₹{(item.unitPrice * item.quantity).toFixed(2)}
+                          </span>
+                        )}
+                        <p className="text-sm font-black text-slate-900">
+                          ₹{item.discountedPrice ? (item.discountedPrice * item.quantity).toFixed(2) : (item.unitPrice * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))}

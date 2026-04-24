@@ -1,9 +1,19 @@
 export interface AdminOrderItem {
+  id: string;
   productId: string;
   productName: string;
+  productImages?: any;
+  variantId: string;
+  sku: string;
   quantity: number;
-  price: number;
-  total: number;
+  unitPrice: number;
+  discountedPrice?: number;
+  discountedPercent?: number;
+  subtotal: number;
+  taxAmount?: number;
+  itemTotal?: number;
+  status?: string;
+  weight?: string;
 }
 
 export interface AdminOrder {
