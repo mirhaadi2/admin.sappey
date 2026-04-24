@@ -6,6 +6,8 @@ export interface AdminProductVariantDetail {
   id: string;
   sku?: string;
   price: number;
+  discountedPrice?: number;
+  discountedPercent?: number;
   weight?: number;
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;

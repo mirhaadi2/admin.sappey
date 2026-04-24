@@ -59,6 +59,8 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
             <tr className="border-b border-slate-200">
               <th className="text-left py-3 px-4 font-semibold text-slate-700">SKU</th>
               <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
+              <th className="text-right py-3 px-4 font-semibold text-slate-700">Sale Price</th>
+              <th className="text-right py-3 px-4 font-semibold text-slate-700">Discount %</th>
               <th className="text-right py-3 px-4 font-semibold text-slate-700">Weight</th>
               <th className="text-center py-3 px-4 font-semibold text-slate-700">Status</th>
               <th className="text-left py-3 px-4 font-semibold text-slate-700">Created</th>
@@ -90,6 +92,16 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
                     <td className="py-3 px-4 text-right">
                       <span className="font-semibold text-slate-900">
                         ₹{variant.price?.toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="font-semibold text-green-600">
+                        {variant.discountedPrice ? `₹${variant.discountedPrice.toLocaleString()}` : 'N/A'}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="font-semibold text-blue-600">
+                        {variant.discountedPercent ? `${variant.discountedPercent}%` : 'N/A'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -138,7 +150,7 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
                   {/* Expanded Details */}
                   {isExpanded && (
                     <tr className="border-b border-slate-200 bg-slate-50">
-                      <td colSpan={6} className="p-0">
+                      <td colSpan={8} className="p-0">
                         <div className="px-4 py-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* SKU Detail */}
@@ -159,11 +171,37 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
                               <div className="flex items-center gap-2 mb-2">
                                 <CurrencyInr size={14} className="text-green-600" />
                                 <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
-                                  Price
+                                  Base Price
                                 </span>
                               </div>
                               <p className="text-sm font-semibold text-slate-900">
                                 ₹{variant.price?.toLocaleString()}
+                              </p>
+                            </div>
+
+                            {/* Sale Price Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <CurrencyInr size={14} className="text-red-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Sale Price
+                                </span>
+                              </div>
+                              <p className="text-sm font-semibold text-red-600">
+                                {variant.discountedPrice ? `₹${variant.discountedPrice.toLocaleString()}` : 'N/A'}
+                              </p>
+                            </div>
+
+                            {/* Discount Percent Detail */}
+                            <div className="bg-white rounded-lg p-3 border border-slate-200">
+                              <div className="flex items-center gap-2 mb-2">
+                                <Package size={14} className="text-blue-600" />
+                                <span className="text-xs font-medium text-slate-600 uppercase tracking-wide">
+                                  Discount %
+                                </span>
+                              </div>
+                              <p className="text-sm font-semibold text-blue-600">
+                                {variant.discountedPercent ? `${variant.discountedPercent}%` : 'N/A'}
                               </p>
                             </div>
 

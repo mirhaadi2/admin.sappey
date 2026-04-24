@@ -51,6 +51,7 @@ export type ProductFormValues = {
   variants?: Array<{
     price: number;
     discountedPrice?: number;
+    discountedPercent?: number;
     weight?: number;
     weightUnit?: "G" | "KG";
     status?: "ACTIVE" | "INACTIVE";
@@ -321,8 +322,9 @@ export function ProductForm({
                       <div key={f.id} className="p-6 bg-slate-50 border rounded-2xl grid grid-cols-12 gap-4 items-end relative shadow-sm hover:shadow-md transition-shadow">
                         <div className="col-span-3"><FormField name={`variants.${i}.weight`} label="Weight" type="number" /></div>
                         <div className="col-span-2"><FormField name={`variants.${i}.weightUnit`} label="Unit" type="select" options={[{value:"G",label:"G"},{value:"KG",label:"KG"}]} /></div>
-                        <div className="col-span-3"><FormField name={`variants.${i}.price`} label="Base Price" type="number" /></div>
-                        <div className="col-span-3"><FormField name={`variants.${i}.discountedPrice`} label="Sale Price" type="number" /></div>
+                        <div className="col-span-2"><FormField name={`variants.${i}.price`} label="Base Price" type="number" /></div>
+                        <div className="col-span-2"><FormField name={`variants.${i}.discountedPrice`} label="Dis. Price" type="number" /></div>
+                        <div className="col-span-2"><FormField name={`variants.${i}.discountedPercent`} label="Discount %" type="number" /></div>
                         <div className="col-span-1"><Button variant="danger" className="w-full p-2 h-10" onClick={() => variants.remove(i)}><Trash size={18}/></Button></div>
                       </div>
                     ))}
