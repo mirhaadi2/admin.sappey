@@ -256,7 +256,7 @@ function InventoryPage() {
                                 </div>
                                 <div>
                                     <p className="text-sm font-medium text-slate-600">Total Items</p>
-                                    <p className="text-2xl font-bold text-slate-900">{stats.totalItems.toLocaleString()}</p>
+                                    <p className="text-2xl font-bold text-slate-900">{stats.uniqueProducts.toLocaleString()}</p>
                                 </div>
                             </div>
                         </Card>
