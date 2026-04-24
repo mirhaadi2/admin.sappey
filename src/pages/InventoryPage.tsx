@@ -135,8 +135,12 @@ function InventoryPage() {
         filters: [
             {
                 key: "lowStock",
-                label: "Show Low Stock Only",
-                type: "checkbox" as const,
+                label: "Stock Status",
+                type: "select" as const, // Changed from checkbox
+                options: [
+                    { label: "Show Low Stock Only", value: "true" },
+                    { label: "Show All", value: "false" }
+                ]
             },
         ],
     };
@@ -220,7 +224,7 @@ function InventoryPage() {
         },
     ];
 
-    const stats = statsData?.data;
+    const stats = statsData;
 
     return (
         <>
@@ -378,7 +382,7 @@ function InventoryPage() {
                 isOpen={showAddStockDialog}
                 title="Add Stock"
                 description={`Add stock to ${selectedInventory?.productName} (${selectedInventory?.sku})`}
-                confirmLabel="Add Stock"
+                confirmText="Add Stock"
                 isLoading={isAddingStock}
                 onConfirm={handleAddStock}
                 onCancel={() => {
@@ -421,8 +425,8 @@ function InventoryPage() {
             <ConfirmDialog
                 isOpen={showRemoveStockDialog}
                 title="Remove Stock"
-                description={`Remove stock from ${selectedInventory?.productName} (${selectedInventory?.sellerSku})`}
-                confirmLabel="Remove Stock"
+                description={`Remove stock from ${selectedInventory?.productName} (${selectedInventory?.sku})`}
+                confirmText="Remove Stock"
                 isLoading={isRemovingStock}
                 onConfirm={handleRemoveStock}
                 onCancel={() => {
@@ -485,8 +489,8 @@ function InventoryPage() {
             <ConfirmDialog
                 isOpen={showUpdateDialog}
                 title="Update Inventory"
-                description={`Update inventory for ${selectedInventory?.productName} (${selectedInventory?.sellerSku})`}
-                confirmLabel="Update Inventory"
+                description={`Update inventory for ${selectedInventory?.productName} (${selectedInventory?.sku})`}
+                confirmText="Update Inventory"
                 isLoading={isUpdating}
                 onConfirm={handleUpdateInventory}
                 onCancel={() => {

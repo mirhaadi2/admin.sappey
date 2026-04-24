@@ -75,13 +75,15 @@ export interface AdminInventoryStats {
 
 export interface AdminInventoryResponse {
     success: boolean;
-    data: AdminInventoryItem[];
-    pagination?: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    };
+    data: {
+        data: AdminInventoryItem[];
+        pagination?: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    }
 }
 
 export interface AdminInventoryHistoryResponse {
