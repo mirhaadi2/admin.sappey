@@ -141,15 +141,24 @@ function ProductsPage() {
       ),
     },
     {
-      key: "variantsCount",
-      header: "Variants",
+      key: "stock",
+      header: "Stock",
       align: "center" as const,
       column: true,
-      render: (count: number, _product: any) => (
-        <div className="flex items-center justify-center gap-1 font-bold text-slate-700">
-          {count}
-        </div>
-      ),
+      render: (stock: number, _product: any) => {
+        const currentStock = stock ?? 0;
+        return (
+          <div className="flex items-center justify-center gap-1 font-bold">
+            {currentStock === 0 ? (
+              <span className="text-red-600">Sold Out</span>
+            ) : currentStock <= 10 ? (
+              <span className="text-orange-600">Low ({currentStock})</span>
+            ) : (
+              <span className="text-green-600">{currentStock}</span>
+            )}
+          </div>
+        );
+      },
     },
   ];
 

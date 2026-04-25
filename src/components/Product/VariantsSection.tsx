@@ -10,18 +10,20 @@ import {
   Clock,
 } from '@phosphor-icons/react';
 import { format } from 'date-fns';
-import type { AdminProductVariantDetail } from '@/api/admin/products/types';
+import type { AdminProductVariantDetail, AdminProductSellerOffering } from '@/api/admin/products/types';
 
 interface VariantsSectionProps {
   variants?: AdminProductVariantDetail[];
   variantsCount: number;
+  stock?: number;
+  sellerOfferings?: AdminProductSellerOffering[];
 }
 
 /**
  * Professional Variants Display Component
  * Enterprise-grade UI for managing and viewing product variants
  */
-export function VariantsSection({ variants, variantsCount }: VariantsSectionProps) {
+export function VariantsSection({ variants, variantsCount, stock, sellerOfferings }: VariantsSectionProps) {
   const [expandedVariant, setExpandedVariant] = useState<string | null>(null);
 
   if (variantsCount === 0) {
@@ -63,6 +65,7 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
               <th className="text-right py-3 px-4 font-semibold text-slate-700">Discount %</th>
               <th className="text-right py-3 px-4 font-semibold text-slate-700">Weight</th>
               <th className="text-center py-3 px-4 font-semibold text-slate-700">Status</th>
+              <th className="text-center py-3 px-4 font-semibold text-slate-700">Stock Status</th>
               <th className="text-left py-3 px-4 font-semibold text-slate-700">Created</th>
               <th className="text-center py-3 px-4"></th>
             </tr>
@@ -70,6 +73,7 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
           <tbody>
             {variants?.map((variant) => {
               const isExpanded = expandedVariant === variant.id;
+              const hasStock = typeof stock === 'number' ? stock > 0 : sellerOfferings?.some(offering => offering.availableStock > 0);
               return (
                 <React.Fragment key={variant.id}>
                   {/* Main Row */}
@@ -107,7 +111,7 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
                     <td className="py-3 px-4 text-right">
                       <span className="text-slate-600">
                         {variant.weight
-                          ? `${variant.weight} KG`
+                          ? `${variant.weight} ${variant?.weightUnit || 'G'}`
                           : 'N/A'}
                       </span>
                     </td>
@@ -122,6 +126,21 @@ export function VariantsSection({ variants, variantsCount }: VariantsSectionProp
                           <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
                             <Minus size={12} weight="fill" />
                             Inactive
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex justify-center">
+                        {hasStock ? (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <CheckCircle size={12} weight="fill" />
+                            In Stock
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <Warning size={12} weight="fill" />
+                            Sold Out
                           </span>
                         )}
                       </div>

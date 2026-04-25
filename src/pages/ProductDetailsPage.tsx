@@ -293,7 +293,28 @@ function ProductDetailsPage() {
               </div>
               <div className="p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs font-medium text-slate-500 uppercase mb-1">Stock Level</p>
-                <p className="text-sm font-semibold text-slate-900">{product.stock} KG</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-slate-900">
+                    {product.stock === 0 ? (
+                      "0"
+                    ) : product.stock < 1 ? (
+                      // If less than 1 (e.g., 0.25), show as grams (250g)
+                      `${product.stock * 1000} G`
+                    ) : (
+                      // If 1 or more (e.g., 1.75), show as kg (1.75kg)
+                      `${product.stock} KG`
+                    )}
+                  </p>
+                  {product.stock === 0 ? (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-red-100 text-red-800">
+                      Sold Out
+                    </span>
+                  ) : product.stock <= 10 ? (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-yellow-100 text-yellow-800">
+                      Low Stock
+                    </span>
+                  ) : null}
+                </div>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg">
                 <p className="text-xs font-medium text-slate-500 uppercase mb-1">Rating</p>
@@ -371,6 +392,8 @@ function ProductDetailsPage() {
           <VariantsSection
             variants={product.variants || []}
             variantsCount={product.variantsCount || 0}
+            stock={product.stock}
+            sellerOfferings={product.sellerOfferings || []}
           />
 
           {/* Seller Offerings Section */}

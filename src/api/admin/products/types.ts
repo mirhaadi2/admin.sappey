@@ -9,6 +9,7 @@ export interface AdminProductVariantDetail {
   discountedPrice?: number;
   discountedPercent?: number;
   weight?: number;
+  weightUnit?: "G" | "KG";
   status: "ACTIVE" | "INACTIVE";
   createdAt: string;
   updatedAt: string;

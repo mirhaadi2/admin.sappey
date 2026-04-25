@@ -95,6 +95,7 @@ export function ProductForm({
   });
 
   const { handleSubmit, reset, setValue, watch, control, formState: { isDirty } } = formMethods;
+  const stockValue = watch("stock") ?? 0;
 
   const variants = useFieldArray({ control, name: "variants" });
   const nutrition = useFieldArray({ control, name: "nutritionFacts" });
@@ -209,6 +210,12 @@ export function ProductForm({
                   <section>
                     <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Stock Levels</h4>
                     <FormField name="stock" label="Total Inventory (kg)" type="number" />
+                    {stockValue === 0 && (
+                      <p className="mt-2 text-sm text-red-600">This product is currently marked as sold out.</p>
+                    )}
+                    {stockValue > 0 && stockValue <= 10 && (
+                      <p className="mt-2 text-sm text-orange-600">Low stock warning: consider restocking soon.</p>
+                    )}
                   </section>
                   <section className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
                     <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2"><Sparkles size={18}/> Marketing Badges</h4>
