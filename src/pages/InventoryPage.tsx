@@ -59,7 +59,7 @@ function InventoryPage() {
         addStock({
             inventoryId: selectedInventory.id,
             data: {
-                quantity: parseInt(stockQuantity),
+                quantity: parseFloat(stockQuantity),
                 notes: stockNotes || undefined,
             }
         }, {
@@ -78,7 +78,7 @@ function InventoryPage() {
         removeStock({
             inventoryId: selectedInventory.id,
             data: {
-                quantity: parseInt(stockQuantity),
+                quantity: parseFloat(stockQuantity),
                 reason: removeReason,
                 notes: stockNotes || undefined,
             }
@@ -101,7 +101,7 @@ function InventoryPage() {
         };
 
         if (updateData.totalStock) {
-            data.totalStock = parseInt(updateData.totalStock);
+            data.totalStock = parseFloat(updateData.totalStock);
         }
 
         if (updateData.reorderLevel) {
