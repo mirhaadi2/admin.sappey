@@ -17,6 +17,7 @@ import {
   Globe,
   QrCode,
   Stack,
+  PuzzlePiece,
 } from '@phosphor-icons/react';
 import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
@@ -40,6 +41,7 @@ function Layout() {
     { label: 'Products', path: '/products', icon: <Package size={20} weight="duotone" /> },
     { label: 'Inventory', path: '/inventory', icon: <Stack size={20} weight="duotone" /> },
     { label: 'Categories', path: '/categories', icon: <Tag size={20} weight="duotone" /> },
+    { label: 'Integrations', path: '/integrations', icon: <PuzzlePiece size={20} weight="duotone" /> },
     { label: 'Website', path: '/website', icon: <Globe size={20} weight="duotone" /> },
     { label: 'Tools', path: '/tools', icon: <QrCode size={20} weight="duotone" /> },
     { label: 'Reports', path: '/reports', icon: <ChartBar size={20} weight="duotone" /> },

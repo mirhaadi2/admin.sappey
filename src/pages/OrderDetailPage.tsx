@@ -21,6 +21,7 @@ import {
   useAdminCancelOrder,
   useAdminDisputeOrder,
 } from "@/api/exports";
+import { useDelhiveryApi } from "@/api/integrations/delhivery";
 import {
   Button,
   StatusBadge,
@@ -44,12 +45,14 @@ function OrderDetailPage() {
   const refundOrderMutation = useAdminRefundOrder();
   const cancelOrderMutation = useAdminCancelOrder();
   const disputeOrderMutation = useAdminDisputeOrder();
+  const { createShipment } = useDelhiveryApi();
 
   // Local UI State
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showDisputeModal, setShowDisputeModal] = useState(false);
+  const [showCreateShipmentModal, setShowCreateShipmentModal] = useState(false);
   const [newStatus, setNewStatus] = useState("");
   const [trackingNumber, setTrackingNumber] = useState(""); // Add this
   const [statusReason, setStatusReason] = useState(""); // Add this
@@ -75,6 +78,9 @@ function OrderDetailPage() {
     order &&
     ["pending", "confirmed", "processing"].includes(order.status.toLowerCase());
   const canDispute = order && !order.disputed;
+  const canCreateShipment =
+    order &&
+    ["processing", "packed"].includes(order.status.toLowerCase());
 
   if (isLoading) {
     return (
@@ -129,6 +135,72 @@ function OrderDetailPage() {
       setToast({
         type: "error",
         message: (err instanceof Error) ? err.message : "Failed to update status",
+      });
+    }
+  };
+
+  const totalWeightInGrams = order?.items?.reduce((total, item) => {
+    // Extract numeric value (e.g., "300.00") and unit (e.g., "G")
+    const weightMatch = item?.weight?.match(/([\d.]+)\s*([a-zA-Z]+)/);
+
+    if (!weightMatch) return total;
+
+    let value = parseFloat(weightMatch[1]);
+    const unit = weightMatch[2].toUpperCase();
+    const quantity = item.quantity || 0;
+
+    // Convert to grams based on unit
+    if (unit === 'KG') {
+      value = value * 1000;
+    } else if (unit === 'G' || unit === 'GM') {
+      value = value; // Already in grams
+    }
+
+    return total + (value * quantity);
+  }, 0);
+
+  console.log(`Total weight: ${totalWeightInGrams} grams`);
+
+  const handleCreateShipment = async () => {
+    if (!order) return;
+    const paymentMethod = order?.paymentMethod && order?.paymentMethod === "Prepaid" ? "Prepaid" : "COD";
+    console.log(totalWeightInGrams, 'Calculated total weight in grams [handleCreateShipment]');
+    try {
+      const shipmentData = {
+        orderNumber: order?.orderNumber,
+        customerName: order.customerName,
+        address: `${order.shippingAddressLine1}${order.shippingAddressLine2 ? `, ${order.shippingAddressLine2}` : ''}`,
+        pincode: order.shippingPostalCode,
+        city: order.shippingCity,
+        state: order.shippingState,
+        country: order.shippingCountry,
+        phone: order.shippingAddressPhone,
+        orderId: order.id,
+        weight: totalWeightInGrams?.toString(), // Delhivery expects weight in grams as a string
+        isPrepaid: paymentMethod === 'COD' ? false : true,
+        products: order.items.map((item: any) => ({
+          name: item.productName,
+          // sku: item.sku,
+          quantity: item.quantity,
+          price: item.discountedPrice || item.unitPrice,
+          weight: item.weight,
+        })),
+        totalAmount: Math.round(order.finalAmount),
+        totalItems: order.items.length,
+
+      };
+
+      const result = await createShipment(shipmentData);
+      setShowCreateShipmentModal(false);
+      setToast({
+        type: "success",
+        message: "Shipment created successfully",
+      });
+      // Optionally refresh the order data
+    } catch (err: unknown) {
+      setToast({
+        type: "error",
+        message: (err instanceof Error) ? err.message : "Failed to create shipment",
       });
     }
   };
@@ -205,6 +277,15 @@ function OrderDetailPage() {
             >
               Invoice
             </Button>
+            {canCreateShipment && (
+              <Button
+                variant="secondary"
+                className="flex-1 md:flex-none bg-blue-600 hover:bg-blue-700"
+                onClick={() => setShowCreateShipmentModal(true)}
+              >
+                Create Shipment
+              </Button>
+            )}
             <Button
               variant="primary"
               className="flex-1 md:flex-none bg-orange-600 hover:bg-orange-700"
@@ -600,6 +681,15 @@ function OrderDetailPage() {
           )}
         </div>
       </ConfirmDialog>
+
+      <ConfirmDialog
+        isOpen={showCreateShipmentModal}
+        title="Create Shipment"
+        description="This will create a shipment with Delhivery for this order. Continue?"
+        onCancel={() => setShowCreateShipmentModal(false)}
+        onConfirm={handleCreateShipment}
+        isLoading={false} // Add loading state if needed
+      />
 
       <ConfirmDialog
         isOpen={showCancelModal}

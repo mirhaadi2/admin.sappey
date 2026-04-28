@@ -18,6 +18,7 @@ import ToolsPage from './pages/ToolsPage';
 import LoginPage from './pages/LoginPage';
 import InventoryPage from './pages/InventoryPage';
 import InventoryHistoryPage from './pages/InventoryHistoryPage';
+import IntegrationsPage from './pages/IntegrationsPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
 
@@ -55,6 +56,7 @@ function App() {
             <Route path="/categories" element={<CategoriesPage />} />
             <Route path="/inventory" element={<InventoryPage />} />
             <Route path="/inventory/history" element={<InventoryHistoryPage />} />
+            <Route path="/integrations" element={<IntegrationsPage />} />
             <Route path="/reports" element={<ReportsPage />} />
             <Route path="/website" element={<WebsitePage />} />
             <Route path="/tools" element={<ToolsPage />} />
