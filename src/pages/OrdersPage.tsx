@@ -121,7 +121,7 @@ function OrdersPage() {
     //   render: (value: string) => <span className="text-slate-700">{value}</span>,
     // },
     {
-      key: 'totalAmount',
+      key: 'finalAmount',
       header: 'Amount',
       width: '12%',
       render: (value: unknown, _order: AdminOrder) => (
