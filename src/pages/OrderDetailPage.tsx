@@ -76,7 +76,9 @@ function OrderDetailPage() {
     order && ["delivered", "shipped"].includes(order.status.toLowerCase());
   const canCancel =
     order &&
-    ["pending", "confirmed", "processing"].includes(order.status.toLowerCase());
+    !["delivered", "cancelled", "refunded", "shipped"].includes(
+      order.status.toLowerCase(),
+    );
   const canDispute = order && !order.disputed;
   const canCreateShipment =
     order &&
@@ -586,7 +588,7 @@ function OrderDetailPage() {
                     className="w-full text-red-500 border-red-100 hover:bg-red-50"
                     onClick={() => setShowCancelModal(true)}
                   >
-                    Void Order
+                    Cancel Order
                   </Button>
                 )}
                 {canRefund && (
@@ -634,6 +636,7 @@ function OrderDetailPage() {
               <option value="SHIPPED">4. Shipped (In Transit)</option>
               <option value="OUT_FOR_DELIVERY">5. Out for Delivery</option>
               <option value="DELIVERED">6. Delivered Successfully ✅</option>
+              <option value="CANCELLED">7. Cancel Order ❌</option>
               <option value="DELIVERY_FAILED">Delivery Failed ❌</option>
               <option value="RTO">Return to Origin (RTO)</option>
             </select>
@@ -679,6 +682,27 @@ function OrderDetailPage() {
               </select>
             </div>
           )}
+
+          {newStatus === "CANCELLED" && (
+            <div className="animate-in fade-in slide-in-from-top-2">
+              <label className="text-[10px] font-black uppercase text-red-500 ml-1">
+                Cancellation Reason
+              </label>
+              <select
+                className="w-full p-3 rounded-xl border border-red-100 font-bold text-sm outline-none focus:ring-2 focus:ring-red-500 bg-red-50/20"
+                value={statusReason}
+                onChange={(e) => setStatusReason(e.target.value)}
+              >
+                <option value="">-- Select Reason --</option>
+                <option value="Customer Requested Cancellation">
+                  Customer Requested Cancellation
+                </option>
+                <option value="Inventory Issue">Inventory Issue</option>
+                <option value="Payment Issue">Payment Issue</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          )}
         </div>
       </ConfirmDialog>
 
@@ -693,8 +717,8 @@ function OrderDetailPage() {
 
       <ConfirmDialog
         isOpen={showCancelModal}
-        title="Cancel Shipment"
-        description="This will permanently void the order. Continue?"
+        title="Cancel Order"
+        description="This will permanently cancel the order and release reservation. Continue?"
         isDangerous
         onCancel={() => setShowCancelModal(false)}
         onConfirm={handleCancel}
