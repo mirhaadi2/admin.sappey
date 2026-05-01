@@ -18,6 +18,7 @@ import {
   QrCode,
   Stack,
   PuzzlePiece,
+  ShoppingCart,
 } from '@phosphor-icons/react';
 import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
@@ -38,6 +39,7 @@ function Layout() {
     { label: 'Customers', path: '/customers', icon: <UserCircle size={20} weight="duotone" /> },
     { label: 'Sellers', path: '/sellers', icon: <Buildings size={20} weight="duotone" /> },
     { label: 'Orders', path: '/orders', icon: <ShoppingBagOpen size={20} weight="duotone" /> },
+    { label: 'Bulk Orders', path: '/bulk-orders', icon: <ShoppingCart size={20} weight="duotone" /> },
     { label: 'Products', path: '/products', icon: <Package size={20} weight="duotone" /> },
     { label: 'Inventory', path: '/inventory', icon: <Stack size={20} weight="duotone" /> },
     { label: 'Categories', path: '/categories', icon: <Tag size={20} weight="duotone" /> },

@@ -46,6 +46,14 @@ export {
 } from './admin/orders/hooks/index';
 export type { AdminOrdersListParams, AdminOrderStatusInput, AdminOrderRefundInput, AdminOrderDisputeInput } from './admin/orders/types';
 
+// Admin Management APIs & Hooks - Bulk Orders
+export { adminBulkOrdersApi } from './admin/bulk-orders/client';
+export {
+  useAdminBulkOrdersList,
+  useAdminUpdateBulkOrderStatus
+} from './admin/bulk-orders/hooks/index';
+export type { AdminBulkOrdersListParams, AdminBulkOrderStatusInput } from './admin/bulk-orders/types';
+
 // Admin Management APIs & Hooks - Products
 export { adminProductsApi } from './admin/products/client';
 export { 

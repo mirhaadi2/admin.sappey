@@ -19,6 +19,7 @@ import LoginPage from './pages/LoginPage';
 import InventoryPage from './pages/InventoryPage';
 import InventoryHistoryPage from './pages/InventoryHistoryPage';
 import IntegrationsPage from './pages/IntegrationsPage';
+import BulkOrdersPage from './pages/BulkOrdersPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import GuestRoute from './components/GuestRoute';
 
@@ -49,6 +50,7 @@ function App() {
             <Route path="/sellers/:id" element={<SellerDetailsPage />} />
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+            <Route path="/bulk-orders" element={<BulkOrdersPage />} />
             <Route path="/products" element={<ProductsPage />} />
             <Route path="/products/create" element={<ProductCreatePage />} />
             <Route path="/products/:id" element={<ProductDetailsPage />} />

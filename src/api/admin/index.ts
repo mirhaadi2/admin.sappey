@@ -69,6 +69,16 @@ export type {
   AdminOrderDisputeInput
 } from './orders/types';
 
+export {
+  adminBulkOrdersApi,
+  useAdminBulkOrdersList,
+  useAdminUpdateBulkOrderStatus
+} from './bulk-orders/index';
+export type {
+  AdminBulkOrdersListParams,
+  AdminBulkOrderStatusInput
+} from './bulk-orders/types';
+
 export { 
   adminProductsApi,
   useAdminProductsList,
