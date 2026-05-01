@@ -161,12 +161,9 @@ function OrderDetailPage() {
     return total + (value * quantity);
   }, 0);
 
-  console.log(`Total weight: ${totalWeightInGrams} grams`);
-
   const handleCreateShipment = async () => {
     if (!order) return;
     const paymentMethod = order?.paymentMethod && order?.paymentMethod === "Prepaid" ? "Prepaid" : "COD";
-    console.log(totalWeightInGrams, 'Calculated total weight in grams [handleCreateShipment]');
     try {
       const shipmentData = {
         orderNumber: order?.orderNumber,
@@ -334,7 +331,7 @@ function OrderDetailPage() {
                       <h3 className="font-bold text-slate-900 truncate">
                         {item.productName}
                       </h3>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                      <div className="flex flex-col gap-y-1 mt-1">
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
                           SKU: {item.sku}
                         </span>
@@ -349,20 +346,23 @@ function OrderDetailPage() {
                           <span className="text-xs font-bold text-slate-400">
                             {item.quantity} x ₹{item.discountedPrice || item.unitPrice}
                           </span>
-                          {item.discountedPercent && item.discountedPercent > 0 && (
-                            <span className="text-[10px] font-black px-1.5 py-0.5 bg-rose-50 text-rose-600 rounded">
-                              -{item.discountedPercent}%
-                            </span>
-                          )}
+
                         </div>
-                        {item.discountedPercent && item.discountedPercent > 0 && (
+                        {(item.discountedPercent && item.discountedPercent > 0) ? (
                           <span className="text-[10px] line-through text-slate-400">
                             ₹{(item.unitPrice * item.quantity).toFixed(2)}
                           </span>
-                        )}
-                        <p className="text-sm font-black text-slate-900">
-                          ₹{item.discountedPrice ? (item.discountedPrice * item.quantity).toFixed(2) : (item.unitPrice * item.quantity).toFixed(2)}
-                        </p>
+                        ) : null}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm font-black text-slate-900">
+                            ₹{item.discountedPrice ? (item.discountedPrice * item.quantity).toFixed(2) : (item.unitPrice * item.quantity).toFixed(2)}
+                          </p>
+                          {(item.discountedPercent && item.discountedPercent > 0) ? (
+                            <span className="text-[10px] font-black px-1.5 py-0.5 bg-rose-50 text-rose-600 rounded">
+                              (-{item.discountedPercent}%)
+                            </span>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -469,22 +469,27 @@ function OrderDetailPage() {
                 </div>
               </div>
               <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500 rounded-lg text-white">
-                    <Envelope size={16} />
+                {order?.customerEmail ? (
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500 rounded-lg text-white">
+                      <Envelope size={16} />
+                    </div>
+                    <span className="text-sm font-bold text-blue-600 truncate">
+                      {order.customerEmail}
+                    </span>
                   </div>
-                  <span className="text-sm font-bold text-blue-600 truncate">
-                    {order.customerEmail}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500 rounded-lg text-white">
-                    <Phone size={16} />
+                ) : null}
+
+                {order?.customerPhone ? (
+                  <div className="flex items-center gap-3">s
+                    <div className="p-2 bg-blue-500 rounded-lg text-white">
+                      <Phone size={16} />
+                    </div>
+                    <span className="text-sm font-bold text-blue-600">
+                      {order.customerPhone}
+                    </span>
                   </div>
-                  <span className="text-sm font-bold text-blue-600">
-                    {order.customerPhone}
-                  </span>
-                </div>
+                ) : null}
               </div>
             </Card>
 
@@ -573,7 +578,7 @@ function OrderDetailPage() {
                 Admin Controls
               </h3>
               <div className="space-y-3">
-                {canUpdate && (
+                {/* {canUpdate && (
                   <Button
                     variant="primary"
                     className="w-full bg-orange-600 py-6 font-black"
@@ -581,7 +586,7 @@ function OrderDetailPage() {
                   >
                     Update Status
                   </Button>
-                )}
+                )} */}
                 {canCancel && (
                   <Button
                     variant="outline"

@@ -77,7 +77,7 @@ function Layout() {
           </button>
         </div>
 
-        <nav className="sidebar-scroll flex-1 min-h-0 px-2 py-4 space-y-2 overflow-y-auto">
+        <nav className="flex-1 min-h-0 px-2 py-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -94,7 +94,7 @@ function Layout() {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-slate-200">
+        <div className="p-2 border-t border-slate-200">
           <button
             onClick={handleLogout}
             disabled={signOutLoading}

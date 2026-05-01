@@ -182,7 +182,6 @@ const DelhiveryIntegration: React.FC = () => {
         try {
             const result = await createShipment(createShipmentData);
             alert("Shipment created successfully!");
-            console.log(result);
         } catch (error) {
             alert(
                 "Error creating shipment: " +
@@ -195,7 +194,6 @@ const DelhiveryIntegration: React.FC = () => {
         try {
             const result = await editShipment(editShipmentData);
             alert("Shipment updated successfully!");
-            console.log(result);
         } catch (error) {
             alert(
                 "Error updating shipment: " +
@@ -209,7 +207,6 @@ const DelhiveryIntegration: React.FC = () => {
         try {
             const result = await cancelShipment(cancelWaybill);
             alert("Shipment cancelled successfully!");
-            console.log(result);
         } catch (error) {
             alert(
                 "Error cancelling shipment: " +
@@ -228,7 +225,6 @@ const DelhiveryIntegration: React.FC = () => {
                 },
             });
             alert("E-waybill updated successfully!");
-            console.log(result);
         } catch (error) {
             alert(
                 "Error updating e-waybill: " +
@@ -255,7 +251,6 @@ const DelhiveryIntegration: React.FC = () => {
 
             if (packingSlipParams.pdf) {
                 const blob = result instanceof Blob ? result : new Blob([result], { type: "application/pdf" });
-                console.log(blob,'blob')
                 const header = await blob.slice(0, 4).text();
 
                 if (!header.startsWith('%PDF')) {
@@ -273,7 +268,6 @@ const DelhiveryIntegration: React.FC = () => {
                 URL.revokeObjectURL(url);
             }
         } catch (error) {
-            console.log(error,'err')
             setPackingSlipResult({
                 error: error instanceof Error ? error.message : String(error),
             });
@@ -284,7 +278,6 @@ const DelhiveryIntegration: React.FC = () => {
         try {
             const result = await createPickupRequest(pickupData);
             alert("Pickup request created successfully!");
-            console.log(result);
         } catch (error) {
             alert(
                 "Error creating pickup request: " +

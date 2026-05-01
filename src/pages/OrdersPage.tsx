@@ -141,30 +141,30 @@ function OrdersPage() {
         );
       },
     },
-    {
-      key: 'disputed',
-      header: 'Disputed',
-      width: '10%',
-      render: (value: unknown, _order: AdminOrder) => (
-        <span
-          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
-            (value as boolean) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-          }`}
-        >
-          {(value as boolean) ? (
-            <>
-              <Warning size={14} /> Yes
-            </>
-          ) : (
-            'No'
-          )}
-        </span>
-      ),
-    },
+    // {
+    //   key: 'disputed',
+    //   header: 'Disputed',
+    //   width: '10%',
+    //   render: (value: unknown, _order: AdminOrder) => (
+    //     <span
+    //       className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${
+    //         (value as boolean) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+    //       }`}
+    //     >
+    //       {(value as boolean) ? (
+    //         <>
+    //           <Warning size={14} /> Yes
+    //         </>
+    //       ) : (
+    //         'No'
+    //       )}
+    //     </span>
+    //   ),
+    // },
     {
       key: 'createdAt',
       header: 'Date',
-      width: '12%',
+      width: '18%',
       render: (value: unknown, _order: AdminOrder) => <span className="text-slate-600 text-sm">{formatDate(value as string)}</span>,
     },
   ];
