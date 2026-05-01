@@ -53,7 +53,7 @@ function Layout() {
   return (
     <div className="flex h-screen bg-slate-50">
       <aside
-        className={`${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-slate-200 shadow-lg transition-all duration-300 flex flex-col`}
+        className={`${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-slate-200 shadow-lg transition-all duration-300 flex flex-col min-h-0 overflow-hidden`}
       >
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           {sidebarOpen ? (
@@ -77,7 +77,7 @@ function Layout() {
           </button>
         </div>
 
-        <nav className="flex-1 px-2 py-4 space-y-2">
+        <nav className="sidebar-scroll flex-1 min-h-0 px-2 py-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => (
             <Link
               key={item.path}
@@ -106,7 +106,7 @@ function Layout() {
         </div>
       </aside>
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 min-h-0 overflow-auto">
         <div className="h-16 sticky top-0 bg-white border-b border-slate-200 z-20 flex items-center justify-between px-6 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
