@@ -65,6 +65,7 @@ function ProductEditPage() {
 
     return {
       name: product.name,
+      slug: product.slug,
       description: product.description ?? "",
       gst_rate: product.gst_rate ?? 18,
       status: product.status === "published" ? "ACTIVE" : "INACTIVE",
@@ -127,6 +128,7 @@ function ProductEditPage() {
   ) => {
     const payload: AdminProductUpdateInput = {
       name: values.name.trim(),
+      slug: values?.slug?.trim(),
       description: values.description.trim(),
       gst_rate: values.gst_rate,
       status: values.status,

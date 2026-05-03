@@ -91,8 +91,11 @@ function ProductDetailsPage() {
                 <h1 className="text-2xl font-bold text-slate-900">
                   {product.name}
                 </h1>
-                <p className="text-sm text-slate-500">
+                {/* <p className="text-sm text-slate-500">
                   Product ID: {product.id}
+                </p> */}
+                <p className="text-sm text-slate-500">
+                  Slug: {product?.slug}
                 </p>
               </div>
             </div>
