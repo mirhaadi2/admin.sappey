@@ -57,7 +57,7 @@ export const HeroList: React.FC<HeroListProps> = ({
                     <CardBody>
                         <div className="flex items-start gap-6">
                             {/* Media Preview */}
-                            {(hero.videoUrl || hero.imageUrl) && (
+                            {(hero.videoUrl || hero.imageUrl || hero.backgroundImageUrl) && (
                                 <div className="flex-shrink-0">
                                     {hero.videoUrl ? (
                                         <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
@@ -70,10 +70,10 @@ export const HeroList: React.FC<HeroListProps> = ({
                                                 playsInline
                                             />
                                         </div>
-                                    ) : hero.imageUrl ? (
+                                    ) : hero.imageUrl || hero.backgroundImageUrl ? (
                                         <div className="w-32 h-24 bg-gray-100 rounded-lg overflow-hidden">
                                             <img
-                                                src={hero.imageUrl}
+                                                src={hero.imageUrl || hero.backgroundImageUrl}
                                                 alt="Hero image"
                                                 className="w-full h-full object-cover"
                                             />

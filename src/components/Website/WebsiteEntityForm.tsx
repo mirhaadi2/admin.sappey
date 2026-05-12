@@ -34,6 +34,7 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
         subtitle: "",
         description: "",
         imageUrl: "",
+        backgroundImageUrl: "",
         buttonText: "",
         buttonUrl: "",
         isActive: true,
@@ -131,8 +132,22 @@ const fieldsByType: Record<
             key: "videoUrl", 
             label: "Video File", 
             type: "file", 
-            required: true,
+            required: false,
             accept: "video/*"
+        },
+        { 
+            key: "imageUrl", 
+            label: "Hero Image", 
+            type: "file", 
+            required: false,
+            accept: "image/*"
+        },
+        { 
+            key: "backgroundImageUrl", 
+            label: "Background Image", 
+            type: "file", 
+            required: false,
+            accept: "image/*"
         },
         { 
             key: "buttonText", 
