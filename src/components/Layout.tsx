@@ -166,36 +166,36 @@ function Layout() {
       </aside>
 
       <main className="flex-1 min-h-0 overflow-auto">
-        <div className="h-16 sticky top-0 bg-white border-b border-slate-200 z-20 flex items-center justify-between px-4 md:px-6 shadow-sm">
-          <div className="flex items-center gap-3">
+        <div className="h-16 sticky top-0 bg-white border-b border-slate-200 z-20 flex items-center justify-between px-4 md:px-6 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
             <button
-              className="md:hidden p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
+              className="md:hidden p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 flex-shrink-0"
               onClick={() => setMobileNavOpen((open) => !open)}
             >
               <ListMagnifyingGlass size={20} />
             </button>
-            <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
-              <ListMagnifyingGlass size={18} className="text-slate-500" />
+            <div className="hidden sm:flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2 min-w-0 flex-1 max-w-xs">
+              <ListMagnifyingGlass size={18} className="text-slate-500 flex-shrink-0" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400"
+                className="bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400 min-w-0 flex-1"
               />
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100">
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <button className="relative p-2 rounded-lg text-slate-600 hover:bg-slate-100 flex-shrink-0">
               <Bell size={20} />
               <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
             </button>
-            <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-md">
-              <span className="w-8 h-8 rounded-full bg-white text-blue-700 flex items-center justify-center font-bold">A</span>
-              {sidebarOpen && <span className="text-sm font-semibold">Admin</span>}
+            <div className="flex items-center gap-2 p-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl shadow-md min-w-0">
+              <span className="w-8 h-8 rounded-full bg-white text-blue-700 flex items-center justify-center font-bold flex-shrink-0">A</span>
+              <span className="hidden md:inline text-sm font-semibold truncate">Admin</span>
             </div>
           </div>
         </div>
 
-        <div className="p-6 md:p-8">
+        <div className="p-4 md:p-6 lg:p-8 overflow-x-hidden">
           <Outlet />
         </div>
       </main>
