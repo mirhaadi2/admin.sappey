@@ -393,7 +393,7 @@ const DelhiveryIntegration: React.FC = () => {
                         </h3>
                     </CardHeader>
                     <CardBody className="space-y-3">
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Origin PIN
@@ -489,7 +489,7 @@ const DelhiveryIntegration: React.FC = () => {
                             </h3>
                         </CardHeader>
                         <CardBody className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Customer Name
@@ -536,7 +536,7 @@ const DelhiveryIntegration: React.FC = () => {
                                     placeholder="Full address"
                                 />
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         City
@@ -584,7 +584,7 @@ const DelhiveryIntegration: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Phone
@@ -688,7 +688,7 @@ const DelhiveryIntegration: React.FC = () => {
                                     placeholder="Waybill number"
                                 />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Payment Type
@@ -724,7 +724,7 @@ const DelhiveryIntegration: React.FC = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">
                                         Height (cm)

@@ -92,9 +92,25 @@ export function Table<T extends { id: string | number }>({
     [columns, visibleColumns]
   );
 
+  const [isMobileView, setIsMobileView] = useState(false);
+
   useEffect(() => {
     onVisibleColumnsChange?.(visibleColumns);
   }, [visibleColumns, onVisibleColumnsChange]);
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 768px)');
+    const update = (event: MediaQueryListEvent) => setIsMobileView(event.matches);
+    setIsMobileView(query.matches);
+
+    if (query.addEventListener) {
+      query.addEventListener('change', update);
+      return () => query.removeEventListener('change', update);
+    }
+
+    query.addListener(update);
+    return () => query.removeListener(update);
+  }, []);
 
   useEffect(() => {
     const onClickOutside = (event: MouseEvent) => {
@@ -119,8 +135,8 @@ export function Table<T extends { id: string | number }>({
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-visible flex flex-col">
       {(filterConfig || onSearchChange || showColumnSelector) && (
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-1 items-center gap-3 min-w-[300px]">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+          <div className="flex flex-col md:flex-row flex-1 items-stretch md:items-center gap-3 min-w-0">
             {showColumnSelector && (
               <div className="relative" ref={columnMenuRef}>
                 <button
@@ -209,7 +225,7 @@ export function Table<T extends { id: string | number }>({
         </div>
       )}
 
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full border-collapse">
           <thead className="bg-slate-50/80 border-b border-slate-200">
             <tr>
@@ -229,7 +245,7 @@ export function Table<T extends { id: string | number }>({
             ) : data.length === 0 ? (
               <tr><td colSpan={10} className="py-20 text-center text-slate-400">{emptyMessage}</td></tr>
             ) : displayedColumns.length === 0 ? (
-              <tr><td colSpan={10} className="py-20 text-center text-slate-400">No columns selected. Use the Columns button to-show fields.</td></tr>
+              <tr><td colSpan={10} className="py-20 text-center text-slate-400">No columns selected. Use the Columns button to show fields.</td></tr>
             ) : (
               data.map((row, idx) => (
                 <tr key={row.id} className={`group hover:bg-blue-50/20 ${striped && idx % 2 !== 0 ? 'bg-slate-50/30' : ''}`}>
@@ -244,6 +260,44 @@ export function Table<T extends { id: string | number }>({
             )}
           </tbody>
         </table>
+      </div>
+
+      <div className="block md:hidden space-y-4">
+        {isLoading ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-500">
+            <CircleNotch size={32} className="mx-auto text-blue-600 animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">{error}</div>
+        ) : data.length === 0 ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-400">{emptyMessage}</div>
+        ) : displayedColumns.length === 0 ? (
+          <div className="rounded-xl border border-slate-200 bg-white p-6 text-center text-slate-400">No columns selected. Use the Columns button to show fields.</div>
+        ) : (
+          data.map((row) => (
+            <div
+              key={row.id}
+              onClick={() => onRowClick?.(row)}
+              className={`rounded-3xl border border-slate-200 bg-white p-4 shadow-sm ${onRowClick ? 'cursor-pointer' : ''}`}
+            >
+              <div className="space-y-3">
+                {displayedColumns.map((col) => (
+                  <div key={String(col.key)} className="space-y-2">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">{col.header}</div>
+                    <div className="text-sm text-slate-700">
+                      {col.render ? col.render((row as any)[col.key], row) : (row as any)[col.key] || '-'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {rowActions && (
+                <div className="mt-4 flex flex-wrap gap-2 justify-end">
+                  {rowActions(row)}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

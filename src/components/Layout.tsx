@@ -24,6 +24,7 @@ import { useAdminAuthContext } from '../contexts/AdminAuthContext';
 
 function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { signOut, signOutLoading } = useAdminAuthContext();
@@ -55,7 +56,7 @@ function Layout() {
   return (
     <div className="flex h-screen bg-slate-50">
       <aside
-        className={`${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-slate-200 shadow-lg transition-all duration-300 flex flex-col min-h-0 overflow-hidden`}
+        className={`hidden md:flex ${sidebarOpen ? 'w-72' : 'w-20'} bg-white border-r border-slate-200 shadow-lg transition-all duration-300 flex-col min-h-0 overflow-hidden`}
       >
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           {sidebarOpen ? (
@@ -108,15 +109,76 @@ function Layout() {
         </div>
       </aside>
 
+      {mobileNavOpen && (
+        <div className="fixed inset-0 z-40 bg-black/30 md:hidden" onClick={() => setMobileNavOpen(false)} />
+      )}
+
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 shadow-lg transition-transform duration-300 md:hidden ${mobileNavOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-4 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-lg">
+              A
+            </div>
+            <div>
+              <h1 className="text-xl font-extrabold text-slate-900">Sappey Admin</h1>
+              <p className="text-xs text-slate-500">Management Portal</p>
+            </div>
+          </div>
+          <button
+            className="w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <CaretLeft size={20} weight="bold" />
+          </button>
+        </div>
+
+        <nav className="flex-1 min-h-0 px-2 py-4 space-y-2 overflow-y-auto">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMobileNavOpen(false)}
+              className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-200 ${
+                isActive(item.path)
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+              }`}
+            >
+              <div className={`${isActive(item.path) ? 'text-white' : 'text-slate-500'}`}>{item.icon}</div>
+              <span className="text-sm font-medium">{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+
+        <div className="p-2 border-t border-slate-200">
+          <button
+            onClick={() => {
+              handleLogout();
+              setMobileNavOpen(false);
+            }}
+            disabled={signOutLoading}
+            className="flex items-center gap-3 w-full p-3 rounded-xl text-slate-700 hover:bg-red-50 hover:text-red-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <SignOut size={20} weight="duotone" />
+            <span className="font-medium">{signOutLoading ? 'Logging out...' : 'Logout'}</span>
+          </button>
+        </div>
+      </aside>
+
       <main className="flex-1 min-h-0 overflow-auto">
-        <div className="h-16 sticky top-0 bg-white border-b border-slate-200 z-20 flex items-center justify-between px-6 shadow-sm">
-          <div className="flex items-center gap-4">
+        <div className="h-16 sticky top-0 bg-white border-b border-slate-200 z-20 flex items-center justify-between px-4 md:px-6 shadow-sm">
+          <div className="flex items-center gap-3">
+            <button
+              className="md:hidden p-2 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200"
+              onClick={() => setMobileNavOpen((open) => !open)}
+            >
+              <ListMagnifyingGlass size={20} />
+            </button>
             <div className="flex items-center gap-2 bg-slate-100 rounded-xl px-3 py-2">
               <ListMagnifyingGlass size={18} className="text-slate-500" />
               <input
                 type="text"
-                placeholder="Search...
-"
+                placeholder="Search..."
                 className="bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400"
               />
             </div>
@@ -138,7 +200,7 @@ function Layout() {
         </div>
       </main>
     </div>
-  );
+  )
 }
 
 export default Layout;

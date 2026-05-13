@@ -410,40 +410,74 @@ function ProductDetailsPage() {
             </div>
 
             {product.sellerOfferings && product.sellerOfferings.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left py-3 px-4 font-semibold text-slate-700">Seller</th>
-                      <th className="text-left py-3 px-4 font-semibold text-slate-700">Contact</th>
-                      <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
-                      <th className="text-right py-3 px-4 font-semibold text-slate-700">Available Stock</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {product.sellerOfferings.map((offering, index) => (
-                      <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-slate-900">{offering.sellerBusinessName}</div>
-                          <div className="text-xs text-slate-500">{offering.sellerOwnerName}</div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="text-slate-600">{offering.sellerOwnerEmail}</div>
-                          <div className="text-xs text-slate-400">{offering.sellerBusinessPhone}</div>
-                        </td>
-                        <td className="py-4 px-4 text-right font-semibold text-slate-900">
+              <div className="space-y-4">
+                <div className="grid gap-4 sm:hidden">
+                  {product.sellerOfferings.map((offering, index) => (
+                    <div key={index} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Seller</p>
+                          <p className="text-sm font-semibold text-slate-900">{offering.sellerBusinessName}</p>
+                          <p className="text-xs text-slate-500">{offering.sellerOwnerName}</p>
+                        </div>
+                        <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
                           ₹{offering.sellerPrice?.toLocaleString()}
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${offering.availableStock > 10 ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"
-                            }`}>
+                        </span>
+                      </div>
+                      <div className="mt-4 space-y-2 text-sm text-slate-600">
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Contact</p>
+                          <p>{offering.sellerOwnerEmail}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Phone</p>
+                          <p>{offering.sellerBusinessPhone}</p>
+                        </div>
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="text-[10px] uppercase tracking-[0.24em] text-slate-400">Stock</p>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${offering.availableStock > 10 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
                             {offering.availableStock}
                           </span>
-                        </td>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Seller</th>
+                        <th className="text-left py-3 px-4 font-semibold text-slate-700">Contact</th>
+                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Price</th>
+                        <th className="text-right py-3 px-4 font-semibold text-slate-700">Available Stock</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {product.sellerOfferings.map((offering, index) => (
+                        <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                          <td className="py-4 px-4">
+                            <div className="font-medium text-slate-900">{offering.sellerBusinessName}</div>
+                            <div className="text-xs text-slate-500">{offering.sellerOwnerName}</div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="text-slate-600">{offering.sellerOwnerEmail}</div>
+                            <div className="text-xs text-slate-400">{offering.sellerBusinessPhone}</div>
+                          </td>
+                          <td className="py-4 px-4 text-right font-semibold text-slate-900">
+                            ₹{offering.sellerPrice?.toLocaleString()}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${offering.availableStock > 10 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                              {offering.availableStock}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
                 {/* {product.sellerOfferingsPagination?.totalPages > 1 && (
                   <div className="mt-6 border-t pt-4">

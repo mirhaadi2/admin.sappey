@@ -58,7 +58,7 @@ function ProductCreatePage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="max-w-5xl mx-auto px-4 py-2">
+      <div className="max-w-5xl mx-auto px-4 py-4 sm:px-6 md:px-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Button
@@ -77,7 +77,7 @@ function ProductCreatePage() {
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-brand-brown/10 p-2">
+        <div className="bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-brand-brown/10 p-4 md:p-6">
           <ProductForm
             title=""
             defaultValues={createDefaultValues}

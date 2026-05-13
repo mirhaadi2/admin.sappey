@@ -315,7 +315,7 @@ function OrderDetailPage() {
               </div>
               <div className="divide-y divide-slate-100">
                 {order?.items?.map((item: any) => (
-                  <div key={item.id} className="p-6 flex items-center gap-6">
+                  <div key={item.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                     <div className="h-20 w-20 bg-slate-100 rounded-[24px] overflow-hidden border border-brand-brown/10 shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex-shrink-0">
                       <img
                         src={item.productImage}
@@ -481,7 +481,7 @@ function OrderDetailPage() {
                 ) : null}
 
                 {order?.customerPhone ? (
-                  <div className="flex items-center gap-3">s
+                  <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500 rounded-lg text-white">
                       <Phone size={16} />
                     </div>

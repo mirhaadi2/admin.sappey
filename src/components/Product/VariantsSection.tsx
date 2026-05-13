@@ -54,8 +54,65 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
         </div>
       </div>
 
-      {/* Variants Table */}
-      <div className="overflow-x-auto">
+      {/* Mobile variant cards */}
+      <div className="space-y-4 sm:hidden">
+        {variants?.map((variant) => {
+          const isExpanded = expandedVariant === variant.id;
+          const hasStock = typeof stock === 'number' ? stock > 0 : sellerOfferings?.some((offering) => offering.availableStock > 0);
+          return (
+            <div key={variant.id} className="rounded-3xl border border-slate-200 bg-slate-50 shadow-sm overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setExpandedVariant(isExpanded ? null : variant.id)}
+                className="w-full p-4 text-left flex items-start justify-between gap-4"
+              >
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 mb-2">
+                    SKU
+                  </p>
+                  <p className="text-base font-bold text-slate-900">{variant.sku || 'N/A'}</p>
+                </div>
+                <div className="flex flex-col items-end gap-2">
+                  <span className="text-sm font-semibold text-slate-900">₹{variant.price?.toLocaleString()}</span>
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${hasStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                    {hasStock ? 'In Stock' : 'Sold Out'}
+                  </span>
+                </div>
+              </button>
+              {isExpanded && (
+                <div className="border-t border-slate-200 bg-white p-4 space-y-3">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="rounded-2xl border border-slate-200 p-3">
+                      <p className="text-xs text-slate-500 uppercase tracking-[0.18em]">Sale Price</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">{variant.discountedPrice ? `₹${variant.discountedPrice.toLocaleString()}` : 'N/A'}</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 p-3">
+                      <p className="text-xs text-slate-500 uppercase tracking-[0.18em]">Discount</p>
+                      <p className="mt-1 text-sm font-semibold text-blue-600">{variant.discountedPercent ? `${variant.discountedPercent}%` : 'N/A'}</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 p-3">
+                      <p className="text-xs text-slate-500 uppercase tracking-[0.18em]">Weight</p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">{variant.weight ? `${variant.weight} ${variant.weightUnit || 'G'}` : 'N/A'}</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 p-3">
+                      <p className="text-xs text-slate-500 uppercase tracking-[0.18em]">Created</p>
+                      <p className="mt-1 text-sm text-slate-700">{format(new Date(variant.createdAt), 'MMM dd, yyyy')}</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 p-3">
+                      <p className="text-xs text-slate-500 uppercase tracking-[0.18em]">Status</p>
+                      <span className={`inline-flex items-center gap-1 mt-1 px-2 py-1 rounded-full text-xs font-semibold ${variant.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-700'}`}>
+                        {variant.status === 'ACTIVE' ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-slate-200">
@@ -73,7 +130,7 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
           <tbody>
             {variants?.map((variant) => {
               const isExpanded = expandedVariant === variant.id;
-              const hasStock = typeof stock === 'number' ? stock > 0 : sellerOfferings?.some(offering => offering.availableStock > 0);
+              const hasStock = typeof stock === 'number' ? stock > 0 : sellerOfferings?.some((offering) => offering.availableStock > 0);
               return (
                 <React.Fragment key={variant.id}>
                   {/* Main Row */}
@@ -85,9 +142,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                   >
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-2">
-                        {/* <div className="w-8 h-8 bg-slate-100 rounded flex items-center justify-center">
-                          <Cpu size={14} className="text-slate-600" />
-                        </div> */}
                         <span className="font-medium text-slate-900">
                           {variant.sku || 'N/A'}
                         </span>
@@ -172,7 +226,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                       <td colSpan={8} className="p-0">
                         <div className="px-4 py-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {/* SKU Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <Cpu size={14} className="text-blue-600" />
@@ -185,7 +238,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                               </p>
                             </div>
 
-                            {/* Price Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <CurrencyInr size={14} className="text-green-600" />
@@ -198,7 +250,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                               </p>
                             </div>
 
-                            {/* Sale Price Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <CurrencyInr size={14} className="text-red-600" />
@@ -211,7 +262,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                               </p>
                             </div>
 
-                            {/* Discount Percent Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <Package size={14} className="text-blue-600" />
@@ -224,7 +274,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                               </p>
                             </div>
 
-                            {/* Weight Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <Package size={14} className="text-purple-600" />
@@ -233,11 +282,10 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                                 </span>
                               </div>
                               <p className="text-sm font-semibold text-slate-900">
-                                {variant.weight ? `${variant.weight} KG` : 'N/A'}
+                                {variant.weight ? `${variant.weight} ${variant.weightUnit || 'G'}` : 'N/A'}
                               </p>
                             </div>
 
-                            {/* Status Detail */}
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">
                                 <CheckCircle size={14} className="text-emerald-600" />
@@ -265,7 +313,6 @@ export function VariantsSection({ variants, variantsCount, stock, sellerOffering
                             </div>
                           </div>
 
-                          {/* Timestamps */}
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                             <div className="bg-white rounded-lg p-3 border border-slate-200">
                               <div className="flex items-center gap-2 mb-2">

@@ -148,12 +148,12 @@ export function ProductForm({
       <style>{quillStyles}</style>
       
       {/* Top Header */}
-      <div className="px-8 py-6 bg-slate-900 text-white flex justify-between items-center">
+      <div className="px-6 py-6 bg-slate-900 text-white flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">{title}</h2>
           <p className="text-slate-400 text-sm mt-1 uppercase tracking-wider font-medium">Sappey Foods Admin</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button variant="outline" className="text-white border-slate-700 hover:bg-slate-800" onClick={onCancel}>Cancel</Button>
           <Button variant="primary" disabled={isSubmitting} onClick={handleSubmit((data) => onSubmit({ ...data, benefits, ingredients }, "return"))}>
             {isSubmitting ? "Saving..." : "Save Product"}
@@ -161,7 +161,7 @@ export function ProductForm({
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row min-h-[650px]">
+      <div className="flex flex-col md:flex-row min-h-[auto]">
         {/* Sidebar Navigation */}
         <div className="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-4 space-y-2">
           {tabs.map((tab) => (
@@ -181,16 +181,16 @@ export function ProductForm({
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 p-8 overflow-y-auto max-h-[800px]">
+        <div className="flex-1 p-6 md:p-8 overflow-y-auto max-h-[calc(100vh-150px)]">
           <FormProvider {...formMethods}>
             <form onSubmit={(e) => e.preventDefault()} className="space-y-8">
               
               {/* TAB: GENERAL */}
               {activeTab === "general" && (
                 <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="grid grid-cols-2 gap-6">
-                    <FormField name="name" label="Product Name" required className="col-span-2" />
-                    <FormField name="slug" label="URL Slug" className="col-span-2" helperText="Helpful for SEO" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField name="name" label="Product Name" required className="md:col-span-2" />
+                    <FormField name="slug" label="URL Slug" className="md:col-span-2" helperText="Helpful for SEO" />
                     <FormField name="category" label="Category" type="select" required 
                       options={categories.map(c => ({ value: c.id, label: c.name }))} 
                     />
@@ -219,7 +219,7 @@ export function ProductForm({
                   </section>
                   <section className="p-6 bg-blue-50 rounded-2xl border border-blue-100">
                     <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2"><Sparkles size={18}/> Marketing Badges</h4>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField name="isNew" label="New Arrival" type="checkbox" />
                       <FormField name="isBestseller" label="Bestseller" type="checkbox" />
                       <FormField name="isCustomerFavourites" label="Customer Favourite" type="checkbox" />
@@ -326,13 +326,13 @@ export function ProductForm({
                   </div>
                   <div className="space-y-4">
                     {variants.fields.map((f, i) => (
-                      <div key={f.id} className="p-6 bg-slate-50 border rounded-2xl grid grid-cols-12 gap-4 items-end relative shadow-sm hover:shadow-md transition-shadow">
-                        <div className="col-span-3"><FormField name={`variants.${i}.weight`} label="Weight" type="number" /></div>
-                        <div className="col-span-2"><FormField name={`variants.${i}.weightUnit`} label="Unit" type="select" options={[{value:"G",label:"G"},{value:"KG",label:"KG"}]} /></div>
-                        <div className="col-span-2"><FormField name={`variants.${i}.price`} label="Base Price" type="number" /></div>
-                        <div className="col-span-2"><FormField name={`variants.${i}.discountedPrice`} label="Dis. Price" type="number" /></div>
-                        <div className="col-span-2"><FormField name={`variants.${i}.discountedPercent`} label="Discount %" type="number" /></div>
-                        <div className="col-span-1"><Button variant="danger" className="w-full p-2 h-10" onClick={() => variants.remove(i)}><Trash size={18}/></Button></div>
+                      <div key={f.id} className="p-6 bg-slate-50 border rounded-2xl grid grid-cols-1 xl:grid-cols-12 gap-4 items-end relative shadow-sm hover:shadow-md transition-shadow">
+                        <div className="xl:col-span-3"><FormField name={`variants.${i}.weight`} label="Weight" type="number" /></div>
+                        <div className="xl:col-span-2"><FormField name={`variants.${i}.weightUnit`} label="Unit" type="select" options={[{value:"G",label:"G"},{value:"KG",label:"KG"}]} /></div>
+                        <div className="xl:col-span-2"><FormField name={`variants.${i}.price`} label="Base Price" type="number" /></div>
+                        <div className="xl:col-span-2"><FormField name={`variants.${i}.discountedPrice`} label="Dis. Price" type="number" /></div>
+                        <div className="xl:col-span-2"><FormField name={`variants.${i}.discountedPercent`} label="Discount %" type="number" /></div>
+                        <div className="xl:col-span-1"><Button variant="danger" className="w-full p-2 h-10" onClick={() => variants.remove(i)}><Trash size={18}/></Button></div>
                       </div>
                     ))}
                   </div>
@@ -347,7 +347,7 @@ export function ProductForm({
                     <ImageIcon className="mx-auto text-slate-400 mb-2" size={48} />
                     <p className="text-sm font-semibold text-slate-600">{uploading ? "Uploading..." : "Click or drag images here to upload"}</p>
                   </div>
-                  <div className="grid grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
                     {watch("images")?.map((url, idx) => (
                       <div key={idx} className="aspect-square rounded-xl overflow-hidden border border-slate-200 relative group">
                         <img src={url} alt="Product" className="w-full h-full object-cover" />
