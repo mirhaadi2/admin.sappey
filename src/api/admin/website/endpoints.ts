@@ -18,6 +18,9 @@ export const WEBSITE_INSTAGRAM = `${WEBSITE_BASE}/instagram`;
 // Promotion endpoints
 export const WEBSITE_PROMOTIONS = `${WEBSITE_BASE}/promotions`;
 
+// Coupon endpoints
+export const WEBSITE_COUPONS = `${WEBSITE_BASE}/coupons`;
+
 // Settings endpoints
 export const WEBSITE_SETTINGS = `${WEBSITE_BASE}/settings`;
 

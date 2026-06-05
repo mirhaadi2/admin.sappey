@@ -346,6 +346,53 @@ export interface CreatePromotionRequest {
 
 export interface UpdatePromotionRequest extends Partial<CreatePromotionRequest> {}
 
+// Coupon types
+export type CouponType = 'fixed_discount' | 'percentage_discount' | 'free_shipping' | 'free_order';
+
+export interface Coupon {
+  id: string;
+  code: string;
+  title: string;
+  description?: string;
+  type: CouponType;
+  discountValue?: number;
+  minOrderValue?: number;
+  maxDiscountAmount?: number;
+  validFrom: string;
+  validUntil: string;
+  usageLimit?: number;
+  currentUsage: number;
+  perUserLimit?: number;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  excludeProducts?: string[];
+  firstOrderOnly: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCouponRequest {
+  code: string;
+  title: string;
+  description?: string;
+  type: CouponType;
+  discountValue?: number;
+  minOrderValue?: number;
+  maxDiscountAmount?: number;
+  validFrom: string;
+  validUntil: string;
+  usageLimit?: number;
+  perUserLimit?: number;
+  applicableCategories?: string[];
+  applicableProducts?: string[];
+  excludeProducts?: string[];
+  firstOrderOnly?: boolean;
+  isActive?: boolean;
+}
+
+export interface UpdateCouponRequest extends Partial<CreateCouponRequest> {}
+
 // API Response types
 export interface WebsiteApiResponse<T> {
   success: boolean;

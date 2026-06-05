@@ -9,6 +9,7 @@ import {
   WEBSITE_PAGES,
   WEBSITE_SUPPORT_PAGES,
   WEBSITE_PROMOTIONS,
+  WEBSITE_COUPONS,
 } from './endpoints';
 import {
   Banner,
@@ -20,6 +21,7 @@ import {
   WebsitePage,
   Page,
   Promotion,
+  Coupon,
   CreateBannerRequest,
   UpdateBannerRequest,
   CreateHeroRequest,
@@ -36,6 +38,8 @@ import {
   UpdateWebsitePageRequest,
   CreatePromotionRequest,
   UpdatePromotionRequest,
+  CreateCouponRequest,
+  UpdateCouponRequest,
   AboutUs,
   ShippingPolicy,
   ReturnsRefunds,
@@ -336,6 +340,33 @@ export const websiteApi = {
 
   deletePromotion: async (id: string): Promise<WebsiteApiResponse<void>> => {
     const response = await apiMethods.delete<WebsiteApiResponse<void>>(`${WEBSITE_PROMOTIONS}/${id}`);
+    return response.data;
+  },
+
+  // ===================== COUPON APIs =====================
+  getCoupons: async (limit = 20, offset = 0): Promise<WebsiteListResponse<Coupon>> => {
+    const url = `${WEBSITE_COUPONS}?limit=${limit}&offset=${offset}`;
+    const response = await apiMethods.get<WebsiteListResponse<Coupon>>(url);
+    return response.data?.data as any;
+  },
+
+  getCoupon: async (id: string): Promise<WebsiteApiResponse<Coupon>> => {
+    const response = await apiMethods.get<WebsiteApiResponse<Coupon>>(`${WEBSITE_COUPONS}/${id}`);
+    return response.data;
+  },
+
+  createCoupon: async (data: CreateCouponRequest): Promise<WebsiteApiResponse<Coupon>> => {
+    const response = await apiMethods.post<WebsiteApiResponse<Coupon>>(WEBSITE_COUPONS, data);
+    return response.data;
+  },
+
+  updateCoupon: async (id: string, data: UpdateCouponRequest): Promise<WebsiteApiResponse<Coupon>> => {
+    const response = await apiMethods.put<WebsiteApiResponse<Coupon>>(`${WEBSITE_COUPONS}/${id}`, data);
+    return response.data;
+  },
+
+  deleteCoupon: async (id: string): Promise<WebsiteApiResponse<void>> => {
+    const response = await apiMethods.delete<WebsiteApiResponse<void>>(`${WEBSITE_COUPONS}/${id}`);
     return response.data;
   },
 };

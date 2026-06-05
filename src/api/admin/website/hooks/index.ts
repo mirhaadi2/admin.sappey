@@ -11,6 +11,7 @@ import {
   Page,
   PageType,
   Promotion,
+  Coupon,
   CreateBannerRequest,
   UpdateBannerRequest,
   CreateHeroRequest,
@@ -27,6 +28,8 @@ import {
   UpdateWebsitePageRequest,
   CreatePromotionRequest,
   UpdatePromotionRequest,
+  CreateCouponRequest,
+  UpdateCouponRequest,
   WebsiteApiResponse,
 } from '../types';
 
@@ -667,6 +670,56 @@ export const useWebsitePromotionMutations = () => {
     createPromotion: createMutation.mutateAsync,
     updatePromotion: updateMutation.mutateAsync,
     deletePromotion: deleteMutation.mutateAsync,
+    createLoading: createMutation.isPending,
+    updateLoading: updateMutation.isPending,
+    deleteLoading: deleteMutation.isPending,
+  };
+};
+
+// ===================== COUPON HOOKS =====================
+export const useWebsiteCoupons = () => {
+  const query = useQuery({
+    queryKey: ['website-coupons'],
+    queryFn: () => websiteApi.getCoupons(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+  return {
+    coupons: query.data?.data || [],
+    isLoading: query.isLoading,
+    error: query.error,
+    refetch: query.refetch,
+  };
+};
+
+export const useWebsiteCouponMutations = () => {
+  const queryClient = useQueryClient();
+
+  const createMutation = useMutation({
+    mutationFn: websiteApi.createCoupon,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-coupons'] });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateCouponRequest }) =>
+      websiteApi.updateCoupon(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-coupons'] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: websiteApi.deleteCoupon,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['website-coupons'] });
+    },
+  });
+
+  return {
+    createCoupon: createMutation.mutateAsync,
+    updateCoupon: updateMutation.mutateAsync,
+    deleteCoupon: deleteMutation.mutateAsync,
     createLoading: createMutation.isPending,
     updateLoading: updateMutation.isPending,
     deleteLoading: deleteMutation.isPending,

@@ -7,7 +7,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Toast } from '../components';
 import WebsiteEntityForm from '../components/Website/WebsiteEntityForm';
 import WebsitePageForm from '../components/Website/WebsitePageForm';
-import { BannerList, HeroList, SectionList, TestimonialList, InstagramList, PromotionList } from '../components/Website/index';
+import { BannerList, HeroList, SectionList, TestimonialList, InstagramList, PromotionList, CouponList } from '../components/Website/index';
 import {
     useWebsiteBanners,
     useWebsiteBannerMutations,
@@ -23,6 +23,8 @@ import {
     useWebsitePageMutations,
     useWebsitePromotions,
     useWebsitePromotionMutations,
+    useWebsiteCoupons,
+    useWebsiteCouponMutations,
     useAboutUs,
     useAboutUsMutations,
     useShippingPolicy,
@@ -43,6 +45,7 @@ import {
     Testimonial,
     InstagramPost,
     Promotion,
+    Coupon,
     CreateBannerRequest,
     UpdateBannerRequest,
     CreateHeroRequest,
@@ -57,12 +60,14 @@ import {
     UpdateWebsitePageRequest,
     CreatePromotionRequest,
     UpdatePromotionRequest,
+    CreateCouponRequest,
+    UpdateCouponRequest,
     WebsitePage as WebsitePageType,
 } from '../api/admin/index';
 
-type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
+type WebsiteContentTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions' | 'coupons' | 'website-pages' | 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 type WebsiteTab = WebsiteContentTab;
-type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions';
+type EntityTab = 'banners' | 'hero' | 'sections' | 'testimonials' | 'instagram' | 'promotions' | 'coupons';
 type SupportPageKey = 'about-us' | 'shipping-policy' | 'returns-refunds' | 'faqs' | 'privacy-policy' | 'terms-and-conditions' | 'sitemap';
 
 const WebsitePage = () => {
@@ -80,7 +85,7 @@ const WebsitePage = () => {
         open: boolean;
         mode: 'create' | 'edit';
         type: EntityTab;
-        item: Banner | Hero | Section | Testimonial | InstagramPost | Promotion | WebsitePageType | null;
+        item: Banner | Hero | Section | Testimonial | InstagramPost | Promotion | Coupon | WebsitePageType | null;
     }>({ open: false, mode: 'create', type: 'banners', item: null });
 
     const [pageModal, setPageModal] = useState<{
@@ -114,6 +119,7 @@ const WebsitePage = () => {
     const { termsConditions, isLoading: termsConditionsLoading, error: termsConditionsError, refetch: refetchTermsConditions } = useTermsConditions();
     const { sitemap, isLoading: sitemapLoading, error: sitemapError, refetch: refetchSitemap } = useSitemap();
     const { promotions, isLoading: promotionsLoading, error: promotionsError } = useWebsitePromotions();
+    const { coupons, isLoading: couponsLoading, error: couponsError } = useWebsiteCoupons();
 
     // Mutation hooks
     const bannerMutations = useWebsiteBannerMutations();
@@ -123,6 +129,7 @@ const WebsitePage = () => {
     const instagramMutations = useWebsiteInstagramMutations();
     const pageMutations = useWebsitePageMutations();
     const promotionMutations = useWebsitePromotionMutations();
+    const couponMutations = useWebsiteCouponMutations();
     const aboutUsMutations = useAboutUsMutations();
     const shippingPolicyMutations = useShippingPolicyMutations();
     const returnsRefundsMutations = useReturnsRefundsMutations();
@@ -266,6 +273,7 @@ const WebsitePage = () => {
         { id: 'testimonials' as WebsiteTab, label: 'Testimonials', icon: <Check size={16} />, count: testimonials?.length || 0 },
         { id: 'instagram' as WebsiteTab, label: 'Instagram', icon: <ImageIcon size={16} />, count: instagramPosts?.length || 0 },
         { id: 'promotions' as WebsiteTab, label: 'Promotions', icon: <Check size={16} />, count: promotions?.length || 0 },
+        { id: 'coupons' as WebsiteTab, label: 'Coupons', icon: <Check size={16} />, count: coupons?.length || 0 },
         { id: 'website-pages' as WebsiteTab, label: 'Website Pages', icon: <List size={16} />, count: pages?.length || 0 },
         { id: 'about-us' as WebsiteTab, label: 'About Us', icon: <List size={16} />, count: aboutUs ? 1 : 0 },
         { id: 'shipping-policy' as WebsiteTab, label: 'Shipping Policy', icon: <List size={16} />, count: shippingPolicy ? 1 : 0 },
@@ -319,6 +327,9 @@ const WebsitePage = () => {
                 case 'promotions':
                     await promotionMutations.deletePromotion(id);
                     break;
+                case 'coupons':
+                    await couponMutations.deleteCoupon(id);
+                    break;
                 case 'website-pages':
                     await pageMutations.deleteWebsitePage(id);
                     break;
@@ -355,11 +366,14 @@ const WebsitePage = () => {
                 case 'promotions':
                     await promotionMutations.updatePromotion({ id: item.id, data: payload });
                     break;
+                case 'coupons':
+                    await couponMutations.updateCoupon({ id: item.id, data: payload });
+                    break;
                 case 'website-pages':
                     await pageMutations.updateWebsitePage({ id: item.slug, data: { isPublished: !item.isPublished } });
                     break;
             }
-            showToastMessage(`${item.title ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);
+            showToastMessage(`${item.title ?? item.code ?? item.name ?? item.author ?? 'Item'} ${payload.isActive ? 'activated' : 'deactivated'}`);
         } catch (error: unknown) {
             showToastMessage(`Failed to update status: ${(error instanceof Error) ? error.message : String(error)}`, 'error');
         }
@@ -395,6 +409,9 @@ const WebsitePage = () => {
                     case 'promotions':
                         await promotionMutations.createPromotion(data as unknown as CreatePromotionRequest);
                         break;
+                    case 'coupons':
+                        await couponMutations.createCoupon(data as unknown as CreateCouponRequest);
+                        break;
                 }
                 showToastMessage(`${type} created successfully.`);
             } else {
@@ -416,6 +433,9 @@ const WebsitePage = () => {
                         break;
                     case 'promotions':
                         await promotionMutations.updatePromotion({ id: id!, data: data as UpdatePromotionRequest });
+                        break;
+                    case 'coupons':
+                        await couponMutations.updateCoupon({ id: id!, data: data as UpdateCouponRequest });
                         break;
                 }
                 showToastMessage(`${type} updated successfully.`);
@@ -701,6 +721,17 @@ const WebsitePage = () => {
                         onToggle={(promotion) => handleToggleActive('promotions', promotion)}
                     />
                 );
+            case 'coupons':
+                return (
+                    <CouponList
+                        coupons={Array.isArray(coupons) ? coupons : []}
+                        isLoading={couponsLoading}
+                        onAdd={() => openEntityModal('coupons', 'create')}
+                        onEdit={(coupon) => openEntityModal('coupons', 'edit', coupon as unknown as Record<string, unknown>)}
+                        onDelete={(id, code) => handleDeleteEntity('coupons', id, code)}
+                        onToggle={(coupon) => handleToggleActive('coupons', coupon)}
+                    />
+                );
             case 'website-pages':
                 return (
                     <div>
@@ -807,7 +838,7 @@ const WebsitePage = () => {
                     {/* Content Tabs */}
                     <div className="overflow-x-auto">
                         <nav className="flex space-x-1 min-w-min px-1">
-                            {tabs.filter(tab => ['banners', 'hero', 'sections', 'testimonials', 'instagram', 'promotions'].includes(tab.id)).map((tab) => (
+                            {tabs.filter(tab => ['banners', 'hero', 'sections', 'testimonials', 'instagram', 'promotions', 'coupons'].includes(tab.id)).map((tab) => (
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}

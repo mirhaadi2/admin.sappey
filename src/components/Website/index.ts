@@ -5,4 +5,5 @@ export { SectionList } from './SectionList';
 export { TestimonialList } from './TestimonialList';
 export { InstagramList } from './InstagramList';
 export { PromotionList } from './PromotionList';
+export { CouponList } from './CouponList';
 export { WebsitePageForm } from './WebsitePageForm';

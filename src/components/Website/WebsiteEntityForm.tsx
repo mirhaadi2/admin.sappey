@@ -11,7 +11,8 @@ type EntityTab =
     | "sections"
     | "testimonials"
     | "instagram"
-    | "promotions";
+    | "promotions"
+    | "coupons";
 
 interface WebsiteEntityFormProps {
     type: EntityTab;
@@ -78,6 +79,21 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
         isActive: true,
         priority: 0,
     },
+    coupons: {
+        code: "",
+        title: "",
+        description: "",
+        type: "fixed_discount",
+        discountValue: undefined,
+        minOrderValue: undefined,
+        maxDiscountAmount: undefined,
+        validFrom: "",
+        validUntil: "",
+        usageLimit: undefined,
+        perUserLimit: undefined,
+        firstOrderOnly: false,
+        isActive: true,
+    },
 };
 
 const fieldsByType: Record<
@@ -85,7 +101,7 @@ const fieldsByType: Record<
     Array<{
         key: string;
         label: string;
-        type: "text" | "textarea" | "number" | "select" | "file";
+        type: "text" | "textarea" | "number" | "select" | "file" | "date" | "checkbox";
         options?: Array<{ value: string; label: string }>;
         required?: boolean;
         accept?: string;
@@ -331,6 +347,79 @@ const fieldsByType: Record<
             type: "number" 
         },
     ],
+    coupons: [
+        { 
+            key: "code", 
+            label: "Coupon Code", 
+            type: "text", 
+            required: true 
+        },
+        { 
+            key: "title", 
+            label: "Coupon Title", 
+            type: "text", 
+            required: true 
+        },
+        { 
+            key: "description", 
+            label: "Description", 
+            type: "textarea" 
+        },
+        { 
+            key: "type", 
+            label: "Discount Type", 
+            type: "select",
+            options: [
+                { value: "fixed_discount", label: "Fixed Discount (₹)" },
+                { value: "percentage_discount", label: "Percentage Discount (%)" },
+                { value: "free_shipping", label: "Free Shipping" },
+                { value: "free_order", label: "Free Order" },
+            ],
+            required: true 
+        },
+        { 
+            key: "discountValue", 
+            label: "Discount Value", 
+            type: "number" 
+        },
+        { 
+            key: "maxDiscountAmount", 
+            label: "Max Discount Amount (₹)", 
+            type: "number" 
+        },
+        { 
+            key: "minOrderValue", 
+            label: "Min Order Value (₹)", 
+            type: "number" 
+        },
+        { 
+            key: "validFrom", 
+            label: "Valid From", 
+            type: "date",
+            required: true 
+        },
+        { 
+            key: "validUntil", 
+            label: "Valid Until", 
+            type: "date",
+            required: true 
+        },
+        { 
+            key: "usageLimit", 
+            label: "Usage Limit (0 = Unlimited)", 
+            type: "number" 
+        },
+        { 
+            key: "perUserLimit", 
+            label: "Per User Limit (0 = Unlimited)", 
+            type: "number" 
+        },
+        { 
+            key: "firstOrderOnly", 
+            label: "First Order Only", 
+            type: "checkbox" 
+        },
+    ],
 };
 
 export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
@@ -480,6 +569,24 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                     </option>
                                 ))}
                             </select>
+                        ) : field.type === "date" ? (
+                            <input
+                                type="date"
+                                value={(form[field.key] as string) || ""}
+                                onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                className="w-full rounded border border-slate-300 p-2"
+                                required={field.required}
+                            />
+                        ) : field.type === "checkbox" ? (
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={(form[field.key] as boolean) || false}
+                                    onChange={(e) => handleInputChange(field.key, e.target.checked)}
+                                    className="w-4 h-4 rounded border-slate-300"
+                                />
+                                <span className="text-sm text-slate-700">{field.label}</span>
+                            </label>
                         ) : field.type === "file" ? (
                             <div className="space-y-2">
                                 <div className="flex items-center gap-2">
