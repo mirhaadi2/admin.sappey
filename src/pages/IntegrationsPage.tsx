@@ -156,7 +156,7 @@ const DelhiveryIntegration: React.FC = () => {
                         details?.pre_paid === "Y" &&
                         details?.cod === "Y" &&
                         details?.cash === "Y" &&
-                        details?.repl === "Y" &&
+                        // details?.repl === "Y" &&
                         details?.pickup === "Y"
                     );
                 }) || false;
