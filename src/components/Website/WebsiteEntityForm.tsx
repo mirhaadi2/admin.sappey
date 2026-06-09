@@ -741,10 +741,10 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                                     ? productOptions
                                                     : field.options ?? []
                                         }
-                                        onChange={(selected) =>
+                                        onChange={(selected: any) =>
                                             handleInputChange(
                                                 field.key,
-                                                selected.map((item) => item.value)
+                                                selected.map((item: any) => item.value)
                                             )
                                         }
                                         className="react-select-container"
