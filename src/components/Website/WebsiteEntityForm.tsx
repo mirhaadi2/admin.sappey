@@ -4,6 +4,9 @@ import { Toggle } from "../Toggle";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { apiClient } from "../../api";
 import { CheckCircle, X } from "@phosphor-icons/react";
+import { useAdminCategoriesList } from "../../api/admin/categories/hooks";
+import { useAdminProductsList } from "../../api/admin/products/hooks";
+import Select from "react-select";
 
 type EntityTab =
     | "banners"
@@ -24,11 +27,11 @@ interface WebsiteEntityFormProps {
 }
 
 const emptyDefaults: Record<EntityTab, Record<string, any>> = {
-    banners: { 
+    banners: {
         // title: "", 
-        text: "", 
+        text: "",
         // subtitle: "", 
-        isActive: true 
+        isActive: true
     },
     hero: {
         title: "",
@@ -61,11 +64,11 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
         rating: 5,
         isActive: true,
     },
-    instagram: { 
-        imageUrl: "", 
-        caption: "", 
-        postUrl: "", 
-        isActive: true 
+    instagram: {
+        imageUrl: "",
+        caption: "",
+        postUrl: "",
+        isActive: true
     },
     promotions: {
         title: "",
@@ -73,11 +76,24 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
         type: "fixed_discount",
         bannerText: "",
         minOrderValue: undefined,
+        maxOrderValue: undefined,
+        minQuantity: undefined,
+        maxQuantity: undefined,
+        applicableCategories: [],
+        applicableProducts: [],
+        excludeProducts: [],
         discountValue: undefined,
+        giftProductId: "",
+        freeText: "",
         validFrom: "",
         validUntil: "",
-        isActive: true,
+        usageLimit: undefined,
         priority: 0,
+        displayOnHomepage: true,
+        displayOnCheckout: true,
+        displayOnProductPages: false,
+        badgeIcon: "",
+        isActive: true,
     },
     coupons: {
         code: "",
@@ -96,17 +112,20 @@ const emptyDefaults: Record<EntityTab, Record<string, any>> = {
     },
 };
 
-const fieldsByType: Record<
-    EntityTab,
-    Array<{
-        key: string;
-        label: string;
-        type: "text" | "textarea" | "number" | "select" | "file" | "date" | "checkbox";
-        options?: Array<{ value: string; label: string }>;
-        required?: boolean;
-        accept?: string;
-    }>
-> = {
+type FieldType = "text" | "textarea" | "number" | "select" | "file" | "date" | "checkbox";
+
+interface FieldDefinition {
+    key: string;
+    label: string;
+    type: FieldType;
+    options?: Array<{ value: string; label: string }>;
+    required?: boolean;
+    accept?: string;
+    multiple?: boolean;
+    optionsSource?: "categories" | "products";
+}
+
+const fieldsByType: Record<EntityTab, FieldDefinition[]> = {
     banners: [
         // { 
         //     key: "title", 
@@ -119,61 +138,61 @@ const fieldsByType: Record<
         //     label: "Subtitle", 
         //     type: "text" 
         // },
-        { 
-            key: "text", 
-            label: "Text", 
-            type: "textarea", 
-            required: true 
+        {
+            key: "text",
+            label: "Text",
+            type: "textarea",
+            required: true
         },
     ],
     hero: [
-        { 
-            key: "title", 
-            label: "Title", 
-            type: "text", 
-            required: true 
+        {
+            key: "title",
+            label: "Title",
+            type: "text",
+            required: true
         },
-        { 
-            key: "subtitle", 
-            label: "Subtitle", 
-            type: "text" 
+        {
+            key: "subtitle",
+            label: "Subtitle",
+            type: "text"
         },
-        { 
-            key: "description", 
-            label: "Description", 
-            type: "textarea", 
-            required: false 
+        {
+            key: "description",
+            label: "Description",
+            type: "textarea",
+            required: false
         },
-        { 
-            key: "videoUrl", 
-            label: "Video File", 
-            type: "file", 
+        {
+            key: "videoUrl",
+            label: "Video File",
+            type: "file",
             required: false,
             accept: "video/*"
         },
-        { 
-            key: "imageUrl", 
-            label: "Hero Image", 
-            type: "file", 
+        {
+            key: "imageUrl",
+            label: "Hero Image",
+            type: "file",
             required: false,
             accept: "image/*"
         },
-        { 
-            key: "backgroundImageUrl", 
-            label: "Background Image", 
-            type: "file", 
+        {
+            key: "backgroundImageUrl",
+            label: "Background Image",
+            type: "file",
             required: false,
             accept: "image/*"
         },
-        { 
-            key: "buttonText", 
-            label: "Button Text", 
-            type: "text" 
+        {
+            key: "buttonText",
+            label: "Button Text",
+            type: "text"
         },
-        { 
-            key: "buttonLink", 
-            label: "Button URL", 
-            type: "text" 
+        {
+            key: "buttonLink",
+            label: "Button URL",
+            type: "text"
         },
     ],
     sections: [
@@ -183,133 +202,133 @@ const fieldsByType: Record<
             type: "text",
             required: true,
         },
-        { 
-            key: "title", 
-            label: "Title", 
-            type: "text", 
-            required: true 
+        {
+            key: "title",
+            label: "Title",
+            type: "text",
+            required: true
         },
-        { 
-            key: "subtitle", 
-            label: "Subtitle", 
-            type: "text" 
+        {
+            key: "subtitle",
+            label: "Subtitle",
+            type: "text"
         },
-        { 
-            key: "content", 
-            label: "Content", 
-            type: "textarea" 
+        {
+            key: "content",
+            label: "Content",
+            type: "textarea"
         },
-        { 
-            key: "order", 
-            label: "Order", 
-            type: "number", 
-            required: true 
+        {
+            key: "order",
+            label: "Order",
+            type: "number",
+            required: true
         },
-        { 
-            key: "imageUrl", 
-            label: "Image", 
+        {
+            key: "imageUrl",
+            label: "Image",
             type: "file",
             accept: "image/*"
         },
-        { 
-            key: "videoUrl", 
-            label: "Video Upload", 
+        {
+            key: "videoUrl",
+            label: "Video Upload",
             type: "file",
             accept: "video/*"
         },
-        { 
-            key: "backgroundImageUrl", 
-            label: "Background Image", 
+        {
+            key: "backgroundImageUrl",
+            label: "Background Image",
             type: "file",
             accept: "image/*"
         },
-        { 
-            key: "buttonText", 
-            label: "Button Text", 
-            type: "text" 
+        {
+            key: "buttonText",
+            label: "Button Text",
+            type: "text"
         },
-        { 
-            key: "buttonLink", 
-            label: "Button Link", 
-            type: "text" 
+        {
+            key: "buttonLink",
+            label: "Button Link",
+            type: "text"
         },
     ],
     testimonials: [
-        { 
-            key: "author", 
-            label: "Author Name", 
-            type: "text", 
-            required: true 
+        {
+            key: "author",
+            label: "Author Name",
+            type: "text",
+            required: true
         },
-        { 
-            key: "role", 
-            label: "Role", 
-            type: "text" 
+        {
+            key: "role",
+            label: "Role",
+            type: "text"
         },
-        { 
-            key: "comment", 
-            label: "Comment", 
-            type: "textarea", 
-            required: true 
+        {
+            key: "comment",
+            label: "Comment",
+            type: "textarea",
+            required: true
         },
-        { 
-            key: "imageUrl", 
-            label: "Image", 
+        {
+            key: "imageUrl",
+            label: "Image",
             type: "file",
             accept: "image/*"
         },
-        { 
-            key: "rating", 
-            label: "Rating (1-5)", 
-            type: "number", 
-            required: true 
+        {
+            key: "rating",
+            label: "Rating (1-5)",
+            type: "number",
+            required: true
         },
-        { 
-            key: "location", 
-            label: "Location", 
-            type: "text", 
-            required: true 
+        {
+            key: "location",
+            label: "Location",
+            type: "text",
+            required: true
         },
     ],
     instagram: [
-        { 
-            key: "imageUrl", 
-            label: "Image", 
-            type: "file", 
+        {
+            key: "imageUrl",
+            label: "Image",
+            type: "file",
             accept: "image/*",
-            required: true 
+            required: true
         },
-        { 
-            key: "caption", 
-            label: "Caption", 
-            type: "textarea" 
+        {
+            key: "caption",
+            label: "Caption",
+            type: "textarea"
         },
-        { 
-            key: "postUrl", 
-            label: "Post URL", 
-            type: "text" 
+        {
+            key: "postUrl",
+            label: "Post URL",
+            type: "text"
         },
     ],
     promotions: [
-        { 
-            key: "title", 
-            label: "Promotion Title", 
-            type: "text", 
-            required: true 
+        {
+            key: "title",
+            label: "Promotion Title",
+            type: "text",
+            required: true
         },
-        { 
-            key: "description", 
-            label: "Description", 
-            type: "textarea" 
+        {
+            key: "description",
+            label: "Description",
+            type: "textarea"
         },
-        { 
-            key: "bannerText", 
-            label: "Banner Text", 
-            type: "text" 
+        {
+            key: "bannerText",
+            label: "Banner Text",
+            type: "text"
         },
-        { 
-            key: "type", 
-            label: "Type", 
+        {
+            key: "type",
+            label: "Type",
             type: "select",
             options: [
                 { value: "fixed_discount", label: "Fixed Discount (₹)" },
@@ -319,55 +338,127 @@ const fieldsByType: Record<
                 { value: "bundle", label: "Bundle Deal" },
                 { value: "tiered", label: "Tiered Pricing" },
             ],
-            required: true 
+            required: true
         },
-        { 
-            key: "minOrderValue", 
-            label: "Min Order Value (₹)", 
-            type: "number" 
+        {
+            key: "minOrderValue",
+            label: "Min Order Value (₹)",
+            type: "number"
         },
-        { 
-            key: "discountValue", 
-            label: "Discount Value", 
-            type: "number" 
+        {
+            key: "maxOrderValue",
+            label: "Max Order Value (₹)",
+            type: "number"
         },
-        { 
-            key: "validFrom", 
-            label: "Valid From", 
-            type: "text" 
+        {
+            key: "minQuantity",
+            label: "Min Quantity",
+            type: "number"
         },
-        { 
-            key: "validUntil", 
-            label: "Valid Until", 
-            type: "text" 
+        {
+            key: "maxQuantity",
+            label: "Max Quantity",
+            type: "number"
         },
-        { 
-            key: "priority", 
-            label: "Priority", 
-            type: "number" 
+        {
+            key: "applicableCategories",
+            label: "Applicable Categories",
+            type: "select",
+            multiple: true,
+            optionsSource: "categories",
+        },
+        {
+            key: "applicableProducts",
+            label: "Applicable Products",
+            type: "select",
+            multiple: true,
+            optionsSource: "products",
+        },
+        {
+            key: "excludeProducts",
+            label: "Excluded Products",
+            type: "select",
+            multiple: true,
+            optionsSource: "products",
+        },
+        {
+            key: "discountValue",
+            label: "Discount Value",
+            type: "number"
+        },
+        {
+            key: "giftProductId",
+            label: "Gift Product",
+            type: "select",
+            optionsSource: "products",
+        },
+        {
+            key: "freeText",
+            label: "Free Gift Text",
+            type: "text",
+        },
+        {
+            key: "validFrom",
+            label: "Valid From",
+            type: "date"
+        },
+        {
+            key: "validUntil",
+            label: "Valid Until",
+            type: "date"
+        },
+        {
+            key: "usageLimit",
+            label: "Usage Limit (0 = Unlimited)",
+            type: "number"
+        },
+        {
+            key: "displayOnHomepage",
+            label: "Show on Homepage",
+            type: "checkbox",
+        },
+        {
+            key: "displayOnCheckout",
+            label: "Show on Checkout",
+            type: "checkbox",
+        },
+        {
+            key: "displayOnProductPages",
+            label: "Show on Product Pages",
+            type: "checkbox",
+        },
+        {
+            key: "badgeIcon",
+            label: "Badge Icon",
+            type: "text"
+        },
+        {
+            key: "priority",
+            label: "Priority",
+            type: "number"
         },
     ],
     coupons: [
-        { 
-            key: "code", 
-            label: "Coupon Code", 
-            type: "text", 
-            required: true 
+        {
+            key: "code",
+            label: "Coupon Code",
+            type: "text",
+            required: true
         },
-        { 
-            key: "title", 
-            label: "Coupon Title", 
-            type: "text", 
-            required: true 
+        {
+            key: "title",
+            label: "Coupon Title",
+            type: "text",
+            required: true
         },
-        { 
-            key: "description", 
-            label: "Description", 
-            type: "textarea" 
+        {
+            key: "description",
+            label: "Description",
+            type: "textarea"
         },
-        { 
-            key: "type", 
-            label: "Discount Type", 
+        {
+            key: "type",
+            label: "Discount Type",
             type: "select",
             options: [
                 { value: "fixed_discount", label: "Fixed Discount (₹)" },
@@ -375,51 +466,76 @@ const fieldsByType: Record<
                 { value: "free_shipping", label: "Free Shipping" },
                 { value: "free_order", label: "Free Order" },
             ],
-            required: true 
+            required: true
         },
-        { 
-            key: "discountValue", 
-            label: "Discount Value", 
-            type: "number" 
+        {
+            key: "discountValue",
+            label: "Discount Value",
+            type: "number"
         },
-        { 
-            key: "maxDiscountAmount", 
-            label: "Max Discount Amount (₹)", 
-            type: "number" 
+        {
+            key: "maxDiscountAmount",
+            label: "Max Discount Amount (₹)",
+            type: "number"
         },
-        { 
-            key: "minOrderValue", 
-            label: "Min Order Value (₹)", 
-            type: "number" 
+        {
+            key: "minOrderValue",
+            label: "Min Order Value (₹)",
+            type: "number"
         },
-        { 
-            key: "validFrom", 
-            label: "Valid From", 
+        {
+            key: "validFrom",
+            label: "Valid From",
             type: "date",
-            required: true 
+            required: true
         },
-        { 
-            key: "validUntil", 
-            label: "Valid Until", 
+        {
+            key: "validUntil",
+            label: "Valid Until",
             type: "date",
-            required: true 
+            required: true
         },
-        { 
-            key: "usageLimit", 
-            label: "Usage Limit (0 = Unlimited)", 
-            type: "number" 
+        {
+            key: "usageLimit",
+            label: "Usage Limit (0 = Unlimited)",
+            type: "number"
         },
-        { 
-            key: "perUserLimit", 
-            label: "Per User Limit (0 = Unlimited)", 
-            type: "number" 
+        {
+            key: "perUserLimit",
+            label: "Per User Limit (0 = Unlimited)",
+            type: "number"
         },
-        { 
-            key: "firstOrderOnly", 
-            label: "First Order Only", 
-            type: "checkbox" 
+        {
+            key: "firstOrderOnly",
+            label: "First Order Only",
+            type: "checkbox"
         },
     ],
+};
+
+const normalizeArrayField = (value: unknown): string[] => {
+    if (Array.isArray(value)) {
+        return value.map((item) => String(item).trim()).filter(Boolean);
+    }
+
+    if (typeof value === "string") {
+        return value
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+    }
+
+    return [];
+};
+
+const initializeFormState = (type: EntityTab, initialValues?: Record<string, any>) => {
+    const formState = { ...emptyDefaults[type], ...initialValues } as Record<string, unknown>;
+
+    ["applicableCategories", "applicableProducts", "excludeProducts"].forEach((key) => {
+        formState[key] = normalizeArrayField(formState[key]);
+    });
+
+    return formState;
 };
 
 export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
@@ -430,10 +546,7 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
     onSubmit,
     onCancel,
 }) => {
-    const [form, setForm] = useState<Record<string, unknown>>(() => ({
-        ...emptyDefaults[type],
-        ...initialValues,
-    }));
+    const [form, setForm] = useState<Record<string, unknown>>(() => initializeFormState(type, initialValues));
     const [uploadingFields, setUploadingFields] = useState<Set<string>>(new Set());
     const [uploadErrors, setUploadErrors] = useState<Record<string, string>>({});
     const [confirmDialog, setConfirmDialog] = useState<{ isOpen: boolean; fieldKey: string | null; fieldLabel: string }>({
@@ -442,8 +555,27 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
         fieldLabel: "",
     });
 
+    const categoriesQuery = useAdminCategoriesList({ page: 1, limit: 200 });
+    const productsQuery = useAdminProductsList({ page: 1, limit: 200 });
+
+    const categoryOptions = useMemo(
+        () => categoriesQuery.data?.data?.categories?.map((category: any) => ({
+            value: category.id,
+            label: category.name,
+        })) ?? [],
+        [categoriesQuery.data],
+    );
+
+    const productOptions = useMemo(
+        () => productsQuery.data?.data?.map((product: any) => ({
+            value: product.id,
+            label: `${product.name} (${product.id})`,
+        })) ?? [],
+        [productsQuery.data],
+    );
+
     useEffect(() => {
-        setForm({ ...emptyDefaults[type], ...initialValues });
+        setForm(initializeFormState(type, initialValues));
     }, [type, initialValues]);
 
     const fields = useMemo(() => fieldsByType[type], [type]);
@@ -534,6 +666,34 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
         if (payload.rating !== undefined) payload.rating = Number(payload.rating);
         if (payload.order !== undefined) payload.order = Number(payload.order);
 
+        if (type === 'promotions') {
+            const normalizedApplicableCategories = normalizeArrayField(payload.applicableCategories);
+            if (normalizedApplicableCategories.length > 0) {
+                payload.applicableCategories = normalizedApplicableCategories;
+            } else {
+                delete payload.applicableCategories;
+            }
+
+            const normalizedApplicableProducts = normalizeArrayField(payload.applicableProducts);
+            if (normalizedApplicableProducts.length > 0) {
+                payload.applicableProducts = normalizedApplicableProducts;
+            } else {
+                delete payload.applicableProducts;
+            }
+
+            const normalizedExcludeProducts = normalizeArrayField(payload.excludeProducts);
+            if (normalizedExcludeProducts.length > 0) {
+                payload.excludeProducts = normalizedExcludeProducts;
+            } else {
+                delete payload.excludeProducts;
+            }
+
+            if (payload.usageLimit !== undefined) payload.usageLimit = Number(payload.usageLimit);
+            if (payload.discountValue !== undefined) payload.discountValue = Number(payload.discountValue);
+            if (typeof payload.validFrom === 'string') payload.validFrom = payload.validFrom;
+            if (typeof payload.validUntil === 'string') payload.validUntil = payload.validUntil;
+        }
+
         onSubmit(payload);
     };
 
@@ -557,18 +717,71 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                 required={field.required}
                             />
                         ) : field.type === "select" ? (
-                            <select
-                                value={(form[field.key] as string) || ""}
-                                onChange={(e) => handleInputChange(field.key, e.target.value)}
-                                className="w-full rounded border border-slate-300 p-2"
-                                required={field.required}
-                            >
-                                {field.options?.map((opt) => (
-                                    <option key={opt.value} value={opt.value}>
-                                        {opt.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <>
+                                {field.multiple ? (
+                                    <Select
+                                        isMulti
+                                        closeMenuOnSelect={false}
+                                        value={
+                                            (
+                                                (field.optionsSource === "categories"
+                                                    ? categoryOptions
+                                                    : field.optionsSource === "products"
+                                                        ? productOptions
+                                                        : field.options ?? []
+                                                ).filter((option) =>
+                                                    ((form[field.key] as string[]) || []).includes(option.value)
+                                                )
+                                            )
+                                        }
+                                        options={
+                                            field.optionsSource === "categories"
+                                                ? categoryOptions
+                                                : field.optionsSource === "products"
+                                                    ? productOptions
+                                                    : field.options ?? []
+                                        }
+                                        onChange={(selected) =>
+                                            handleInputChange(
+                                                field.key,
+                                                selected.map((item) => item.value)
+                                            )
+                                        }
+                                        className="react-select-container"
+                                        classNamePrefix="react-select"
+                                        placeholder={`Select ${field.label}`}
+                                    />
+                                ) : (
+                                    <select
+                                        value={(form[field.key] as string) || ""}
+                                        onChange={(e) => handleInputChange(field.key, e.target.value)}
+                                        className="w-full rounded border border-slate-300 p-2"
+                                        required={field.required}
+                                    >
+                                        <option value="">Select an option</option>
+
+                                        {(field.optionsSource === "categories"
+                                            ? categoryOptions
+                                            : field.optionsSource === "products"
+                                                ? productOptions
+                                                : field.options ?? []
+                                        ).map((opt) => (
+                                            <option key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )}
+                                {field.multiple && (
+                                    <p className="text-xs text-slate-500">Hold Ctrl / Cmd to select multiple items.</p>
+                                )}
+                                {field.optionsSource === "categories" && categoriesQuery.isLoading && (
+                                    <p className="text-xs text-slate-500">Loading categories...</p>
+                                )}
+                                {field.optionsSource === "products" && productsQuery.isLoading && (
+                                    <p className="text-xs text-slate-500">Loading products...</p>
+                                )}
+                            </>
                         ) : field.type === "date" ? (
                             <input
                                 type="date"
@@ -670,8 +883,8 @@ export const WebsiteEntityForm: React.FC<WebsiteEntityFormProps> = ({
                                     handleInputChange(
                                         field.key,
                                         field.type === "number"
-                                        ? Number(e.target.value)
-                                        : e.target.value,
+                                            ? Number(e.target.value)
+                                            : e.target.value,
                                     )
                                 }
                                 className="w-full rounded border border-slate-300 p-2"
