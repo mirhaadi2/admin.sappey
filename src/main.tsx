@@ -6,6 +6,7 @@ import App from './App';
 import './index.css';
 import { Analytics } from "@vercel/analytics/react";
 
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
