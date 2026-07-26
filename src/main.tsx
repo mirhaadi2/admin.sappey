@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import App from './App';
 import './index.css';
+import { Analytics } from "@vercel/analytics/react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +26,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AdminAuthProvider>
         <App />
+        <Analytics />
       </AdminAuthProvider>
     </QueryClientProvider>
   </React.StrictMode>,
